@@ -98,7 +98,7 @@ Full style guide: **`docs/art-reference.md`** (written from reference photos in 
 - **Materials:** PBR from **CC0 textures only** (Poly Haven, ambientCG), credited in the README. Hand-modelled detail only for real Winnipeg landmarks. No purchased or downloaded city models.
 - **Atmosphere:** heavy snowfall (small flakes plus a few large soft near-camera discs), haze and fog tinted by the local light.
 - **Palette:** the **UI palette** is unchanged (HUD, panels, CSS tokens): night `#0B1426`, night-2 `#14233F`, snow `#E8EEF5`, street `#FFB25C`, hud `#4FE3E3`, brick `#8A4B3A`, sunrise `#FF8A5B` → `#FFD27A`. The **world palette** (sky, lamps, glass, brick, limestone, snow and slush, sign accents) is sampled from the photos and listed in `docs/art-reference.md`; it lives in `src/lib/palette.ts` under `world`.
-- **Quality tiers:** `high` and `medium` use PBR maps; `low` drops PBR maps (flat colours), reduces buildings, trees and flakes, and disables bloom. Same §5.5 budgets in every tier.
+- **Quality tiers:** `high` and `medium` use PBR maps (colour, normal, roughness; 1024², brick 512²). `low` uses 512² **colour maps only** (no normal or roughness maps; a constant roughness), reduces buildings, trees and flakes, and disables bloom. Same §5.5 budgets in every tier.
 - **Post-processing:** bloom (lights only), vignette, subtle film grain, light fog.
 - **Typography (HUD/panels):** one monospace for radio/log (e.g. JetBrains Mono), one clean sans for panels (e.g. Inter). Self-hosted via `next/font`.
 - **No logos or trademarks.** The RRC rooftop text reads "RRC Polytechnic" with no college logo; other signage is generic.
@@ -118,7 +118,7 @@ Full style guide: **`docs/art-reference.md`** (written from reference photos in 
 | Buildings and props | Procedural geometry in code, instanced (`InstancedMesh`); no per-building textures |
 | Shaders | Custom window shader (emissive grid, hash-based lit/unlit and warm/cool) via `onBeforeCompile` or `ShaderMaterial`; lamp halo and snow sprites |
 | Models | Blender → GLB for real Winnipeg landmarks only, Draco + meshopt via gltf-transform |
-| Textures | CC0 PBR sets (Poly Haven, ambientCG), small (≤ 1024²), tiled and shared, KTX2 or WebP; vertex colours and flat colours on the `low` tier |
+| Textures | CC0 PBR sets (Poly Haven, ambientCG), WebP, tiled and shared. Maps that matter at night only: colour, normal, roughness (no displacement or AO unless they visibly help). 1024² for `high`/`medium` (brick 512²), plus 512² colour-only versions for `low`. Initial picks: `asphalt_snow` (road), `snow_02` (ground and banks), `factory_brick` (brick) |
 | Audio | Howler.js (lazy-loaded only when sound is enabled) |
 | Perf tooling | Dev-only overlay (Drei `Stats` + renderer draw calls and triangles), Drei `PerformanceMonitor` for adaptive quality. (`r3f-perf` was dropped: it targets fiber 8 / React 18 and crashes the Turbopack dev server.) |
 | Unit tests | Vitest + Testing Library |
@@ -208,7 +208,7 @@ night-patrol/
 - **Scroll → t:** normalized progress (0..1), damped (`THREE.MathUtils.damp`) for smoothness. Near a stop's `t`, apply an easing "magnet" so the car settles at checkpoints.
 - **Content-driven:** every stop, panel, skill, radio line comes from `src/content/*`. Scene components never hardcode copy. `/simple` and the 3D view read the same data.
 - **3D isolation:** three/R3F imported only under `src/scene` and loaded via `next/dynamic` with `ssr: false`. Links to the 3D route use `prefetch={false}` where appropriate.
-- **Quality tiers:** `high | medium | low` chosen by Drei `PerformanceMonitor` + device hints. Low disables post FX and PBR maps (flat colours), reduces buildings, trees and snow particles, lowers DPR. Low must not download PBR textures at all.
+- **Quality tiers:** `high | medium | low` chosen by Drei `PerformanceMonitor` + device hints. Low disables post FX, uses 512² colour-only texture maps (it must not download normal or roughness maps or the 1024² sets), reduces buildings, trees and snow particles, lowers DPR.
 - **Fallback:** no WebGL or reduced-motion preference → show prompt offering simple view (reduced motion: auto-switch to gentle camera cuts instead of continuous motion).
 - **Instancing:** streetlights, trees, snowbanks, buildings, props (bins, poles, fences), snow particles use `InstancedMesh`. Windows are drawn by the shader, not geometry.
 - **Procedural buildings:** a few shape variants (tower, slab, brick low-rise) placed along the route from a seeded generator (deterministic, so identical on every load). One shared window material, parameterised per instance. Placement stays clear of the road and the camera path.
@@ -290,8 +290,8 @@ Skill = { id: string; name: string; group: 'gauge'|'switch'|'indicator'|'preset'
 | `/` initial JS (before 3D chunk) | ≤ 120 KB gzipped |
 | 3D chunk (JS) | ≤ 450 KB gzipped |
 | Total models + textures | ≤ 6 MB, streamed progressively |
-| PBR textures (`high`/`medium`) | ≤ 3 MB of that total, each ≤ 1024², shared across the scene |
-| `low` tier | Downloads no PBR textures |
+| PBR textures (`high`/`medium`) | ≤ 3 MB of that total (target about 2 MB), each ≤ 1024², shared across the scene. The total is reported in each PR that changes textures |
+| `low` tier textures | 512² colour maps only, ≤ 0.5 MB total; downloads no normal or roughness maps |
 | LCP on `/` (loading screen) | ≤ 2.5 s on 4G |
 | Draw calls | < 150 |
 | Triangles | < 300k |
@@ -356,7 +356,7 @@ Style guide: `docs/art-reference.md`. Two branches, merged in order:
 - Sky per section: overcast city glow (grey-green, grey-brown, orange-tinged), one clear deep-blue stretch with a low moon, tinted fog that follows the route
 - Instanced streetlights in three types (cool LED cobra-head, warm sodium, lantern) with halo sprites + bloom; car headlights (spot lights, shadows off or baked)
 - Snow: small flakes plus a few large soft near-camera discs; count scales with quality tier
-- Road and ground: packed snow and slush with dark tyre ruts, rounded dirty snowbanks, CC0 PBR maps on `high`/`medium` and flat colours on `low`
+- Road and ground: packed snow and slush with dark tyre ruts, rounded dirty snowbanks, CC0 PBR maps on `high`/`medium` and 512² colour-only maps on `low`
 - Bare elm silhouettes arching over streets (instanced)
 - Vignette, grain (windshield and wipers move to Phase 6, with the interior view)
 - World palette added to `src/lib/palette.ts`; CC0 texture credits in README and `public/textures/CREDITS.md`
@@ -367,7 +367,7 @@ Style guide: `docs/art-reference.md`. Two branches, merged in order:
 - Procedural, instanced buildings along the route: varied towers downtown, brick low-rises in the Exchange District
 - Window shader: emissive grid, random lit/unlit windows, warm and cool tones, no texture per building
 - Back-lane props (instanced): wooden poles with wires, bins, fences, garages
-- `low` tier: fewer buildings, no PBR maps
+- `low` tier: fewer buildings, colour-only 512² maps
 - **Done when:** the route is lined with believable buildings that glow at night, within budgets, with no landmarks yet.
 
 ### Phase 4: First checkpoint end to end (RRC Exchange District)  → `v0.4.0`
@@ -484,7 +484,7 @@ Target 60 fps desktop. Show me the plan first, then implement.
 ```
 Read docs/art-reference.md. Start Phase 3a on feat/p3-night-mood: sky and fog per section, instanced
 streetlights with halos and bloom, headlights, two-layer snowfall, packed-snow road with ruts and CC0 PBR maps
-(flat colours on the low tier), elm silhouettes, vignette and grain (wipers are Phase 6), plus reduced-motion variants.
+(512² colour-only maps on the low tier), elm silhouettes, vignette and grain (wipers are Phase 6), plus reduced-motion variants.
 Then Phase 3b on feat/p3-buildings: procedural instanced buildings with the window shader.
 Show me the plan first. Report draw calls, triangles and texture sizes per quality tier versus §5.5 budgets.
 ```
@@ -518,6 +518,6 @@ then give me the PR description and the release notes for the tag.
 - [ ] Final verified copy for each project (links, screenshots)
 - [ ] Voice for radio lines (text only vs recorded)
 - [ ] Analytics on/off
-- [ ] Which CC0 texture sets to use (verify the licence on each asset page before adding)
+- [x] CC0 texture sets: `asphalt_snow`, `snow_02`, `factory_brick` (Poly Haven; licence re-checked on each asset page at download; fall back to ambientCG Snow012/Snow014 or other Poly Haven bricks if tiling shows a seam)
 - [ ] Initial JS budget on `/`: the Next/React runtime alone is about 132 KB gz, so the 120 KB budget in §5.5 cannot be met; proposal is "runtime baseline + 15 KB"
 - [ ] Wording of the sign text at The Forks (our own lettering, content-driven), if shown at all

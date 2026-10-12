@@ -33,7 +33,7 @@ pnpm models:optimize  # gltf-transform pipeline for public/models
 4. **`/simple` must always work** and contain all content. It is the SEO page and the fallback.
 5. **Reduced motion:** respect `prefers-reduced-motion` in every new animation (fades/cuts instead of continuous motion).
 6. **Sound off by default.** Never autoplay audio. Caption every radio line.
-7. **Performance budgets** (see PROJECT_PLAN §5.5): < 150 draw calls, < 300k triangles, 3D JS chunk ≤ 450 KB gz. Use `InstancedMesh` for repeated objects (buildings, trees, lamps, props). Report draw calls/triangles when a PR touches the scene, per quality tier. The `low` tier drops PBR maps (and downloads none) and reduces buildings, trees and snow.
+7. **Performance budgets** (see PROJECT_PLAN §5.5): < 150 draw calls, < 300k triangles, 3D JS chunk ≤ 450 KB gz. Use `InstancedMesh` for repeated objects (buildings, trees, lamps, props). Report draw calls/triangles when a PR touches the scene, per quality tier. The `low` tier uses 512² colour-only texture maps (no normal or roughness) and reduces buildings, trees and snow. Texture weight stays within PROJECT_PLAN §5.5; report the total when a PR changes textures.
 8. **Original models, CC0 textures and audio only.** Models are original: procedural geometry, or hand-modelled detail for real Winnipeg landmarks. No purchased or downloaded city or building models. The only third-party assets allowed are CC0: PBR textures from Poly Haven or ambientCG, and CC0 audio. Check the CC0 licence on each asset's page before adding it, and credit every one in the README (name, source URL, licence). Primitive blockouts are fine until Phase 10.
 9. **Warming shelter stop:** no human figures, no sad music, no dramatic effects. Warm lit windows, a quiet captioned line, and resource links only.
 10. **No logos or trademarks** of real organizations (Winnipeg Transit, Jets, Canada Life, etc.) in models, textures or signage. Landmarks are stylized silhouettes. The RRC campus rooftop text reads "RRC Polytechnic", with no college logo, banner or crest. Buses and signs stay generic.
@@ -47,7 +47,7 @@ Stylized realistic winter night, not low-poly. Read `docs/art-reference.md` befo
 - Roads are packed snow and slush with dark tyre ruts, never clean asphalt.
 - Lamps: cool white LED cobra-heads on avenues, warm sodium downtown, with halos.
 - Bare elms, buildings and back-lane props are instanced. Buildings are procedural; windows come from one shader (emissive grid, random lit/unlit, warm and cool), with no texture per building.
-- PBR maps are CC0 only and tiered: none on `low`.
+- PBR maps are CC0 only, WebP, and tiered: colour, normal and roughness on `high`/`medium` (1024², brick 512²); 512² colour only on `low`. Skip displacement and AO unless they visibly help.
 - Warming shelter stop: warm windows only, no people, no drama (rule 9 still applies).
 
 ## Code style
