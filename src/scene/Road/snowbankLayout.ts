@@ -35,14 +35,14 @@ export function buildSnowbanks(model: RouteModel, options: SnowbankOptions): Sno
     const halfWidth = model.widthAt(u) / 2;
 
     for (const side of [-1, 1]) {
-      const lengthScale = range(random, 3, 5);
-      const heightScale = range(random, 0.5, 1.1);
-      const depthScale = range(random, 1.4, 2.4);
+      const lengthScale = range(random, 4, 6.5);
+      const heightScale = range(random, 0.9, 1.7);
+      const depthScale = range(random, 1.8, 3);
       const offset = halfWidth + depthScale / 2 + range(random, 0.1, 0.8);
       // Lateral direction matches the road ribbon: (tangent.z, 0, -tangent.x).
       position.set(
         p.x + tangent.z * offset * side,
-        heightScale / 2 - 0.05,
+        heightScale * 0.12 - 0.04,
         p.z - tangent.x * offset * side,
       );
       euler.set(0, yaw + range(random, -0.15, 0.15), 0);

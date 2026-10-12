@@ -1,13 +1,26 @@
-import { useEffect, useMemo } from 'react';
-import { palette } from '@/lib/palette';
+import { Suspense, useEffect, useMemo } from 'react';
+import { world } from '@/lib/palette';
+import type { QualityTier } from '@/lib/quality';
+import { createRoadMaterial } from '../Materials/surfaceMaterials';
+import { useSurfaceTextures } from '../Materials/useSurfaceTextures';
 import { buildRibbon } from './ribbon';
 import { routeModel } from './route';
 
 const SURFACE_SAMPLES = 700;
-const LINE_SAMPLES = 1000;
 
-/** Asphalt strip plus a dashed centre line: two draw calls for the whole route. */
-export function Road() {
+/** Textured once the maps load; until then the flat fallback below shows. */
+function RoadSurface({ tier }: { tier: QualityTier }) {
+  const textures = useSurfaceTextures(tier);
+  const material = useMemo(() => createRoadMaterial(textures), [textures]);
+  useEffect(() => () => material.dispose(), [material]);
+  return <primitive object={material} attach="material" />;
+}
+
+/**
+ * The road: packed snow and slush with dark wheel ruts, one draw call. No painted centre line:
+ * lane markings are buried under snow in winter (docs/art-reference.md).
+ */
+export function Road({ tier }: { tier: QualityTier }) {
   const surface = useMemo(
     () =>
       buildRibbon(routeModel, {
@@ -17,29 +30,15 @@ export function Road() {
       }),
     [],
   );
-  const centreLine = useMemo(
-    () =>
-      buildRibbon(routeModel, {
-        samples: LINE_SAMPLES,
-        extent: () => [-0.12, 0.12],
-        y: 0.04,
-        dash: { on: 5, off: 5 },
-      }),
-    [],
-  );
 
   // Geometries built by hand are not managed by R3F, so release them ourselves.
   useEffect(() => () => surface.dispose(), [surface]);
-  useEffect(() => () => centreLine.dispose(), [centreLine]);
 
   return (
-    <group>
-      <mesh geometry={surface}>
-        <meshStandardMaterial color="#1b2740" roughness={1} />
-      </mesh>
-      <mesh geometry={centreLine}>
-        <meshStandardMaterial color={palette.street} roughness={1} />
-      </mesh>
-    </group>
+    <mesh geometry={surface}>
+      <Suspense fallback={<meshStandardMaterial color={world.snowPacked} roughness={1} />}>
+        <RoadSurface tier={tier} />
+      </Suspense>
+    </mesh>
   );
 }

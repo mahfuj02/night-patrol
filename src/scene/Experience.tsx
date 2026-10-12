@@ -53,9 +53,9 @@ export function Experience() {
       <ProgressDriver reducedMotion={reducedMotion} />
       <AtmosphereDriver />
       <Sky />
-      <Ground />
-      <Road />
-      <Snowbanks />
+      <Ground tier={tier} />
+      <Road tier={tier} />
+      <Snowbanks tier={tier} />
       <Streetlights />
       <Car />
       <Snow tier={tier} reducedMotion={reducedMotion} />
