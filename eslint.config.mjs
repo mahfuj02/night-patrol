@@ -9,6 +9,14 @@ const threeRestricted = [
   { group: ['postprocessing'], message: '3D code may only be imported under src/scene/.' },
 ];
 
+// The validated content index pulls zod and every content file into the bundle. Client code
+// imports the plain data files (@/content/stops, @/content/route, @/content/ui) instead.
+const contentIndexRestricted = {
+  name: '@/content',
+  message:
+    'Import a plain data file such as @/content/stops instead; the validated index is for server code and tests.',
+};
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
@@ -21,7 +29,26 @@ const eslintConfig = defineConfig([
     },
   },
   {
+    // 3D is allowed under src/scene, but it is client code, so the content index is still off limits.
     files: ['src/scene/**'],
+    rules: { 'no-restricted-imports': ['error', { paths: [contentIndexRestricted] }] },
+  },
+  {
+    files: [
+      'src/store/**',
+      'src/hooks/**',
+      'src/ui/DriveControls/**',
+      'src/app/HomeExperience.tsx',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        { patterns: threeRestricted, paths: [contentIndexRestricted] },
+      ],
+    },
+  },
+  {
+    files: ['**/*.test.{ts,tsx}', 'tests/**'],
     rules: { 'no-restricted-imports': 'off' },
   },
   globalIgnores([

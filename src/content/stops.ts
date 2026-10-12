@@ -1,9 +1,8 @@
-import { z } from 'zod';
-import { StopSchema } from './schema';
+import type { Stop } from './schema';
 
 // `t` is the arc-length fraction of each stop's point in route.ts. src/scene/Road/route.test.ts
 // fails if the two drift apart; after editing route.ts, update these from that test's output.
-export const stops = z.array(StopSchema).parse([
+export const stops: Stop[] = [
   { id: 'ignition', order: 0, t: 0, title: 'Ignition', landmark: 'ignition', kind: 'intro' },
   {
     id: 'dispatch',
@@ -106,4 +105,4 @@ export const stops = z.array(StopSchema).parse([
     kind: 'contact',
     radioId: 'shift-complete',
   },
-]);
+];

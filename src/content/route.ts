@@ -1,4 +1,4 @@
-import { RouteSchema } from './schema';
+import type { Route } from './schema';
 
 /**
  * Control points for the patrol route, in scene units (x east, z south).
@@ -9,7 +9,7 @@ import { RouteSchema } from './schema';
  * Portage & Main, a curve southeast through downtown, then a slow wide curve into The Forks.
  * TODO(content): owner to review the shape against real Winnipeg geography.
  */
-export const route = RouteSchema.parse({
+export const route: Route = {
   points: [
     // Exchange District: narrow streets, tight bends
     { x: 0, z: 0, width: 6, stopId: 'ignition' },
@@ -37,4 +37,4 @@ export const route = RouteSchema.parse({
     { x: 830, z: 420, width: 10 },
     { x: 860, z: 500, width: 10, stopId: 'the-forks' },
   ],
-});
+};

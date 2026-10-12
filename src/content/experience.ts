@@ -1,8 +1,7 @@
-import { z } from 'zod';
-import { ExperienceSchema } from './schema';
+import type { Experience } from './schema';
 
 // Patrol log: LIILAB, RRC and Sprint-Innovation only (owner decision).
-export const experience = z.array(ExperienceSchema).parse([
+export const experience: Experience[] = [
   {
     id: 'liilab',
     kind: 'work',
@@ -39,4 +38,4 @@ export const experience = z.array(ExperienceSchema).parse([
     start: '2025',
     bullets: [],
   },
-]);
+];

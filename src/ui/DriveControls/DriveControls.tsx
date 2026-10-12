@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { stops } from '@/content';
+import { stops } from '@/content/stops';
 import { simpleCopy } from '@/content/ui';
 import { formatTemplate } from '@/lib/template';
 import { useDriveStore } from '@/store/drive';

@@ -1,16 +1,44 @@
-import { communityNotes } from './community';
-import { experience } from './experience';
+/**
+ * Validated content. Importing this module parses every content file with its zod schema and
+ * checks cross-references, so a mistake fails `pnpm test` and `pnpm build`.
+ *
+ * Use it from server code and tests only. Client components import the plain data files
+ * (`@/content/stops`, `@/content/route`, `@/content/ui`) directly: that keeps zod and the whole
+ * content layer out of the browser bundle.
+ */
+import { z } from 'zod';
+import { communityNotes as communityNotesData } from './community';
+import { experience as experienceData } from './experience';
 import { assertContentIntegrity } from './integrity';
-import { profile } from './profile';
-import { projects } from './projects';
-import { radioLines } from './radio';
-import { route } from './route';
-import { skills } from './skills';
-import { stops } from './stops';
+import { profile as profileData } from './profile';
+import { projects as projectsData } from './projects';
+import { radioLines as radioLinesData } from './radio';
+import { route as routeData } from './route';
+import {
+  CommunityNoteSchema,
+  ExperienceSchema,
+  ProfileSchema,
+  ProjectSchema,
+  RadioLineSchema,
+  RouteSchema,
+  SkillSchema,
+  StopSchema,
+  UiCopySchema,
+} from './schema';
+import { skills as skillsData } from './skills';
+import { stops as stopsData } from './stops';
+import { simpleCopy as simpleCopyData } from './ui';
 
-// Fails the build (and any import) if cross-references are broken.
+export const communityNotes = z.array(CommunityNoteSchema).parse(communityNotesData);
+export const experience = z.array(ExperienceSchema).parse(experienceData);
+export const profile = ProfileSchema.parse(profileData);
+export const projects = z.array(ProjectSchema).parse(projectsData);
+export const radioLines = z.array(RadioLineSchema).parse(radioLinesData);
+export const route = RouteSchema.parse(routeData);
+export const skills = z.array(SkillSchema).parse(skillsData);
+export const stops = z.array(StopSchema).parse(stopsData);
+export const simpleCopy = UiCopySchema.parse(simpleCopyData);
+
 assertContentIntegrity({ route, stops, projects, experience, communityNotes, radioLines });
 
-export { communityNotes, experience, profile, projects, radioLines, route, skills, stops };
 export * from './schema';
-export { simpleCopy } from './ui';

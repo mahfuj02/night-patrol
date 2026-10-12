@@ -1,5 +1,5 @@
 import { CatmullRomCurve3, Vector3 } from 'three';
-import { route as routeContent } from '@/content';
+import { route as routeContent } from '@/content/route';
 import type { Route } from '@/content/schema';
 import { interpolateWidth } from '@/lib/route';
 

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { stops } from '@/content';
+import { stops } from '@/content/stops';
 import { clamp01, isAtStop, nearestStopIndex, stepToStop } from '@/lib/route';
 
 export const STOP_TS: readonly number[] = stops.map((stop) => stop.t);
