@@ -4,6 +4,15 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ## [Unreleased]
 
+### Added
+
+- Zod content schemas and typed content for profile, projects, skills, experience, stops, radio and the community note, with cross-reference validation
+- `/simple` page: hero, projects, skills, experience and education, community note, contact and resume link
+- Page metadata, canonical URL, Open Graph tags, `sitemap.xml`, `robots.txt` and Person JSON-LD
+- Playwright and axe tests for `/simple`
+- Lighthouse CI workflow (not a required check yet)
+- `docs/content-guide.md`
+
 ## [0.0.1] - TBD
 
 ### Added

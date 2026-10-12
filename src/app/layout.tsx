@@ -1,13 +1,16 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
+import { simpleCopy } from '@/content/ui';
+import { getSiteUrl } from '@/lib/site';
 import './globals.css';
 
 const inter = Inter({ variable: '--font-inter', subsets: ['latin'] });
 const jetbrainsMono = JetBrains_Mono({ variable: '--font-jetbrains-mono', subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Night Patrol',
-  description: 'A scroll-driven 3D night drive through low-poly winter Winnipeg.',
+  metadataBase: new URL(getSiteUrl()),
+  title: simpleCopy.site.title,
+  description: simpleCopy.site.description,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
