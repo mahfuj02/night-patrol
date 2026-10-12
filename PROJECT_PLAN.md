@@ -346,7 +346,7 @@ Branch: `feat/p2-road-car-scroll`
 - Placeholder car (primitives), follows `t`, oriented to tangent
 - Scroll / keys / swipe → damped `t`; CameraRig chase camera
 - Stop "magnet" easing; unit tests for route math
-- r3f-perf in dev
+- Dev-only stats overlay (fps, draw calls, triangles)
 - **Done when:** scrolling smoothly drives the car end to end at 60 fps on desktop.
 
 ### Phase 3: Night mood and materials  → `v0.3.0`
@@ -358,7 +358,7 @@ Style guide: `docs/art-reference.md`. Two branches, merged in order:
 - Snow: small flakes plus a few large soft near-camera discs; count scales with quality tier
 - Road and ground: packed snow and slush with dark tyre ruts, rounded dirty snowbanks, CC0 PBR maps on `high`/`medium` and flat colours on `low`
 - Bare elm silhouettes arching over streets (instanced)
-- Windshield + wiper animation; vignette, grain
+- Vignette, grain (windshield and wipers move to Phase 6, with the interior view)
 - World palette added to `src/lib/palette.ts`; CC0 texture credits in README and `public/textures/CREDITS.md`
 - Reduced-motion variants
 - **Done when:** the scene feels like a winter night in Winnipeg with no buildings yet. Perf budgets met in every tier.
@@ -390,6 +390,7 @@ One branch per stop or small group, e.g. `feat/p5-stop-exchange-eventflow`, `fea
 ### Phase 6: Dashboard skills + patrol log  → `v0.6.0`
 Branch: `feat/p6-dashboard-patrol-log`
 - Interior dashboard view (camera can glance down, or HUD overlay of dashboard)
+- Windshield and wiper animation (needs the interior view; moved here from Phase 3). Wipers respect reduced motion (static, or a single slow wipe)
 - Gauges/switches/indicators/presets from `skills.ts`, hover/focus tooltips
 - PatrolLog panel with experience entries
 - Bangladesh flag + coffee cup props
@@ -483,7 +484,7 @@ Target 60 fps desktop. Show me the plan first, then implement.
 ```
 Read docs/art-reference.md. Start Phase 3a on feat/p3-night-mood: sky and fog per section, instanced
 streetlights with halos and bloom, headlights, two-layer snowfall, packed-snow road with ruts and CC0 PBR maps
-(flat colours on the low tier), elm silhouettes, wipers, vignette and grain, plus reduced-motion variants.
+(flat colours on the low tier), elm silhouettes, vignette and grain (wipers are Phase 6), plus reduced-motion variants.
 Then Phase 3b on feat/p3-buildings: procedural instanced buildings with the window shader.
 Show me the plan first. Report draw calls, triangles and texture sizes per quality tier versus §5.5 budgets.
 ```
