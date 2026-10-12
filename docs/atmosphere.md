@@ -35,3 +35,13 @@ How lighting and weather change along the route.
 ## Comparing tiers
 
 Open `/?quality=high`, `?quality=medium` or `?quality=low`. The tier is pinned and adaptive quality is off, so you can compare looks and fps. In development an overlay shows fps, draw calls and triangles.
+
+## Road, ground and banks
+
+- **Road** (`Road.tsx`, `Materials/surfaceMaterials.ts`): one ribbon with metric `uv` and an `aRoad` attribute (lateral offset, distance along, half width). The shader draws two ruts per lane, meandering and patchy, with `asphalt_snow` (colour, normal, roughness) in the ruts and `snow_02` on the ridges and edges. Lane count follows the road width. The bump map fades with distance and the asphalt grit blends to its average, because both shimmer at grazing angles. There is no painted centre line: markings are buried under snow in winter.
+- **Ground and banks:** `snow_02` sampled in world space at two blended scales (one rotated), so the footprint-like marks in the tile never visibly repeat. Banks are lumpy instanced mounds with a little grime near the ground. A faint sky-bounce glow, set from the blended ambient light, keeps snow readable far from lamps.
+- **Tiers:** high and medium use the 1024² maps; low uses the 512² colour maps only. Textures load lazily behind a flat-colour fallback.
+
+## Trees
+
+`Environment/Elms.tsx`: bare elm silhouettes, two draw calls (instanced trunks and instanced canopy cards). The canopy texture is drawn once in the browser by a procedural branch generator (`src/lib/branches.ts`), so no image is shipped. Placement follows each zone's `trees` density (many on the avenue, few downtown); the low tier plants half as many with a smaller texture.

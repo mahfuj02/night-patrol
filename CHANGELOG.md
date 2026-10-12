@@ -25,7 +25,12 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - `?quality=high|medium|low` URL override that pins the quality tier and disables adaptation
 - CC0 textures (Poly Haven asphalt snow, snow, factory brick) with a conversion script and a dev-only preview page, and the world palette
 
+- Rut-mask road (asphalt_snow in the wheel ruts, snow_02 on ridges and edges), snow ground and lumpy snowbanks with world-space two-scale snow so marks never repeat
+- Bare elm silhouettes along the road, placed by a per-zone `trees` density, with a procedural branch texture
+
 ### Changed
+
+- The painted centre line is gone: lane markings are buried under snow
 
 - Content data files are plain typed data; `src/content/index.ts` validates them. Keeps zod out of the client bundle.
 - Stop `t` values now match the route curve
