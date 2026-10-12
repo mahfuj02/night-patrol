@@ -27,7 +27,10 @@ describe('route model', () => {
       const fraction = routeModel.stopFractions.get(stop.id);
       expect(fraction, `route point for ${stop.id}`).toBeDefined();
       // stops.ts stores three decimals, so allow half a unit in the last place
-      expect(Math.abs(stop.t - fraction!), `t for ${stop.id}`).toBeLessThan(0.0006);
+      expect(
+        Math.abs(stop.t - fraction!),
+        `stops.ts: ${stop.id} should have t: ${fraction!.toFixed(3)} (has ${stop.t})`,
+      ).toBeLessThan(0.0006);
     }
   });
 

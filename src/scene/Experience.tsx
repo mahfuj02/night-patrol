@@ -14,12 +14,9 @@ import { ProgressDriver } from './ProgressDriver';
 import { Road } from './Road/Road';
 import { Snowbanks } from './Road/Snowbanks';
 
-// r3f-perf is a dev dependency: this ternary is folded away in production builds, so the
-// import below is never bundled.
-const Perf =
-  process.env.NODE_ENV === 'development'
-    ? lazy(() => import('r3f-perf').then((m) => ({ default: m.Perf })))
-    : null;
+// Dev-only overlay. The ternary is folded away in production builds, so the lazy
+// import is never bundled.
+const DevStats = process.env.NODE_ENV === 'development' ? lazy(() => import('./DevStats')) : null;
 
 export function Experience() {
   const reducedMotion = useReducedMotion();
@@ -51,9 +48,9 @@ export function Experience() {
       <Car />
       <CameraRig reducedMotion={reducedMotion} />
 
-      {Perf && (
+      {DevStats && (
         <Suspense fallback={null}>
-          <Perf position="top-left" />
+          <DevStats />
         </Suspense>
       )}
     </Canvas>
