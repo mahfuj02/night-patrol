@@ -35,6 +35,9 @@ describe('world palette', () => {
       'brick',
       'snow',
       'night',
+      // Aliases of the UI sunrise gradient, which the guide lists as `sunrise`.
+      'sunriseOrange',
+      'sunriseGold',
     ]);
     for (const token of Object.keys(world)) {
       if (undocumented.has(token)) continue;

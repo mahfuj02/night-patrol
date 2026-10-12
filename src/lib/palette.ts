@@ -60,6 +60,8 @@ export const world = {
   forksMagentaDeep: '#791F7C',
   forksMagentaCore: '#E8BDE2',
   sunriseCloud: '#F0CBBF',
+  sunriseOrange: palette.sunriseFrom,
+  sunriseGold: palette.sunriseTo,
 } as const;
 
 export type WorldToken = keyof typeof world;

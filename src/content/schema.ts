@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { world, type WorldToken } from '../lib/palette';
 
 const url = z.url();
 /** YYYY or YYYY-MM */
@@ -181,3 +182,36 @@ export const UiCopySchema = z.object({
   labels: z.object({ stack: z.string(), problem: z.string(), built: z.string() }),
 });
 export type UiCopy = z.infer<typeof UiCopySchema>;
+
+// Lighting and weather by route zone (see src/content/atmosphere.ts).
+const worldTokens = Object.keys(world) as [WorldToken, ...WorldToken[]];
+export const WorldTokenSchema = z.enum(worldTokens);
+export const lampTypes = ['sodium', 'led', 'warm'] as const;
+export type LampType = (typeof lampTypes)[number];
+
+const unit = z.number().min(0).max(1);
+
+export const AtmosphereZoneSchema = z.object({
+  id: kebabId,
+  /** The zone holds its values from the `from` stop to the `to` stop (plus offsets, in `t`). */
+  from: kebabId,
+  to: kebabId,
+  startOffset: z.number().optional(),
+  endOffset: z.number().optional(),
+  /** Length in `t` over which the previous zone eases into this one, ending where this zone starts. */
+  blend: z.number().min(0),
+  sky: z.object({ zenith: WorldTokenSchema, horizon: WorldTokenSchema }),
+  fog: z.object({ color: WorldTokenSchema, near: z.number().min(0), far: z.number().positive() }),
+  light: z.object({
+    type: z.enum(lampTypes),
+    color: WorldTokenSchema,
+    intensity: z.number().min(0),
+  }),
+  ambient: z.object({ color: WorldTokenSchema, intensity: z.number().min(0) }),
+  snow: z.object({ density: unit, wind: unit, gust: unit }),
+  moon: unit,
+  sunrise: unit,
+  /** Mix of lit window tones; used by the buildings in Phase 3b. */
+  windows: z.object({ warm: unit, cool: unit }),
+});
+export type AtmosphereZone = z.infer<typeof AtmosphereZoneSchema>;

@@ -1,6 +1,16 @@
-import type { CommunityNote, Experience, Project, RadioLine, Route, Stop } from './schema';
+import { findZoneProblems } from '../lib/atmosphere';
+import type {
+  AtmosphereZone,
+  CommunityNote,
+  Experience,
+  Project,
+  RadioLine,
+  Route,
+  Stop,
+} from './schema';
 
 export interface ContentBundle {
+  atmosphere: AtmosphereZone[];
   route: Route;
   stops: Stop[];
   projects: Project[];
@@ -86,6 +96,7 @@ export function findContentProblems(c: ContentBundle): string[] {
   if (pinnedOrder.some((order, i) => i > 0 && order <= pinnedOrder[i - 1]!)) {
     problems.push('Route points must pin stops in stop order');
   }
+  problems.push(...findZoneProblems(c.atmosphere, c.stops));
   for (const line of c.radioLines) {
     if (!stopsById.has(line.stopId)) {
       problems.push(`Radio ${line.id}: unknown stopId ${line.stopId}`);
