@@ -5,10 +5,10 @@ import { dampT } from '@/lib/route';
 import { progress } from './progress';
 import { routeModel } from './Road/route';
 
-const CHASE_BACK = 11;
-const CHASE_UP = 4.6;
-const LOOK_AHEAD = 10;
-const LOOK_UP = 1.2;
+const CHASE_BACK = 12;
+const CHASE_UP = 4.8;
+const LOOK_AHEAD = 6;
+const LOOK_UP = 0.8;
 /** Camera smoothing rate (per second). */
 const FOLLOW_RATE = 9;
 const MAX_DELTA = 0.1;
