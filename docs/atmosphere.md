@@ -39,9 +39,15 @@ Open `/?quality=high`, `?quality=medium` or `?quality=low`. The tier is pinned a
 ## Road, ground and banks
 
 - **Road** (`Road.tsx`, `Materials/surfaceMaterials.ts`): one ribbon with metric `uv` and an `aRoad` attribute (lateral offset, distance along, half width). The shader draws two ruts per lane, meandering and patchy, with `asphalt_snow` (colour, normal, roughness) in the ruts and `snow_02` on the ridges and edges. Lane count follows the road width. The bump map fades with distance and the asphalt grit blends to its average, because both shimmer at grazing angles. There is no painted centre line: markings are buried under snow in winter.
-- **Ground and banks:** `snow_02` sampled in world space at two blended scales (one rotated), so the footprint-like marks in the tile never visibly repeat. Banks are lumpy instanced mounds with a little grime near the ground. A faint sky-bounce glow, set from the blended ambient light, keeps snow readable far from lamps.
+- **Snow ridge:** one continuous plowed ridge along each road edge as a single mesh, with gentle lumpy variation along its length, a crest nearer the road, and gaps only at the intersections listed in `src/content/route.ts`.
+- **Ground:** `snow_02` sampled in world space at two blended scales (one rotated), so the footprint-like marks in the tile never visibly repeat. Banks are lumpy instanced mounds with a little grime near the ground. The ridge and ground share it. A faint sky-bounce glow, set from the blended ambient light, keeps snow readable far from lamps.
 - **Tiers:** high and medium use the 1024² maps; low uses the 512² colour maps only. Textures load lazily behind a flat-colour fallback.
 
 ## Trees
 
-`Environment/Elms.tsx`: bare elm silhouettes, two draw calls (instanced trunks and instanced canopy cards). The canopy texture is drawn once in the browser by a procedural branch generator (`src/lib/branches.ts`), so no image is shipped. Placement follows each zone's `trees` density (many on the avenue, few downtown); the low tier plants half as many with a smaller texture.
+`Environment/Trees.tsx`, `treeBuilder.ts`, `treeLayout.ts`: bare winter elms as real 3D trees, with no canopy cards and no trunk in any texture.
+
+- **Shape:** a tapered trunk with a slight base flare that forks at 2 to 3 m into 3 to 5 limbs arching up and outward in a vase shape, then one or two levels of smaller branches, built as tapered tubes and merged. Four variants on high and medium, two with fewer branch levels on low. Small crossed twig planes (2 or 3 per cluster) sit at the branch tips only, with a procedural twig texture and alpha-to-coverage for soft edges.
+- **Material:** dark grey-brown bark from vertex colours, lit by the nearest lamps (the lamp cone uniforms shared with the snow) and the headlights, with upward-facing surfaces blending to snow.
+- **Placement:** regular rows 8 to 10 m apart along both sides, set back behind the plowed ridge, the two rows staggered. Each tree turns its long limbs toward the road, so on a lined avenue the branches from both sides arch over it. Rows follow each zone's `trees` density, stop at intersections and stay clear of lamp poles. The low tier plants half as many.
+- **Cost:** about 1.1k triangles per high tree, about 0.4k per low tree, and two draw calls per shape.
