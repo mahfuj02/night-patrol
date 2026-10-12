@@ -53,6 +53,8 @@ Winter night in Winnipeg. Snow is falling. The visitor rides along on Mahfuj's p
 
 **Ambient life:** a generic city bus (no logos or livery), parked cars buried in snow with block heater cords, snowbanks, bare elms arching over streets, back-lane details (wooden power poles with wires, bins, fences, garages), streetlights, occasional passing car headlights.
 
+**Setting by stretch:** the Exchange District is brick warehouses and low-rises; downtown and Portage & Main are towers; from the warming shelter through the avenue to the Human Rights Museum and Esplanade Riel the route runs through a **residential Winnipeg neighbourhood** (houses, garages, back lanes with wooden power poles and wires, city bins) under the elm tunnel. Cross streets branch off at intersections, with traffic lights at the corners, so it feels like a city grid; the car never leaves the route.
+
 ### 2.3 In-car UI (always available)
 - **Dashboard = Skills.** Gauges and indicator lights, each one a skill. Hover/focus shows a tooltip with level and where it was used.
   - TypeScript, Next.js, Node.js, React (gauges)
@@ -72,7 +74,7 @@ Winter night in Winnipeg. Snow is falling. The visitor rides along on Mahfuj's p
 - **Mobile:** vertical swipe + large "Next stop ›" / "‹ Prev" buttons.
 - **Mini-map (GPS):** bottom corner, lists every stop. Click/tap jumps the car there (eased camera move). Keyboard focusable.
 - **Simple view:** `/simple` route (and top-corner link) renders all content as a normal fast HTML page. Also the automatic fallback when WebGL is unavailable or the device is too weak.
-- Car **never** steers freely.
+- The car follows the route and **never steers freely**. It also **never drives backwards**: when the travel direction reverses, it makes a smooth U-turn and drives back in the opposite lane facing forward (Canada drives on the right), and the camera stays behind it in the direction of travel (Phase 8).
 
 ### 2.5 Checkpoint behaviour
 1. Car approaches → decelerates (scroll progress eases).
@@ -101,6 +103,7 @@ Full style guide: **`docs/art-reference.md`** (written from reference photos in 
 - **Quality tiers:** `high` and `medium` use PBR maps (colour, normal, roughness; 1024², brick 512²). `low` uses 512² **colour maps only** (no normal or roughness maps; a constant roughness), reduces buildings, trees and flakes, and disables bloom. Same §5.5 budgets in every tier.
 - **Post-processing:** bloom (lights only), vignette, subtle film grain, light fog.
 - **Typography (HUD/panels):** one monospace for radio/log (e.g. JetBrains Mono), one clean sans for panels (e.g. Inter). Self-hosted via `next/font`.
+- **The car:** the owner's own white 2019 Honda Civic sedan, modified (amber roof light bar, tinted windows, black rims, subtle cyan underglow), with no manufacturer logos or badges. Details in Phase 10.
 - **No logos or trademarks.** The RRC rooftop text reads "RRC Polytechnic" with no college logo; other signage is generic.
 
 ---
@@ -364,11 +367,19 @@ Style guide: `docs/art-reference.md`. Two branches, merged in order:
 - **Done when:** the scene feels like a winter night in Winnipeg with no buildings yet. Perf budgets met in every tier.
 
 **3b. Branch `feat/p3-buildings`**
-- Procedural, instanced buildings along the route: varied towers downtown, brick low-rises in the Exchange District
-- Window shader: emissive grid, random lit/unlit windows, warm and cool tones, no texture per building
-- Back-lane props (instanced): wooden poles with wires, bins, fences, garages
-- `low` tier: fewer buildings, colour-only 512² maps
-- **Done when:** the route is lined with believable buildings that glow at night, within budgets, with no landmarks yet.
+
+**Decision:** the stretch from the warming shelter through the avenue to the Human Rights Museum and Esplanade Riel is a **residential Winnipeg neighbourhood** under the elm tunnel. Downtown stays towers; the Exchange District stays brick warehouses and low-rises.
+
+- Procedural, instanced buildings by stretch:
+  - Exchange District: brick warehouses and low-rises
+  - Downtown and Portage & Main: varied towers
+  - Shelter and avenue: houses (gabled and flat-roofed, snow on the roofs) and detached garages, set back behind the tree rows
+- Window shader: emissive grid, random lit/unlit windows, warm and cool tones, no texture per building. Houses show a few warm windows; the shelter stop shows warm windows only (rule 9: no figures).
+- Back lanes (instanced) behind the houses: wooden power poles with wires, city bins, fences and garages, seen between the houses
+- **Cross streets at intersections:** roads branching off the route into the distance, with traffic lights (yellow-housed signals on mast arms) at the corners, so it reads as a city grid. The car never leaves the route. Intersections come from `intersections` in `src/content/route.ts`; the snow ridge and tree rows already break at each one. The residential stretch gets its own intersections (the owner adds them there).
+- `low` tier: fewer buildings and houses, fewer back-lane props, colour-only 512² maps
+- If this branch grows too large for one reviewable PR, split the cross streets and traffic lights into a `feat/p3-streets` branch.
+- **Done when:** the route is lined with believable buildings and houses that glow at night, with cross streets and traffic lights at the intersections, within budgets, with no landmarks yet.
 
 ### Phase 4: First checkpoint end to end (RRC Exchange District)  → `v0.4.0`
 Branch: `feat/p4-checkpoint-rrc`
@@ -389,7 +400,7 @@ One branch per stop or small group, e.g. `feat/p5-stop-exchange-eventflow`, `fea
 
 ### Phase 6: Dashboard skills + patrol log  → `v0.6.0`
 Branch: `feat/p6-dashboard-patrol-log`
-- Interior dashboard view (camera can glance down, or HUD overlay of dashboard)
+- Interior dashboard view (camera can glance down, or HUD overlay of dashboard). The cabin matches the owner's car (see Phase 10): dark, tinted glass, amber light bar glow on the roof lining
 - Windshield and wiper animation (needs the interior view; moved here from Phase 3). Wipers respect reduced motion (static, or a single slow wipe)
 - Gauges/switches/indicators/presets from `skills.ts`, hover/focus tooltips
 - PatrolLog panel with experience entries
@@ -400,6 +411,7 @@ Branch: `feat/p6-dashboard-patrol-log`
 Branch: `feat/p7-ignition-sunrise`
 - LoadingScreen: fuel gauge progress from Drei `useProgress`, Start Patrol, Skip to simple view
 - The Forks landmark: market building, frozen river skating trail with lights
+- **Roundabout at The Forks**, at the end of the route. The car loops it for the "end of shift / start new patrol" moment, with the camera following behind. Under reduced motion the loop is a cut or a short fade, not a continuous circle. The route curve and the `the-forks` stop are reshaped around it.
 - Sunrise sky transition driven by `t` near the end
 - Contact panel, resume download, link to mahfuj.dev
 - **Done when:** the experience has a full beginning and ending.
@@ -408,6 +420,7 @@ Branch: `feat/p7-ignition-sunrise`
 Branch: `feat/p8-minimap-mobile`
 - MiniMap with stop list, current position, click/tap to jump (eased)
 - Mobile controls: swipe + Next/Prev buttons, safe-area insets
+- **Direction changes:** when the travel direction reverses (Prev, a mini-map jump back, scrolling back), the car makes a smooth U-turn and drives back in the opposite lane **facing forward** (Canada drives on the right). It never drives backwards. The camera follows behind the car in the direction of travel. This needs a lane offset (each direction uses its right-hand lane), a U-turn path across the road, and an eased camera handover. Under reduced motion the car cuts to the opposite lane instead of turning continuously. The lane and U-turn math lives in `src/lib` with unit tests.
 - Keyboard shortcuts overlay (`?`)
 - E2E for mini-map and keyboard
 - **Done when:** any stop is ≤ 2 clicks from anywhere on any device.
@@ -422,6 +435,7 @@ Branch: `feat/p9-sound`
 ### Phase 10: Art pass (hand-modelled landmarks)  → `v0.10.0`
 Branches: `feat/p10-models-<name>`
 - Replace landmark blockouts with original hand-modelled detail (each real Winnipeg landmark, the car). Procedural buildings and props stay procedural. No purchased or downloaded models.
+- **The car** is the owner's own white 2019 Honda Civic sedan (10th generation), modified: amber roof light bar, tinted windows, black rims, subtle cyan underglow. Original hand-modelled, with **no Honda logos, badges or other manufacturer marks**. The licence plate reads "MAHFUJ02" on a stylized plate that is not a copy of the official Manitoba plate; the plate text comes from `src/content` (`profile.ts`), not from the scene code. Until this phase the placeholder car is a simple white sedan shape. The Phase 6 interior matches it.
 - `scripts/optimize-models.mjs` (gltf-transform: dedup, weld, draco/meshopt, resize textures)
 - Consistent world palette; small shared texture atlases only where needed
 - **Done when:** visual quality is final and budgets still pass in every tier.
@@ -521,3 +535,7 @@ then give me the PR description and the release notes for the tag.
 - [x] CC0 texture sets: `asphalt_snow`, `snow_02`, `factory_brick` (Poly Haven; licence re-checked on each asset page at download; fall back to ambientCG Snow012/Snow014 or other Poly Haven bricks if tiling shows a seam)
 - [ ] Initial JS budget on `/`: the Next/React runtime alone is about 132 KB gz, so the 120 KB budget in §5.5 cannot be met; proposal is "runtime baseline + 15 KB"
 - [ ] Wording of the sign text at The Forks (our own lettering, content-driven), if shown at all
+- [ ] What happens after the roundabout loop at The Forks ("start new patrol"): reset to the first stop, or drive back through the route with a U-turn (Phase 7 and 8)
+- [ ] Lane offset: the car currently drives on the road centre line. Move it to the right-hand lane in Phase 8 (with the U-turn) or earlier?
+- [ ] Licence plate "MAHFUJ02" is a personal identifier shown on a public site: confirm it is fine, and decide the content field for it (`profile.ts`)
+- [ ] Intersections for the residential stretch in `src/content/route.ts` (only Portage & Main is listed today)
