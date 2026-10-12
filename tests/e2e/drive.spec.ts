@@ -5,8 +5,11 @@ import { stops } from '../../src/content';
 const status = (page: Page) => page.getByRole('status');
 const total = stops.length;
 
-async function openHome(page: Page) {
-  await page.goto('/');
+// Behaviour tests run on the low tier: they are about navigation, not looks, and the low tier
+// avoids post-processing, which is slow on the software renderer the CI runners use. The high and
+// medium tiers have their own render and accessibility checks below.
+async function openHome(page: Page, tier: 'high' | 'medium' | 'low' = 'low') {
+  await page.goto(`/?quality=${tier}`);
   await expect(page.locator('canvas')).toBeVisible();
 }
 
@@ -89,8 +92,10 @@ test.describe('drive (WebGL)', () => {
     await expect(page).toHaveURL(/\/simple$/);
   });
 
-  test('has no serious accessibility violations', async ({ page }) => {
-    await openHome(page);
+  test('has no serious accessibility violations (high tier, with post-processing)', async ({
+    page,
+  }) => {
+    await openHome(page, 'high');
     const results = await new AxeBuilder({ page }).analyze();
     const serious = results.violations.filter(
       (v) => v.impact === 'serious' || v.impact === 'critical',
@@ -118,12 +123,23 @@ test.describe('reduced motion', () => {
 
   test('one wheel gesture moves exactly one stop', async ({ page }) => {
     await openHome(page);
+    // Two wheel events in the same task, so they are always inside the step cooldown however
+    // slow the machine is. Only the first may move a stop.
+    await page.evaluate(() => {
+      const container = document.querySelector('canvas')!.closest('[aria-hidden="true"]')!;
+      for (let i = 0; i < 2; i++) {
+        container.dispatchEvent(new WheelEvent('wheel', { deltaY: 100, bubbles: true }));
+      }
+    });
+    await expect(status(page)).toContainText(`Stop 2 of ${total}`);
+    await page.waitForTimeout(300);
+    await expect(status(page)).toContainText(`Stop 2 of ${total}`);
+
+    // After the cooldown, the next gesture moves the next stop.
+    await page.waitForTimeout(600);
     await page.mouse.move(400, 300);
     await page.mouse.wheel(0, 100);
-    await expect(status(page)).toContainText(`Stop 2 of ${total}`);
-    await page.mouse.wheel(0, 100);
-    await page.waitForTimeout(150);
-    await expect(status(page)).toContainText(`Stop 2 of ${total}`);
+    await expect(status(page)).toContainText(`Stop 3 of ${total}`);
   });
 
   test('arrow keys step between stops', async ({ page }) => {
