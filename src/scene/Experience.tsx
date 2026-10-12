@@ -10,13 +10,13 @@ import { useQualityStore } from '@/store/quality';
 import { Car } from './Car/Car';
 import { CameraRig } from './CameraRig';
 import { AtmosphereDriver } from './Environment/AtmosphereDriver';
-import { Elms } from './Environment/Elms';
+import { Trees } from './Environment/Trees';
 import { Ground } from './Environment/Ground';
 import { Sky } from './Environment/Sky';
 import { Snow } from './Environment/Snow';
 import { ProgressDriver } from './ProgressDriver';
 import { Road } from './Road/Road';
-import { Snowbanks } from './Road/Snowbanks';
+import { SnowRidge } from './Road/SnowRidge';
 import { Streetlights } from './Road/Streetlights';
 
 // Dev-only overlay. The ternary is folded away in production builds, so the lazy
@@ -56,8 +56,8 @@ export function Experience() {
       <Sky />
       <Ground tier={tier} />
       <Road tier={tier} />
-      <Snowbanks tier={tier} />
-      <Elms tier={tier} />
+      <SnowRidge tier={tier} />
+      <Trees tier={tier} />
       <Streetlights />
       <Car />
       <Snow tier={tier} reducedMotion={reducedMotion} />

@@ -7,7 +7,6 @@ import {
   ShaderMaterial,
   Vector2,
   Vector3,
-  Vector4,
   type PerspectiveCamera,
   type Points,
 } from 'three';
@@ -18,17 +17,11 @@ import {
   REDUCED_MOTION_SNOW,
   SNOW_PARTICLES,
   createSnowAttributes,
-  lampWindow,
   snowCount,
 } from '@/lib/snow';
 import { atmosphere } from '../atmosphere';
-import { carState } from '../carState';
-import { progress } from '../progress';
-import { lamps } from '../Road/lamps';
+import { MAX_LAMPS, lampUniforms } from '../lampUniforms';
 
-const MAX_LAMPS = 14;
-const LAMPS_BEHIND = 3;
-const LAMPS_AHEAD = 8;
 const SEED = 1949;
 
 /** Size of the box of snow that follows the camera, in metres. */
@@ -36,15 +29,6 @@ const BOX = new Vector3(40, 24, 40);
 const WIND_DIRECTION = new Vector2(Math.cos(0.6), Math.sin(0.6));
 /** Sideways drift of the middle layer at full wind, in metres per second. */
 const MAX_WIND_SPEED = 6;
-
-// A streetlight lights flakes inside a wide cone below its head; headlights use a tight cone.
-const STREET_COS_HALF = Math.cos(MathUtils.degToRad(62));
-const STREET_GAIN = 2.8;
-const HEADLIGHT_COS_HALF = Math.cos(0.42);
-const HEADLIGHT_RANGE = 34;
-const HEADLIGHT_COLOR: [number, number, number] = [1, 0.92, 0.77];
-
-const lampUs = lamps.map((lamp) => lamp.u);
 
 const vertexShader = /* glsl */ `
   #define MAX_LAMPS ${MAX_LAMPS}
@@ -167,14 +151,8 @@ const uniforms = {
   uBox: { value: BOX },
   uAmbient: { value: new Vector3() },
   uWindOffset: { value: new Vector2() },
-  uLampPos: { value: Array.from({ length: MAX_LAMPS }, () => new Vector4()) },
-  uLampDir: { value: Array.from({ length: MAX_LAMPS }, () => new Vector4(0, -1, 0, 1)) },
-  uLampCol: { value: Array.from({ length: MAX_LAMPS }, () => new Vector3()) },
+  ...lampUniforms,
 };
-
-const forward = new Vector3();
-const right = new Vector3();
-const aim = new Vector3();
 
 /**
  * Falling snow: a single GPU particle system (one draw call). Flakes are positioned and animated
@@ -239,31 +217,6 @@ export function Snow({ tier, reducedMotion }: { tier: QualityTier; reducedMotion
     uniforms.uAmbient.value
       .set(...atmosphere.ambientColor)
       .multiplyScalar(atmosphere.ambientIntensity * 0.5);
-
-    // Nearest streetlights, then the two headlights.
-    const [start, end] = lampWindow(lampUs, progress.t, LAMPS_BEHIND, LAMPS_AHEAD);
-    let n = 0;
-    for (let i = start; i < end && n < MAX_LAMPS - 2; i++, n++) {
-      const lamp = lamps[i]!;
-      uniforms.uLampPos.value[n]!.set(lamp.head.x, lamp.head.y, lamp.head.z, lamp.height * 3.4);
-      uniforms.uLampDir.value[n]!.set(0, -1, 0, STREET_COS_HALF);
-      uniforms.uLampCol.value[n]!.set(...lamp.color).multiplyScalar(lamp.intensity * STREET_GAIN);
-    }
-    forward.copy(carState.forward);
-    right.set(forward.z, 0, -forward.x);
-    aim.set(forward.x, -0.09, forward.z).normalize();
-    for (const side of [-1, 1]) {
-      uniforms.uLampPos.value[n]!.set(
-        carState.position.x + forward.x * 2.1 + right.x * 0.65 * side,
-        carState.position.y + 0.75,
-        carState.position.z + forward.z * 2.1 + right.z * 0.65 * side,
-        HEADLIGHT_RANGE,
-      );
-      uniforms.uLampDir.value[n]!.set(aim.x, aim.y, aim.z, HEADLIGHT_COS_HALF);
-      uniforms.uLampCol.value[n]!.set(...HEADLIGHT_COLOR).multiplyScalar(1.5);
-      n++;
-    }
-    for (; n < MAX_LAMPS; n++) uniforms.uLampCol.value[n]!.set(0, 0, 0);
   });
 
   return (

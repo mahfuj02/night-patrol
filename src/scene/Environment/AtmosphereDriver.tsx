@@ -4,6 +4,7 @@ import { Color, Fog, SRGBColorSpace, type AmbientLight, type DirectionalLight } 
 import { sampleAtmosphere } from '@/lib/atmosphere';
 import { world } from '@/lib/palette';
 import { atmosphere, resolvedZones } from '../atmosphere';
+import { updateLampUniforms } from '../lampUniforms';
 import { surfaceUniforms } from '../Materials/surfaceUniforms';
 import { progress } from '../progress';
 
@@ -28,6 +29,7 @@ export function AtmosphereDriver() {
 
   useFrame((state) => {
     sampleAtmosphere(resolvedZones, progress.t, atmosphere);
+    updateLampUniforms(progress.t);
 
     const { fog, background } = state.scene;
     if (fog instanceof Fog) {

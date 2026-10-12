@@ -1,68 +1,73 @@
 import { describe, expect, it } from 'vitest';
-import { drawBranches, type BranchContext } from './branches';
+import { drawTwigs, type TwigContext } from './branches';
 
 function recorder() {
   const widths: number[] = [];
+  const alphas: number[] = [];
   const points: [number, number][] = [];
-  const ctx: BranchContext = {
+  const ctx: TwigContext = {
     lineWidth: 1,
+    globalAlpha: 1,
     beginPath: () => {},
     moveTo: (x, y) => points.push([x, y]),
     lineTo: (x, y) => points.push([x, y]),
-    stroke: () => widths.push(ctx.lineWidth),
+    stroke: () => {
+      widths.push(ctx.lineWidth);
+      alphas.push(ctx.globalAlpha);
+    },
   };
-  return { ctx, widths, points };
+  return { ctx, widths, alphas, points };
 }
 
-describe('drawBranches', () => {
-  it('draws a few hundred segments for a full tree', () => {
+describe('drawTwigs', () => {
+  it('draws a modest sprig of segments', () => {
     const { ctx } = recorder();
-    const segments = drawBranches(ctx, 512, 1);
-    expect(segments).toBeGreaterThan(150);
-    expect(segments).toBeLessThan(4000);
+    const segments = drawTwigs(ctx, 256, 1);
+    expect(segments).toBeGreaterThan(20);
+    expect(segments).toBeLessThan(800);
   });
 
-  it('starts at the bottom centre with the thickest stroke and tapers', () => {
-    const { ctx, widths, points } = recorder();
-    drawBranches(ctx, 512, 1);
-    expect(points[0]).toEqual([256, 512]);
-    expect(widths[0]).toBeGreaterThan(10);
-    expect(Math.min(...widths)).toBe(1);
-    expect(widths[0]).toBe(Math.max(...widths));
-  });
-
-  it('stays roughly inside the canvas', () => {
+  it('starts near the bottom centre and fans upward, with no trunk', () => {
     const { ctx, points } = recorder();
-    drawBranches(ctx, 512, 3);
-    for (const [x, y] of points) {
-      expect(x).toBeGreaterThan(-200);
-      expect(x).toBeLessThan(712);
-      expect(y).toBeGreaterThan(-200);
-      expect(y).toBeLessThanOrEqual(512);
-    }
+    drawTwigs(ctx, 256, 1);
+    const [x0, y0] = points[0]!;
+    expect(Math.abs(x0 - 128)).toBeLessThan(1);
+    expect(y0).toBeGreaterThan(240);
+    // Every stem begins at the base, none begins at the very bottom edge as a thick trunk would.
+    const topmost = Math.min(...points.map(([, y]) => y));
+    expect(topmost).toBeLessThan(80);
   });
 
-  it('spreads wide, like a vase, not just straight up', () => {
-    const { ctx, points } = recorder();
-    drawBranches(ctx, 512, 2);
-    const xs = points.map(([x]) => x);
-    expect(Math.max(...xs) - Math.min(...xs)).toBeGreaterThan(300);
+  it('draws every segment twice: a wide faint halo under a thin solid core', () => {
+    const { ctx, widths, alphas } = recorder();
+    const segments = drawTwigs(ctx, 256, 2);
+    expect(widths).toHaveLength(segments * 2);
+    expect(alphas.filter((a) => a < 1)).toHaveLength(segments);
+    expect(alphas.filter((a) => a === 1)).toHaveLength(segments);
+    expect(widths[0]).toBeGreaterThan(widths[1]!);
+  });
+
+  it('restores full opacity when finished', () => {
+    const { ctx } = recorder();
+    drawTwigs(ctx, 256, 3);
+    expect(ctx.globalAlpha).toBe(1);
   });
 
   it('is deterministic for a seed and varies between seeds', () => {
     const a = recorder();
     const b = recorder();
     const c = recorder();
-    drawBranches(a.ctx, 512, 5);
-    drawBranches(b.ctx, 512, 5);
-    drawBranches(c.ctx, 512, 6);
+    drawTwigs(a.ctx, 256, 5);
+    drawTwigs(b.ctx, 256, 5);
+    drawTwigs(c.ctx, 256, 6);
     expect(a.points).toEqual(b.points);
     expect(a.points).not.toEqual(c.points);
   });
 
   it('scales with the canvas size', () => {
     const small = recorder();
-    drawBranches(small.ctx, 256, 1);
-    expect(small.points[0]).toEqual([128, 256]);
+    drawTwigs(small.ctx, 128, 1);
+    const [x] = small.points[0]!;
+    expect(Math.abs(x - 64)).toBeLessThan(1);
   });
 });
