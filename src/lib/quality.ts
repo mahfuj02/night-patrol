@@ -26,3 +26,12 @@ export function raiseTier(tier: QualityTier): QualityTier {
   const i = QUALITY_TIERS.indexOf(tier);
   return QUALITY_TIERS[Math.max(i - 1, 0)]!;
 }
+
+/**
+ * Reads `?quality=high|medium|low` from a URL query string. Pins the tier and turns off adaptive
+ * quality, so tiers can be compared (and measured) on a given machine. Null when absent or invalid.
+ */
+export function parseQualityParam(search: string): QualityTier | null {
+  const value = new URLSearchParams(search).get('quality');
+  return isQualityTier(value) ? value : null;
+}
