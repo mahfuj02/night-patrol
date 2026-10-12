@@ -20,6 +20,7 @@ export interface Atmosphere {
   snowDensity: number;
   snowWind: number;
   snowGust: number;
+  trees: number;
   moon: number;
   sunrise: number;
   windowsWarm: number;
@@ -58,6 +59,7 @@ export function createAtmosphere(): Atmosphere {
     snowDensity: 0,
     snowWind: 0,
     snowGust: 0,
+    trees: 0,
     moon: 0,
     sunrise: 0,
     windowsWarm: 0,
@@ -96,6 +98,7 @@ export function resolveZones(
       snowDensity: zone.snow.density,
       snowWind: zone.snow.wind,
       snowGust: zone.snow.gust,
+      trees: zone.trees,
       moon: zone.moon,
       sunrise: zone.sunrise,
       windowsWarm: zone.windows.warm,
@@ -132,6 +135,7 @@ export function blendAtmosphere(a: Atmosphere, b: Atmosphere, k: number, out: At
   out.snowDensity = lerp(a.snowDensity, b.snowDensity, k);
   out.snowWind = lerp(a.snowWind, b.snowWind, k);
   out.snowGust = lerp(a.snowGust, b.snowGust, k);
+  out.trees = lerp(a.trees, b.trees, k);
   out.moon = lerp(a.moon, b.moon, k);
   out.sunrise = lerp(a.sunrise, b.sunrise, k);
   out.windowsWarm = lerp(a.windowsWarm, b.windowsWarm, k);

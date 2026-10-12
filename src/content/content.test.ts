@@ -184,6 +184,13 @@ describe('atmosphere zones', () => {
     expect(byId.sunrise!.sunrise).toBe(1);
   });
 
+  it('lines the avenue with elms and keeps downtown nearly bare', () => {
+    const byId = Object.fromEntries(atmosphereZones.map((z) => [z.id, z]));
+    expect(byId.avenue!.trees).toBe(1);
+    expect(byId.downtown!.trees).toBeLessThan(byId.avenue!.trees);
+    expect(byId.downtown!.trees).toBeLessThan(byId.exchange!.trees);
+  });
+
   it('keeps the shelter calm and warm-lit only', () => {
     const shelter = atmosphereZones.find((z) => z.id === 'shelter')!;
     expect(shelter.windows.cool).toBe(0);

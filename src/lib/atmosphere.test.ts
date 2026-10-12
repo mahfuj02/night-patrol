@@ -24,6 +24,7 @@ const zone = (over: Partial<AtmosphereZone> & { id: string }): AtmosphereZone =>
   light: { type: 'sodium', color: 'sodium', intensity: 1 },
   ambient: { color: 'skyOvercastGrey', intensity: 0.5 },
   snow: { density: 1, wind: 0.2, gust: 0.2 },
+  trees: 0,
   moon: 0,
   sunrise: 0,
   windows: { warm: 1, cool: 0 },
@@ -41,6 +42,7 @@ const zones: AtmosphereZone[] = [
     snow: { density: 0, wind: 0.8, gust: 0.6 },
     fog: { color: 'skyClearHorizon', near: 30, far: 300 },
     moon: 1,
+    trees: 1,
   }),
 ];
 
@@ -95,6 +97,7 @@ describe('sampleAtmosphere', () => {
     expect(s.snowDensity).toBeCloseTo(0.5, 6);
     expect(s.snowWind).toBeCloseTo(0.5, 6);
     expect(s.moon).toBeCloseTo(0.5, 6);
+    expect(s.trees).toBeCloseTo(0.5, 6);
     expect(s.fogNear).toBeCloseTo(20, 6);
     expect(s.fogFar).toBeCloseTo(200, 6);
     expect(s.lightIntensity).toBeCloseTo(0.75, 6);

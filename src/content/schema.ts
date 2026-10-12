@@ -209,6 +209,8 @@ export const AtmosphereZoneSchema = z.object({
   }),
   ambient: z.object({ color: WorldTokenSchema, intensity: z.number().min(0) }),
   snow: z.object({ density: unit, wind: unit, gust: unit }),
+  /** How densely bare elms line the road in this zone, 0..1. */
+  trees: unit,
   moon: unit,
   sunrise: unit,
   /** Mix of lit window tones; used by the buildings in Phase 3b. */
