@@ -5,6 +5,7 @@ import {
   profile,
   projects,
   radioLines,
+  route,
   skills,
   stops,
   ProfileSchema,
@@ -15,7 +16,7 @@ import {
 } from './index';
 import { assertContentIntegrity, findContentProblems } from './integrity';
 
-const bundle = { stops, projects, experience, communityNotes, radioLines };
+const bundle = { route, stops, projects, experience, communityNotes, radioLines };
 
 describe('content data', () => {
   it('has one stop per route entry, in order', () => {
@@ -122,5 +123,31 @@ describe('findContentProblems', () => {
     expect(problems).toContain('Duplicate project id');
     expect(problems).toContain('Duplicate experience id');
     expect(problems).toContain('Duplicate radio id');
+  });
+});
+
+describe('route integrity', () => {
+  it('pins every stop exactly once, in order', () => {
+    const pins = route.points.flatMap((p) => (p.stopId ? [p.stopId] : []));
+    expect(pins).toEqual(stops.map((s) => s.id));
+  });
+
+  it('reports unknown, duplicate, missing and misordered pins', () => {
+    const points = route.points.map((p) => ({ ...p }));
+    points[1]!.stopId = 'nowhere';
+    points[3]!.stopId = 'ignition';
+    const problems = findContentProblems({ ...bundle, route: { points } }).join('\n');
+    expect(problems).toContain('Duplicate route stop pin id');
+    expect(problems).toContain('pins unknown stop nowhere');
+    expect(problems).toContain('Stop dispatch has no route point');
+
+    const swapped = route.points.map((p) => ({ ...p }));
+    const a = swapped.findIndex((p) => p.stopId === 'dispatch');
+    const b = swapped.findIndex((p) => p.stopId === 'rrc-campus');
+    swapped[a]!.stopId = 'rrc-campus';
+    swapped[b]!.stopId = 'dispatch';
+    expect(findContentProblems({ ...bundle, route: { points: swapped } }).join('\n')).toContain(
+      'in stop order',
+    );
   });
 });

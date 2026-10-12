@@ -121,3 +121,18 @@ export const CommunityNoteSchema = z.object({
   links: z.array(z.object({ label: z.string().min(1), href: url })).min(1),
 });
 export type CommunityNote = z.infer<typeof CommunityNoteSchema>;
+
+export const RoutePointSchema = z.object({
+  /** East (+x) and south (+z) in scene units. */
+  x: z.number(),
+  z: z.number(),
+  /** Road width at this point; defaults to 8. */
+  width: z.number().positive().optional(),
+  /** Pins a stop to this point. Every stop appears on exactly one point. */
+  stopId: kebabId.optional(),
+});
+export const RouteSchema = z.object({
+  points: z.array(RoutePointSchema).min(2),
+});
+export type RoutePoint = z.infer<typeof RoutePointSchema>;
+export type Route = z.infer<typeof RouteSchema>;
