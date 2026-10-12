@@ -35,3 +35,28 @@ export function parseQualityParam(search: string): QualityTier | null {
   const value = new URLSearchParams(search).get('quality');
   return isQualityTier(value) ? value : null;
 }
+
+export interface EffectsSettings {
+  /** False means no post-processing at all (the low tier renders straight to the screen). */
+  enabled: boolean;
+  bloom: boolean;
+  vignette: boolean;
+  /** Film grain. Off under reduced motion: it is constantly shifting noise. */
+  grain: boolean;
+  /** MSAA samples for the composer. Needed for smooth alpha-to-coverage edges on the trees. */
+  multisampling: number;
+}
+
+/** Post-processing for a quality tier: bloom, vignette and grain on high and medium, none on low. */
+export function effectsForTier(tier: QualityTier, reducedMotion: boolean): EffectsSettings {
+  if (tier === 'low') {
+    return { enabled: false, bloom: false, vignette: false, grain: false, multisampling: 0 };
+  }
+  return {
+    enabled: true,
+    bloom: true,
+    vignette: true,
+    grain: !reducedMotion,
+    multisampling: tier === 'high' ? 4 : 2,
+  };
+}

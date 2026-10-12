@@ -8,6 +8,7 @@ import { dprForTier, parseQualityParam } from '@/lib/quality';
 import { palette } from '@/lib/palette';
 import { useQualityStore } from '@/store/quality';
 import { Car } from './Car/Car';
+import { Effects } from './Effects/Effects';
 import { CameraRig } from './CameraRig';
 import { AtmosphereDriver } from './Environment/AtmosphereDriver';
 import { Trees } from './Environment/Trees';
@@ -62,6 +63,7 @@ export function Experience() {
       <Car />
       <Snow tier={tier} reducedMotion={reducedMotion} />
       <CameraRig reducedMotion={reducedMotion} />
+      <Effects tier={tier} reducedMotion={reducedMotion} />
 
       {DevStats && (
         <Suspense fallback={null}>
