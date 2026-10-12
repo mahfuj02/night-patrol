@@ -1,6 +1,6 @@
 # Night Patrol — 3D Portfolio of Mahfuj
 
-> A cinematic, scroll-driven night drive through a low-poly winter Winnipeg. Each stop on the patrol route is a chapter of Mahfuj's career: projects, skills, education, achievements, contact.
+> A cinematic, scroll-driven night drive through a stylized-realistic winter Winnipeg. Each stop on the patrol route is a chapter of Mahfuj's career: projects, skills, education, achievements, contact.
 
 - **Owner:** Mahfuj (Full Stack Web Developer, Winnipeg MB)
 - **Repo:** `github.com/mahfuj02/night-patrol` (rename if preferred)
@@ -21,8 +21,8 @@
 
 ### Non-goals
 - Free-roam driving / physics steering (the car follows a fixed path).
-- Photorealism. Style is low-poly, flat-shaded, stylized.
-- Downloaded third-party models of recognizable portfolio templates. **Everything original.**
+- Photorealism. Style is "stylized realistic": believable light, atmosphere and materials on simplified shapes (see `docs/art-reference.md`).
+- Downloaded or purchased third-party **models**, and anything copied from reference photos. Models are original (procedural or hand-modelled). The only third-party assets allowed are **CC0 PBR textures** (Poly Haven, ambientCG) and CC0 audio, credited in the README.
 - A CMS. Content lives in typed TypeScript files.
 
 ---
@@ -34,11 +34,11 @@ Winter night in Winnipeg. Snow is falling. The visitor rides along on Mahfuj's p
 
 ### 2.2 The route (stops in order)
 
-| # | Stop | Landmark (low-poly, recognizable by silhouette) | Content |
+| # | Stop | Landmark (stylized, recognizable by silhouette) | Content |
 |---|------|------------------------------------------------|---------|
 | 0 | **Ignition** | Car dashboard, dark | Loading screen. Fuel gauge = load %. "Start Patrol" button. "Skip to simple view" link. |
 | 1 | **Dispatch** | Car pulls out onto a snowy Exchange District street | Name, role, one-line pitch on windshield HUD. Radio: "Unit 02, Mahfuj, Full Stack Developer, starting patrol." |
-| 2 | **RRC Polytechnic, Exchange District Campus** | Brick heritage facade + modern glass (Roblin Centre style), lit windows | Education: Diploma, Red River College Polytechnic. Sprint-Innovation 2025 teaser. |
+| 2 | **RRC Polytechnic, Exchange District Campus** | Glass curtain wall with a dark mullion grid, a printed-heritage-facade glass panel, "RRC Polytechnic" rooftop letters (no logo), cream limestone and red-brick neighbours; the glass glows from inside. Details in `docs/art-reference.md` | Education: Diploma, Red River College Polytechnic. Sprint-Innovation 2025 teaser. |
 | 3 | **Exchange District warehouses** | Old brick warehouses, painted "ghost sign" style murals | **EventFlow** checkpoint (marquee-style sign on a venue) |
 | 4 | **City services building** | Civic building with a "311" sign | **CivicTrack** checkpoint |
 | 5 | **Portage & Main** | Wide intersection, tall towers, wind-blown snow | **RoleReady** checkpoint (office tower, one lit window = interview in progress). Radio joke about the wind. |
@@ -49,9 +49,9 @@ Winter night in Winnipeg. Snow is falling. The visitor rides along on Mahfuj's p
 | 10 | **Canadian Museum for Human Rights + Esplanade Riel** | Glass Tower of Hope lit, cable-stayed bridge spire glowing | Sprint-Innovation 2025 trophy landmark |
 | 11 | **The Forks: End of shift** | Market building, frozen river skating trail with lights, sunrise | Radio: "Shift complete." Contact: email, GitHub, LinkedIn, resume PDF, link back to mahfuj.dev |
 
-**Distant skyline elements** (always visible, cheap billboards or low-poly): Golden Boy on the Legislative Building, downtown towers, Esplanade Riel spire.
+**Distant skyline elements** (always visible, cheap billboards or simple silhouettes): Golden Boy on the Legislative Building, downtown towers, Esplanade Riel spire.
 
-**Ambient life:** Winnipeg Transit-style bus (generic, no logos), parked cars with block heater cords, snowbanks, streetlights, occasional passing car headlights.
+**Ambient life:** a generic city bus (no logos or livery), parked cars buried in snow with block heater cords, snowbanks, bare elms arching over streets, back-lane details (wooden power poles with wires, bins, fences, garages), streetlights, occasional passing car headlights.
 
 ### 2.3 In-car UI (always available)
 - **Dashboard = Skills.** Gauges and indicator lights, each one a skill. Hover/focus shows a tooltip with level and where it was used.
@@ -87,17 +87,21 @@ Winter night in Winnipeg. Snow is falling. The visitor rides along on Mahfuj's p
 - No dramatic or sad music at the warming shelter stop. Silence or just wind.
 
 ### 2.7 Art direction
-- **Style:** low-poly, flat-shaded, slightly toy-like proportions.
-- **Palette:**
-  - Night sky `#0B1426` → `#14233F`
-  - Snow `#E8EEF5`
-  - Streetlight warm `#FFB25C`
-  - HUD cyan `#4FE3E3`
-  - Brick `#8A4B3A`
-  - Sunrise `#FF8A5B` → `#FFD27A`
+Full style guide: **`docs/art-reference.md`** (written from reference photos in `design/reference/`, which are git-ignored and never committed, shipped or used as textures).
+
+- **Style:** stylized realistic winter night. Believable lighting, atmosphere and materials on simplified shapes. The look comes from light, haze, snowfall and emissive windows, not from polygon count.
+- **Roads and ground:** packed snow and slush with dark tyre ruts, never clean asphalt. Soft, dirty snowbanks. Dull specular, no mirror reflections.
+- **Lighting:** cool white LED cobra-head lamps on avenues, warm sodium orange downtown, visible halos around lamps. Signals have yellow housings.
+- **Sky:** overcast city glow (grey-green or orange-tinged) for snowy sections; deep blue with a low moon for one clear stretch; peach and gold at sunrise.
+- **Trees:** bare elms arching over streets as near-black silhouettes (instanced).
+- **Buildings:** procedural and instanced: varied towers downtown, brick low-rises in the Exchange District. A single window shader draws an emissive grid with random lit/unlit windows in warm and cool tones, so there is no texture per building.
+- **Materials:** PBR from **CC0 textures only** (Poly Haven, ambientCG), credited in the README. Hand-modelled detail only for real Winnipeg landmarks. No purchased or downloaded city models.
+- **Atmosphere:** heavy snowfall (small flakes plus a few large soft near-camera discs), haze and fog tinted by the local light.
+- **Palette:** the **UI palette** is unchanged (HUD, panels, CSS tokens): night `#0B1426`, night-2 `#14233F`, snow `#E8EEF5`, street `#FFB25C`, hud `#4FE3E3`, brick `#8A4B3A`, sunrise `#FF8A5B` → `#FFD27A`. The **world palette** (sky, lamps, glass, brick, limestone, snow and slush, sign accents) is sampled from the photos and listed in `docs/art-reference.md`; it lives in `src/lib/palette.ts` under `world`.
+- **Quality tiers:** `high` and `medium` use PBR maps; `low` drops PBR maps (flat colours), reduces buildings, trees and flakes, and disables bloom. Same §5.5 budgets in every tier.
 - **Post-processing:** bloom (lights only), vignette, subtle film grain, light fog.
 - **Typography (HUD/panels):** one monospace for radio/log (e.g. JetBrains Mono), one clean sans for panels (e.g. Inter). Self-hosted via `next/font`.
-- **All models original**, built in Blender (or primitives in code for early phases). No Sketchfab downloads.
+- **No logos or trademarks.** The RRC rooftop text reads "RRC Polytechnic" with no college logo; other signage is generic.
 
 ---
 
@@ -111,10 +115,12 @@ Winter night in Winnipeg. Snow is falling. The visitor rides along on Mahfuj's p
 | Animation | GSAP (camera/UI tweens) + Drei `ScrollControls` or custom scroll progress |
 | State | Zustand (current stop, sound on/off, quality tier, panel open) |
 | Styling | Tailwind CSS for HTML UI |
-| Models | Blender → GLB, Draco + meshopt compression via gltf-transform |
-| Textures | KTX2 / small PNG atlases, mostly vertex colors (low-poly) |
+| Buildings and props | Procedural geometry in code, instanced (`InstancedMesh`); no per-building textures |
+| Shaders | Custom window shader (emissive grid, hash-based lit/unlit and warm/cool) via `onBeforeCompile` or `ShaderMaterial`; lamp halo and snow sprites |
+| Models | Blender → GLB for real Winnipeg landmarks only, Draco + meshopt via gltf-transform |
+| Textures | CC0 PBR sets (Poly Haven, ambientCG), small (≤ 1024²), tiled and shared, KTX2 or WebP; vertex colours and flat colours on the `low` tier |
 | Audio | Howler.js (lazy-loaded only when sound is enabled) |
-| Perf tooling | r3f-perf (dev only), Drei `PerformanceMonitor` for adaptive quality |
+| Perf tooling | Dev-only overlay (Drei `Stats` + renderer draw calls and triangles), Drei `PerformanceMonitor` for adaptive quality. (`r3f-perf` was dropped: it targets fiber 8 / React 18 and crashes the Turbopack dev server.) |
 | Unit tests | Vitest + Testing Library |
 | E2E tests | Playwright (simple view, navigation, mini-map, a11y via @axe-core/playwright) |
 | Lint/format | ESLint (next + typescript-eslint), Prettier |
@@ -140,8 +146,8 @@ night-patrol/
 │  ├─ pull_request_template.md
 │  └─ dependabot.yml
 ├─ public/
-│  ├─ models/        # compressed .glb
-│  ├─ textures/
+│  ├─ models/        # compressed .glb (real landmarks only)
+│  ├─ textures/      # CC0 PBR sets + CREDITS.md (source, licence)
 │  ├─ audio/
 │  ├─ images/projects/
 │  └─ resume.pdf
@@ -161,10 +167,12 @@ night-patrol/
 │  │  └─ schema.ts          # zod schemas + types; validated at build
 │  ├─ scene/
 │  │  ├─ Experience.tsx     # Canvas, providers, quality tier
-│  │  ├─ Road/              # path curve, road mesh, snowbanks
+│  │  ├─ Road/              # path curve, road mesh (packed snow, ruts), snowbanks
 │  │  ├─ Car/               # car model, headlights, wipers, dashboard
-│  │  ├─ Landmarks/         # one component per landmark
-│  │  ├─ Environment/       # sky, fog, snow particles, streetlights (instanced)
+│  │  ├─ Buildings/         # procedural instanced towers and low-rises, window shader
+│  │  ├─ Materials/         # PBR material sets per quality tier, shared shaders
+│  │  ├─ Landmarks/         # one component per landmark (hand-modelled detail)
+│  │  ├─ Environment/       # sky, fog, snow particles, streetlights, elm trees (instanced)
 │  │  ├─ Effects/           # postprocessing
 │  │  └─ CameraRig.tsx      # follows car along curve, eases into stops
 │  ├─ ui/
@@ -178,6 +186,10 @@ night-patrol/
 │  ├─ store/                # zustand stores
 │  ├─ lib/                  # math helpers, curve utils, audio manager
 │  └─ styles/
+├─ design/
+│  └─ reference/            # reference photos: git-ignored, never committed or shipped
+├─ docs/
+│  └─ art-reference.md      # style guide and sampled palette
 ├─ tests/
 │  ├─ unit/
 │  └─ e2e/
@@ -196,9 +208,11 @@ night-patrol/
 - **Scroll → t:** normalized progress (0..1), damped (`THREE.MathUtils.damp`) for smoothness. Near a stop's `t`, apply an easing "magnet" so the car settles at checkpoints.
 - **Content-driven:** every stop, panel, skill, radio line comes from `src/content/*`. Scene components never hardcode copy. `/simple` and the 3D view read the same data.
 - **3D isolation:** three/R3F imported only under `src/scene` and loaded via `next/dynamic` with `ssr: false`. Links to the 3D route use `prefetch={false}` where appropriate.
-- **Quality tiers:** `high | medium | low` chosen by Drei `PerformanceMonitor` + device hints. Low disables post FX, reduces snow particles, lowers DPR.
+- **Quality tiers:** `high | medium | low` chosen by Drei `PerformanceMonitor` + device hints. Low disables post FX and PBR maps (flat colours), reduces buildings, trees and snow particles, lowers DPR. Low must not download PBR textures at all.
 - **Fallback:** no WebGL or reduced-motion preference → show prompt offering simple view (reduced motion: auto-switch to gentle camera cuts instead of continuous motion).
-- **Instancing:** streetlights, trees, snowbanks, windows, snow particles use `InstancedMesh`.
+- **Instancing:** streetlights, trees, snowbanks, buildings, props (bins, poles, fences), snow particles use `InstancedMesh`. Windows are drawn by the shader, not geometry.
+- **Procedural buildings:** a few shape variants (tower, slab, brick low-rise) placed along the route from a seeded generator (deterministic, so identical on every load). One shared window material, parameterised per instance. Placement stays clear of the road and the camera path.
+- **Materials per tier:** one `Materials` module returns the material set for the current tier, so components never branch on tier themselves.
 - **Draw-call budget:** < 150 draw calls, < 300k triangles total scene.
 
 ### 4.3 Content model (sketch)
@@ -276,6 +290,8 @@ Skill = { id: string; name: string; group: 'gauge'|'switch'|'indicator'|'preset'
 | `/` initial JS (before 3D chunk) | ≤ 120 KB gzipped |
 | 3D chunk (JS) | ≤ 450 KB gzipped |
 | Total models + textures | ≤ 6 MB, streamed progressively |
+| PBR textures (`high`/`medium`) | ≤ 3 MB of that total, each ≤ 1024², shared across the scene |
+| `low` tier | Downloads no PBR textures |
 | LCP on `/` (loading screen) | ≤ 2.5 s on 4G |
 | Draw calls | < 150 |
 | Triangles | < 300k |
@@ -297,6 +313,7 @@ Skill = { id: string; name: string; group: 'gauge'|'switch'|'indicator'|'preset'
 - `CONTRIBUTING.md`: branch/commit conventions, how to add a stop or project.
 - `docs/adding-a-stop.md`: step-by-step (content entry → landmark component → path `t` → test).
 - `docs/model-pipeline.md`: Blender export settings, `pnpm models:optimize`.
+- `docs/art-reference.md`: style guide and sampled world palette (reference photos stay local in `design/reference/`).
 
 ---
 
@@ -326,25 +343,37 @@ Branch: `feat/p1-content-simple-view`
 Branch: `feat/p2-road-car-scroll`
 - Canvas setup via dynamic import, quality tier store, WebGL support check
 - Route curve from control points, road mesh following curve, simple snowbanks
-- Placeholder low-poly car (primitives), follows `t`, oriented to tangent
+- Placeholder car (primitives), follows `t`, oriented to tangent
 - Scroll / keys / swipe → damped `t`; CameraRig chase camera
 - Stop "magnet" easing; unit tests for route math
 - r3f-perf in dev
 - **Done when:** scrolling smoothly drives the car end to end at 60 fps on desktop.
 
-### Phase 3: Night mood  → `v0.3.0`
-Branch: `feat/p3-night-mood`
-- Night sky gradient, fog, moon
-- Instanced streetlights with warm emissive + bloom; car headlights (spot lights, shadows off or baked)
-- Snow particles (instanced / points, count scales with quality tier)
+### Phase 3: Night mood and materials  → `v0.3.0`
+Style guide: `docs/art-reference.md`. Two branches, merged in order:
+
+**3a. Branch `feat/p3-night-mood`**
+- Sky per section: overcast city glow (grey-green, grey-brown, orange-tinged), one clear deep-blue stretch with a low moon, tinted fog that follows the route
+- Instanced streetlights in three types (cool LED cobra-head, warm sodium, lantern) with halo sprites + bloom; car headlights (spot lights, shadows off or baked)
+- Snow: small flakes plus a few large soft near-camera discs; count scales with quality tier
+- Road and ground: packed snow and slush with dark tyre ruts, rounded dirty snowbanks, CC0 PBR maps on `high`/`medium` and flat colours on `low`
+- Bare elm silhouettes arching over streets (instanced)
 - Windshield + wiper animation; vignette, grain
+- World palette added to `src/lib/palette.ts`; CC0 texture credits in README and `public/textures/CREDITS.md`
 - Reduced-motion variants
-- **Done when:** the scene feels like a winter night in Winnipeg with no landmarks yet. Perf budgets met.
+- **Done when:** the scene feels like a winter night in Winnipeg with no buildings yet. Perf budgets met in every tier.
+
+**3b. Branch `feat/p3-buildings`**
+- Procedural, instanced buildings along the route: varied towers downtown, brick low-rises in the Exchange District
+- Window shader: emissive grid, random lit/unlit windows, warm and cool tones, no texture per building
+- Back-lane props (instanced): wooden poles with wires, bins, fences, garages
+- `low` tier: fewer buildings, no PBR maps
+- **Done when:** the route is lined with believable buildings that glow at night, within budgets, with no landmarks yet.
 
 ### Phase 4: First checkpoint end to end (RRC Exchange District)  → `v0.4.0`
 Branch: `feat/p4-checkpoint-rrc`
 - `Landmark` base pattern (light-up animation, bounding focus)
-- RRC Exchange District Campus landmark (primitive/low-poly blockout)
+- RRC Exchange District Campus landmark (stylized blockout following docs/art-reference.md)
 - CheckpointPanel (DOM) with slide in/out tied to `t`, focus management, Esc to close
 - HUD subtitles with dispatch line
 - Component tests for panel; E2E: scroll to stop → panel visible
@@ -352,7 +381,7 @@ Branch: `feat/p4-checkpoint-rrc`
 
 ### Phase 5: All stops  → `v0.5.0`
 One branch per stop or small group, e.g. `feat/p5-stop-exchange-eventflow`, `feat/p5-stop-civictrack`, `feat/p5-stop-portage-main-roleready`, `feat/p5-stop-dashcam-safedrive`, `feat/p5-stop-arcade-akari`, `feat/p5-stop-inspection-extension`, `feat/p5-stop-warming-shelter`, `feat/p5-stop-cmhr-esplanade`
-- Each landmark as low-poly blockout first (shape recognizable), detail later
+- Each landmark as a stylized blockout first (silhouette recognizable, glowing windows), detail later
 - Safe Drive AI dashcam overlay (DOM/canvas overlay with bounding boxes on scene objects)
 - Warming shelter: warm windows, no figures, quiet radio line, resource links
 - Distant skyline: Golden Boy, towers
@@ -389,12 +418,12 @@ Branch: `feat/p9-sound`
 - Original or properly licensed CC0 audio only; credits in README
 - **Done when:** sound adds atmosphere and never autoplays.
 
-### Phase 10: Art pass (Blender models)  → `v0.10.0`
+### Phase 10: Art pass (hand-modelled landmarks)  → `v0.10.0`
 Branches: `feat/p10-models-<name>`
-- Replace blockouts with original Blender low-poly models (car, each landmark, props)
+- Replace landmark blockouts with original hand-modelled detail (each real Winnipeg landmark, the car). Procedural buildings and props stay procedural. No purchased or downloaded models.
 - `scripts/optimize-models.mjs` (gltf-transform: dedup, weld, draco/meshopt, resize textures)
-- Vertex colours / small atlases, consistent palette
-- **Done when:** visual quality is final and budgets still pass.
+- Consistent world palette; small shared texture atlases only where needed
+- **Done when:** visual quality is final and budgets still pass in every tier.
 
 ### Phase 11: Performance, a11y, launch  → `v1.0.0`
 Branch: `perf/p11-launch-hardening`
@@ -452,15 +481,17 @@ Target 60 fps desktop. Show me the plan first, then implement.
 
 **Phase 3**
 ```
-Start Phase 3 on feat/p3-night-mood. Add night sky, fog, instanced streetlights with bloom, headlights,
-snow particles scaled by quality tier, wipers, vignette and grain, plus reduced-motion variants.
-Report draw calls and triangle count at the end versus §5.5 budgets.
+Read docs/art-reference.md. Start Phase 3a on feat/p3-night-mood: sky and fog per section, instanced
+streetlights with halos and bloom, headlights, two-layer snowfall, packed-snow road with ruts and CC0 PBR maps
+(flat colours on the low tier), elm silhouettes, wipers, vignette and grain, plus reduced-motion variants.
+Then Phase 3b on feat/p3-buildings: procedural instanced buildings with the window shader.
+Show me the plan first. Report draw calls, triangles and texture sizes per quality tier versus §5.5 budgets.
 ```
 
 **Phase 4**
 ```
 Start Phase 4 on feat/p4-checkpoint-rrc. Build the reusable Landmark pattern, the RRC Polytechnic
-Exchange District Campus landmark (low-poly blockout), the DOM CheckpointPanel with focus management,
+Exchange District Campus landmark (stylized blockout following docs/art-reference.md), the DOM CheckpointPanel with focus management,
 and HUD subtitles. Write docs/adding-a-stop.md describing the exact steps so future stops follow it.
 ```
 
@@ -486,3 +517,6 @@ then give me the PR description and the release notes for the tag.
 - [ ] Final verified copy for each project (links, screenshots)
 - [ ] Voice for radio lines (text only vs recorded)
 - [ ] Analytics on/off
+- [ ] Which CC0 texture sets to use (verify the licence on each asset page before adding)
+- [ ] Initial JS budget on `/`: the Next/React runtime alone is about 132 KB gz, so the 120 KB budget in §5.5 cannot be met; proposal is "runtime baseline + 15 KB"
+- [ ] Wording of the sign text at The Forks (our own lettering, content-driven), if shown at all
