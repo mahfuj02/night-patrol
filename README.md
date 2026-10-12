@@ -2,7 +2,7 @@
 
 A cinematic, scroll-driven 3D night drive through a low-poly winter Winnipeg. Each stop on the patrol route is a chapter of Mahfuj's career. Full spec: [PROJECT_PLAN.md](PROJECT_PLAN.md).
 
-> **Status:** Phase 0 (repo foundation). The app is an empty shell; there is no 3D yet.
+> **Status:** Phase 1 (content layer and simple view). `/simple` is a complete HTML portfolio; there is no 3D yet. Content is edited in `src/content/` (see [docs/content-guide.md](docs/content-guide.md)).
 
 <!-- TODO: screenshot or GIF -->
 <!-- TODO: live link once the domain is decided -->
