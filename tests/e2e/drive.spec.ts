@@ -99,6 +99,20 @@ test.describe('drive (WebGL)', () => {
   });
 });
 
+test.describe('quality override', () => {
+  for (const tier of ['high', 'medium', 'low']) {
+    test(`?quality=${tier} renders without runtime errors`, async ({ page }) => {
+      const errors: string[] = [];
+      page.on('pageerror', (error) => errors.push(error.message));
+      await page.goto(`/?quality=${tier}`);
+      await expect(page.locator('canvas')).toBeVisible();
+      await expect(status(page)).toContainText(`Stop 1 of ${total}`);
+      await page.waitForTimeout(500);
+      expect(errors).toEqual([]);
+    });
+  }
+});
+
 test.describe('reduced motion', () => {
   test.use({ reducedMotion: 'reduce' });
 

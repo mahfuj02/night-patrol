@@ -9,17 +9,18 @@ Each file exports plain typed data. `src/content/index.ts` parses every file wit
 - Server code and tests: `@/content` (the validated index).
 - Client code (components, hooks, stores, the 3D scene): the plain file, for example `@/content/stops`, `@/content/route` or `@/content/ui`. The index pulls zod and every content file into the browser bundle, so ESLint blocks it there.
 
-| File            | Holds                                                                        |
-| --------------- | ---------------------------------------------------------------------------- |
-| `profile.ts`    | Name, role, pitch, contact links, resume path                                |
-| `projects.ts`   | Projects. `stopId` is optional; projects without one show only in `/simple`  |
-| `skills.ts`     | Skills by group (gauge, switch, indicator, preset)                           |
-| `experience.ts` | Patrol log: work, education, achievements                                    |
-| `community.ts`  | Community notes (the warming shelter note)                                   |
-| `stops.ts`      | Route order and `t` along the path, landmark id, `contentRef`                |
-| `route.ts`      | Control points of the road (x east, z south), widths, and the stop on each   |
-| `radio.ts`      | Dispatch lines; every line is captioned                                      |
-| `ui.ts`         | Section headings, labels and link text for the HTML views and drive controls |
+| File            | Holds                                                                           |
+| --------------- | ------------------------------------------------------------------------------- |
+| `profile.ts`    | Name, role, pitch, contact links, resume path                                   |
+| `projects.ts`   | Projects. `stopId` is optional; projects without one show only in `/simple`     |
+| `skills.ts`     | Skills by group (gauge, switch, indicator, preset)                              |
+| `experience.ts` | Patrol log: work, education, achievements                                       |
+| `community.ts`  | Community notes (the warming shelter note)                                      |
+| `stops.ts`      | Route order and `t` along the path, landmark id, `contentRef`                   |
+| `route.ts`      | Control points of the road (x east, z south), widths, and the stop on each      |
+| `atmosphere.ts` | Lighting and weather zones: sky, fog, lamps, snow, moon, sunrise, by stop range |
+| `radio.ts`      | Dispatch lines; every line is captioned                                         |
+| `ui.ts`         | Section headings, labels and link text for the HTML views and drive controls    |
 
 ## Editing rules
 

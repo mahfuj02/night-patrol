@@ -18,6 +18,13 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - WebGL fallback to the simple view, reduced-motion stepping between stops, quality tiers with adaptive resolution
 - Dev-only performance overlay (fps, draw calls, triangles)
 
+- Lighting and weather zones in `src/content/atmosphere.ts` (Exchange, Downtown, Shelter, Avenue, Forks, Sunrise) with smooth blending as `t` changes
+- Zone-driven sky (overcast glow, clear night with a big moon, sunrise), fog, ambient light and moonlight
+- Instanced streetlights in three types (sodium, cool LED, warm) with halos and light pools; car headlights
+- GPU snowfall: one draw call, depth layers, wind and gusts, flakes that brighten in lamp and headlight cones; 14k / 7k / 2.5k flakes by quality tier
+- `?quality=high|medium|low` URL override that pins the quality tier and disables adaptation
+- CC0 textures (Poly Haven asphalt snow, snow, factory brick) with a conversion script and a dev-only preview page, and the world palette
+
 ### Changed
 
 - Content data files are plain typed data; `src/content/index.ts` validates them. Keeps zod out of the client bundle.
