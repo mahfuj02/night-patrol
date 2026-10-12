@@ -10,6 +10,7 @@ import { useQualityStore } from '@/store/quality';
 import { Car } from './Car/Car';
 import { CameraRig } from './CameraRig';
 import { AtmosphereDriver } from './Environment/AtmosphereDriver';
+import { Elms } from './Environment/Elms';
 import { Ground } from './Environment/Ground';
 import { Sky } from './Environment/Sky';
 import { Snow } from './Environment/Snow';
@@ -56,6 +57,7 @@ export function Experience() {
       <Ground tier={tier} />
       <Road tier={tier} />
       <Snowbanks tier={tier} />
+      <Elms tier={tier} />
       <Streetlights />
       <Car />
       <Snow tier={tier} reducedMotion={reducedMotion} />

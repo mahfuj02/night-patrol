@@ -27,7 +27,9 @@ const SNOW_SAMPLE = /* glsl */ `
 const RUT_MASK = /* glsl */ `
   float rutMask(vec3 r) {
     float width = r.z * 2.0;
-    float lanes = max(2.0, floor(width / 3.6 + 0.5));
+    // Thresholds sit away from the road widths in use (6, 7, 9, 10, 12, 14), or the lane count
+    // would flicker between two values per pixel on a stretch of exactly that width.
+    float lanes = max(2.0, floor(width / 3.6 + 0.25));
     float laneW = width / lanes;
     float x = r.x + r.z;
     float inLane = mod(x, laneW) - 0.5 * laneW;
@@ -98,7 +100,9 @@ export function createRoadMaterial(textures: SurfaceTextures): MeshStandardMater
       `#include <map_fragment>
        float rut = rutMask(vRoad);
        vec3 snowAlbedo = snowSample(uSnowMap, vMapUv) * 2.0 * uSnowTint;
-       diffuseColor.rgb = mix(snowAlbedo, diffuseColor.rgb * uRutTint, rut);`,
+       // Asphalt grit shimmers when it is smaller than a pixel, so fade it to its average with distance.
+       vec3 asphalt = mix(vec3(0.2), diffuseColor.rgb, 1.0 - smoothstep(8.0, 30.0, length(vViewPosition)));
+       diffuseColor.rgb = mix(snowAlbedo, asphalt * uRutTint, rut);`,
     );
     shader.fragmentShader = replace(
       shader.fragmentShader,
