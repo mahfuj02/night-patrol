@@ -7,4 +7,12 @@ describe('Home page', () => {
     render(<Home />);
     expect(screen.getByRole('heading', { level: 1, name: 'Night Patrol' })).toBeInTheDocument();
   });
+
+  it('links to the simple version', () => {
+    render(<Home />);
+    expect(screen.getByRole('link', { name: 'View the simple version' })).toHaveAttribute(
+      'href',
+      '/simple',
+    );
+  });
 });
