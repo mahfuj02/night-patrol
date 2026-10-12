@@ -12,3 +12,4 @@ assertContentIntegrity({ stops, projects, experience, communityNotes, radioLines
 
 export { communityNotes, experience, profile, projects, radioLines, skills, stops };
 export * from './schema';
+export { simpleCopy } from './ui';
