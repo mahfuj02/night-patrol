@@ -161,7 +161,7 @@ Notes:
 - **Windows:** a shader draws the grid in world or object space: lit or unlit chosen by a hash of the cell, warm or cool by another hash, brighter on mid floors, a little flicker-free noise in intensity. Output is emissive so bloom lights it. One material, parameterised per instance.
 - **PBR:** CC0 textures only (Poly Haven, ambientCG) for snow, slush, brick, concrete and similar. Each used asset is credited in the README with name, source and licence. Textures are resized and compressed (KTX2 or WebP) and tiled, with a few shared across all buildings.
 - **Landmarks:** hand-modelled detail only for real Winnipeg landmarks. No purchased or downloaded city models.
-- **Quality tiers:** `high` and `medium` use PBR maps; `low` drops PBR maps (flat colours plus vertex tint), uses fewer buildings and fewer trees, fewer flakes, and no bloom.
+- **Quality tiers:** `high` and `medium` use PBR maps; `low` uses 512² colour-only maps (no normal or roughness), uses fewer buildings and fewer trees, fewer flakes, and no bloom.
 - **Reduced motion:** static or very slow snow, no flicker, no camera shake.
 - **Shelter stop:** nothing here changes the rule: warm windows, a quiet captioned line, and links only.
 - **No logos or trademarks.** Landmarks are silhouettes, with only the text allowed by the content files.

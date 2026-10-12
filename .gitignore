@@ -48,6 +48,6 @@ next-env.d.ts
 # lighthouse
 /.lighthouseci/
 
-# design reference photos (never commit)
+# design reference photos and previews (never commit)
 /design/reference/
-
+/design/previews/
