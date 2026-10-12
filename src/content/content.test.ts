@@ -136,6 +136,15 @@ describe('findContentProblems', () => {
 });
 
 describe('route integrity', () => {
+  it('breaks the ridge and tree rows at Portage & Main, and rejects unknown intersection stops', () => {
+    expect(route.intersections?.map((x) => x.stopId)).toEqual(['portage-main']);
+    const broken = {
+      ...bundle,
+      route: { ...route, intersections: [{ stopId: 'nope', halfLength: 5 }] },
+    };
+    expect(findContentProblems(broken).join(' | ')).toContain('unknown stop nope');
+  });
+
   it('pins every stop exactly once, in order', () => {
     const pins = route.points.flatMap((p) => (p.stopId ? [p.stopId] : []));
     expect(pins).toEqual(stops.map((s) => s.id));

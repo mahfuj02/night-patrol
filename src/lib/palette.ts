@@ -35,6 +35,7 @@ export const world = {
   ledHalo: '#8EAABA',
   lantern: '#E1E1DD',
   signalYellow: '#E0A63E',
+  taillightRed: '#E0262E',
   windowWarm: '#E8B27A',
   windowCool: '#B9D3E0',
   // buildings
@@ -54,6 +55,7 @@ export const world = {
   // props
   treeSilhouette: '#060E11',
   woodPole: '#4B4238',
+  bark: '#3A332C',
   binBlue: '#2D4A6B',
   // accents
   forksMagenta: '#AD76AE',

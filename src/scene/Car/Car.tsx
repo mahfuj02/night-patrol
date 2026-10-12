@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useLayoutEffect, useRef } from 'react';
 import { Vector3, type Group, type Object3D, type SpotLight } from 'three';
-import { palette } from '@/lib/palette';
+import { palette, world } from '@/lib/palette';
 import { carState } from '../carState';
 import { progress } from '../progress';
 import { routeModel } from '../Road/route';
@@ -82,8 +82,8 @@ export function Car() {
         <mesh key={`tail-${x}`} position={[x, 0.7, -2.12]}>
           <boxGeometry args={[0.4, 0.2, 0.08]} />
           <meshStandardMaterial
-            color={palette.sunriseFrom}
-            emissive={palette.sunriseFrom}
+            color={world.taillightRed}
+            emissive={world.taillightRed}
             emissiveIntensity={0.8}
           />
         </mesh>

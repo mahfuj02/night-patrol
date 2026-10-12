@@ -132,9 +132,18 @@ export const RoutePointSchema = z.object({
   /** Pins a stop to this point. Every stop appears on exactly one point. */
   stopId: kebabId.optional(),
 });
+export const IntersectionSchema = z.object({
+  /** The stop the intersection is centred on. */
+  stopId: kebabId,
+  /** Half the length of the gap, in metres along the road. */
+  halfLength: z.number().positive(),
+});
 export const RouteSchema = z.object({
   points: z.array(RoutePointSchema).min(2),
+  /** Gaps in the plowed snowbank ridge and the tree rows, where side streets cross. */
+  intersections: z.array(IntersectionSchema).optional(),
 });
+export type Intersection = z.infer<typeof IntersectionSchema>;
 export type RoutePoint = z.infer<typeof RoutePointSchema>;
 export type Route = z.infer<typeof RouteSchema>;
 
