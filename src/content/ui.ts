@@ -3,6 +3,18 @@ import { z } from 'zod';
 const SimpleCopySchema = z.object({
   site: z.object({ title: z.string(), description: z.string() }),
   home: z.object({ heading: z.string(), intro: z.string(), simpleLink: z.string() }),
+  drive: z.object({
+    navLabel: z.string(),
+    prev: z.string(),
+    next: z.string(),
+    simpleView: z.string(),
+    enRoute: z.string(),
+    /** Placeholders: {n}, {total}, {title}. */
+    atStop: z.string(),
+    hint: z.string(),
+    loading: z.string(),
+    noWebGL: z.string(),
+  }),
   pageTitle: z.string(),
   pageDescription: z.string(),
   skipToContent: z.string(),
@@ -41,6 +53,17 @@ export const simpleCopy = SimpleCopySchema.parse({
     heading: 'Night Patrol',
     intro: 'Unit 02 is warming up. The patrol starts soon.',
     simpleLink: 'View the simple version',
+  },
+  drive: {
+    navLabel: 'Patrol controls',
+    prev: '‹ Prev',
+    next: 'Next stop ›',
+    simpleView: 'Simple view',
+    enRoute: 'En route',
+    atStop: 'Stop {n} of {total}: {title}',
+    hint: 'Scroll, swipe or use the arrow keys to drive. Space or Page Down for the next stop.',
+    loading: 'Starting the engine…',
+    noWebGL: 'This browser cannot show the 3D drive, but the simple version has everything.',
   },
   pageTitle: 'Mahfuj: Full Stack Web Developer in Winnipeg',
   pageDescription:
