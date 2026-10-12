@@ -1,8 +1,7 @@
-import { z } from 'zod';
-import { SkillSchema } from './schema';
+import type { Skill } from './schema';
 
 // TODO(content): verify every level (1-5) and note; levels are placeholders until reviewed.
-export const skills = z.array(SkillSchema).parse([
+export const skills: Skill[] = [
   { id: 'typescript', name: 'TypeScript', group: 'gauge', level: 4 },
   { id: 'nextjs', name: 'Next.js', group: 'gauge', level: 4 },
   { id: 'nodejs', name: 'Node.js', group: 'gauge', level: 4 },
@@ -26,4 +25,4 @@ export const skills = z.array(SkillSchema).parse([
   { id: 'gemini', name: 'Gemini', group: 'preset', level: 3 },
   { id: 'groq-whisper', name: 'Groq / Whisper', group: 'preset', level: 3 },
   { id: 'claude', name: 'Claude', group: 'preset', level: 3 },
-]);
+];

@@ -1,8 +1,7 @@
-import { ProjectSchema } from './schema';
-import { z } from 'zod';
+import type { Project } from './schema';
 
 // TODO(content): verify every project description, stack and link before launch.
-export const projects = z.array(ProjectSchema).parse([
+export const projects: Project[] = [
   {
     id: 'eventflow',
     name: 'EventFlow',
@@ -112,4 +111,4 @@ export const projects = z.array(ProjectSchema).parse([
     links: { github: 'https://github.com/mahfuj02/av-device-controller' },
     images: [],
   },
-]);
+];

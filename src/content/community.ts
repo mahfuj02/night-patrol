@@ -1,8 +1,7 @@
-import { z } from 'zod';
-import { CommunityNoteSchema } from './schema';
+import type { CommunityNote } from './schema';
 
 // TODO(content): owner to review this wording. Keep it short and respectful.
-export const communityNotes = z.array(CommunityNoteSchema).parse([
+export const communityNotes: CommunityNote[] = [
   {
     id: 'warming-shelter',
     title: 'Warming shelter',
@@ -16,4 +15,4 @@ export const communityNotes = z.array(CommunityNoteSchema).parse([
       },
     ],
   },
-]);
+];

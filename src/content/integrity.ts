@@ -1,6 +1,7 @@
-import type { CommunityNote, Experience, Project, RadioLine, Stop } from './schema';
+import type { CommunityNote, Experience, Project, RadioLine, Route, Stop } from './schema';
 
 export interface ContentBundle {
+  route: Route;
   stops: Stop[];
   projects: Project[];
   experience: Experience[];
@@ -69,6 +70,21 @@ export function findContentProblems(c: ContentBundle): string[] {
     } else if (stop.contentRef !== project.id) {
       problems.push(`Project ${project.id}: stop ${stop.id} does not reference it back`);
     }
+  }
+  const pinned = c.route.points.flatMap((p) => (p.stopId ? [p.stopId] : []));
+  checkDuplicates('route stop pin', pinned);
+  for (const id of pinned) {
+    if (!stopsById.has(id)) problems.push(`Route point pins unknown stop ${id}`);
+  }
+  for (const stop of c.stops) {
+    if (!pinned.includes(stop.id)) problems.push(`Stop ${stop.id} has no route point`);
+  }
+  const pinnedOrder = pinned.flatMap((id) => {
+    const stop = stopsById.get(id);
+    return stop ? [stop.order] : [];
+  });
+  if (pinnedOrder.some((order, i) => i > 0 && order <= pinnedOrder[i - 1]!)) {
+    problems.push('Route points must pin stops in stop order');
   }
   for (const line of c.radioLines) {
     if (!stopsById.has(line.stopId)) {

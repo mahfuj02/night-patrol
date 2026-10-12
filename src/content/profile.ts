@@ -1,6 +1,6 @@
-import { ProfileSchema } from './schema';
+import type { Profile } from './schema';
 
-export const profile = ProfileSchema.parse({
+export const profile: Profile = {
   name: 'Md Mahfuj Ahmed',
   displayName: 'Mahfuj',
   role: 'Full Stack Web Developer',
@@ -19,4 +19,4 @@ export const profile = ProfileSchema.parse({
     portfolio: 'https://mahfuj.dev',
   },
   resumePath: '/resume.pdf',
-});
+};

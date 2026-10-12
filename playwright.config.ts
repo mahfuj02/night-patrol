@@ -11,7 +11,22 @@ export default defineConfig({
     baseURL: `http://localhost:${port}`,
     trace: 'on-first-retry',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        // Headless Chromium has no GPU; software WebGL lets the 3D scene run in tests.
+        launchOptions: {
+          args: [
+            '--use-angle=swiftshader',
+            '--enable-unsafe-swiftshader',
+            '--ignore-gpu-blocklist',
+          ],
+        },
+      },
+    },
+  ],
   webServer: {
     command: `pnpm exec next start -p ${port}`,
     url: `http://localhost:${port}`,
