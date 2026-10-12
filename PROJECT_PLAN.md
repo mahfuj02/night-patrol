@@ -370,6 +370,8 @@ Style guide: `docs/art-reference.md`. Two branches, merged in order:
 
 **Decision:** the stretch from the warming shelter through the avenue to the Human Rights Museum and Esplanade Riel is a **residential Winnipeg neighbourhood** under the elm tunnel. Downtown stays towers; the Exchange District stays brick warehouses and low-rises.
 
+- **First commit of this branch: the lane offset.** The car, the chase camera and everything placed along the road (lamps, tree rows, the snow ridge, buildings) are positioned relative to correct lanes. The car drives in the **right-hand lane** (Canada drives on the right) instead of on the centre line, and the road's ruts line up with the lane the car uses. This lands before any buildings so nothing has to be re-placed later; Phase 8 then reuses it for the opposite lane in the U-turn.
+- **Intersections anchored to stops:** intersections in `src/content/route.ts` are anchored to a stop plus an offset in metres, so they can sit between stops. The list is agreed with the owner before it is built.
 - Procedural, instanced buildings by stretch:
   - Exchange District: brick warehouses and low-rises
   - Downtown and Portage & Main: varied towers
@@ -411,7 +413,7 @@ Branch: `feat/p6-dashboard-patrol-log`
 Branch: `feat/p7-ignition-sunrise`
 - LoadingScreen: fuel gauge progress from Drei `useProgress`, Start Patrol, Skip to simple view
 - The Forks landmark: market building, frozen river skating trail with lights
-- **Roundabout at The Forks**, at the end of the route. The car loops it for the "end of shift / start new patrol" moment, with the camera following behind. Under reduced motion the loop is a cut or a short fade, not a continuous circle. The route curve and the `the-forks` stop are reshaped around it.
+- **Roundabout at The Forks**, at the end of the route. The car loops it for the "end of shift / start new patrol" moment, with the camera following behind. Under reduced motion the loop is a cut or a short fade, not a continuous circle. The route curve and the `the-forks` stop are reshaped around it. **After the loop the experience resets to stop 1** with a short fade and a captioned dispatch line, "New patrol starting." (a new line in `src/content/radio.ts`). Scrolling back mid-route does not reset: it uses the Phase 8 U-turn.
 - Sunrise sky transition driven by `t` near the end
 - Contact panel, resume download, link to mahfuj.dev
 - **Done when:** the experience has a full beginning and ending.
@@ -420,7 +422,7 @@ Branch: `feat/p7-ignition-sunrise`
 Branch: `feat/p8-minimap-mobile`
 - MiniMap with stop list, current position, click/tap to jump (eased)
 - Mobile controls: swipe + Next/Prev buttons, safe-area insets
-- **Direction changes:** when the travel direction reverses (Prev, a mini-map jump back, scrolling back), the car makes a smooth U-turn and drives back in the opposite lane **facing forward** (Canada drives on the right). It never drives backwards. The camera follows behind the car in the direction of travel. This needs a lane offset (each direction uses its right-hand lane), a U-turn path across the road, and an eased camera handover. Under reduced motion the car cuts to the opposite lane instead of turning continuously. The lane and U-turn math lives in `src/lib` with unit tests.
+- **Direction changes:** when the travel direction reverses (Prev, a mini-map jump back, scrolling back), the car makes a smooth U-turn and drives back in the opposite lane **facing forward** (Canada drives on the right). It never drives backwards. The camera follows behind the car in the direction of travel. This reuses the lane offset from Phase 3b (each direction uses its right-hand lane) and adds a U-turn path across the road, and an eased camera handover. Under reduced motion the car cuts to the opposite lane instead of turning continuously. The lane and U-turn math lives in `src/lib` with unit tests.
 - Keyboard shortcuts overlay (`?`)
 - E2E for mini-map and keyboard
 - **Done when:** any stop is ≤ 2 clicks from anywhere on any device.
@@ -535,7 +537,7 @@ then give me the PR description and the release notes for the tag.
 - [x] CC0 texture sets: `asphalt_snow`, `snow_02`, `factory_brick` (Poly Haven; licence re-checked on each asset page at download; fall back to ambientCG Snow012/Snow014 or other Poly Haven bricks if tiling shows a seam)
 - [ ] Initial JS budget on `/`: the Next/React runtime alone is about 132 KB gz, so the 120 KB budget in §5.5 cannot be met; proposal is "runtime baseline + 15 KB"
 - [ ] Wording of the sign text at The Forks (our own lettering, content-driven), if shown at all
-- [ ] What happens after the roundabout loop at The Forks ("start new patrol"): reset to the first stop, or drive back through the route with a U-turn (Phase 7 and 8)
-- [ ] Lane offset: the car currently drives on the road centre line. Move it to the right-hand lane in Phase 8 (with the U-turn) or earlier?
-- [ ] Licence plate "MAHFUJ02" is a personal identifier shown on a public site: confirm it is fine, and decide the content field for it (`profile.ts`)
-- [ ] Intersections for the residential stretch in `src/content/route.ts` (only Portage & Main is listed today)
+- [x] After the roundabout loop at The Forks the experience resets to stop 1 with a short fade and the dispatch line "New patrol starting."; scrolling back mid-route still uses the Phase 8 U-turn
+- [x] Lane offset: done at the start of Phase 3b, before buildings; the car drives in the right-hand lane
+- [x] Licence plate "MAHFUJ02" is fine (it is the owner's public GitHub username); the text is stored in `src/content/profile.ts` (`plate`)
+- [ ] Intersections in `src/content/route.ts`: a list is proposed (Princess St at the RRC campus, Portage & Main, three in the residential stretch) and needs the owner's OK before it is built
