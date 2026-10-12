@@ -7,16 +7,16 @@ describe('logger', () => {
     vi.restoreAllMocks();
   });
 
-  it('logs outside production', () => {
-    const spy = vi.spyOn(console, 'debug').mockImplementation(() => {});
-    logger.debug('hello');
+  it.each(['debug', 'warn', 'error'] as const)('%s logs outside production', (level) => {
+    const spy = vi.spyOn(console, level).mockImplementation(() => {});
+    logger[level]('hello');
     expect(spy).toHaveBeenCalledWith('[night-patrol]', 'hello');
   });
 
-  it('is silent in production', () => {
+  it.each(['debug', 'warn', 'error'] as const)('%s is silent in production', (level) => {
     vi.stubEnv('NODE_ENV', 'production');
-    const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    logger.warn('hidden');
+    const spy = vi.spyOn(console, level).mockImplementation(() => {});
+    logger[level]('hidden');
     expect(spy).not.toHaveBeenCalled();
   });
 });
