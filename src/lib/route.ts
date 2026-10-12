@@ -31,11 +31,30 @@ export function nearestStopIndex(t: number, stopTs: readonly number[]): number {
   return best;
 }
 
-/** True when progress is within the magnet radius of the nearest stop. */
+/**
+ * Magnet radius for one stop, capped at half the gap to its neighbours so that the zones of
+ * two close stops never overlap (which would make the magnet jump between them).
+ */
+export function effectiveRadius(
+  index: number,
+  stopTs: readonly number[],
+  radius = MAGNET_RADIUS,
+): number {
+  const stopT = stopTs[index];
+  if (stopT === undefined) return radius;
+  let result = radius;
+  const before = stopTs[index - 1];
+  const after = stopTs[index + 1];
+  if (before !== undefined) result = Math.min(result, (stopT - before) / 2);
+  if (after !== undefined) result = Math.min(result, (after - stopT) / 2);
+  return result;
+}
+
+/** True when progress is within the (effective) magnet radius of the nearest stop. */
 export function isAtStop(t: number, stopTs: readonly number[], radius = MAGNET_RADIUS): boolean {
   const index = nearestStopIndex(t, stopTs);
   const stopT = stopTs[index];
-  return stopT !== undefined && Math.abs(stopT - t) <= radius;
+  return stopT !== undefined && Math.abs(stopT - t) <= effectiveRadius(index, stopTs, radius);
 }
 
 /** `t` of the next (dir 1) or previous (dir -1) stop, clamped to the first and last stop. */
@@ -64,11 +83,13 @@ export function applyMagnet(
   strength = 1,
 ): number {
   if (stopTs.length === 0 || strength <= 0 || radius <= 0) return t;
-  const stopT = stopTs[nearestStopIndex(t, stopTs)]!;
+  const index = nearestStopIndex(t, stopTs);
+  const stopT = stopTs[index]!;
+  const zone = effectiveRadius(index, stopTs, radius);
   const distance = t - stopT;
-  const u = Math.abs(distance) / radius;
+  const u = Math.abs(distance) / zone;
   if (u >= 1) return t;
-  return stopT + Math.sign(distance) * radius * Math.pow(u, 1 + strength);
+  return stopT + Math.sign(distance) * zone * Math.pow(u, 1 + strength);
 }
 
 /** Frame-rate independent exponential smoothing (same shape as THREE.MathUtils.damp). */

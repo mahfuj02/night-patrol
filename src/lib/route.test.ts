@@ -6,6 +6,7 @@ import {
   applyMagnet,
   clamp01,
   dampT,
+  effectiveRadius,
   interpolateWidth,
   isAtStop,
   nearestStopIndex,
@@ -156,5 +157,29 @@ describe('interpolateWidth', () => {
     expect(interpolateWidth(fractions, widths, 2)).toBe(8);
     expect(interpolateWidth([], [], 0.5)).toBe(0);
     expect(interpolateWidth([0.5, 0.5, 1], [1, 2, 3], 0.5)).toBe(1);
+  });
+});
+
+describe('effectiveRadius', () => {
+  it('is the full radius when neighbours are far', () => {
+    expect(effectiveRadius(1, [0, 0.2, 0.5, 1])).toBe(MAGNET_RADIUS);
+  });
+
+  it('is capped at half the gap to the nearest neighbour', () => {
+    expect(effectiveRadius(1, [0, 0.03, 0.5])).toBeCloseTo(0.015, 10);
+    expect(effectiveRadius(0, [0, 0.03, 0.5])).toBeCloseTo(0.015, 10);
+    expect(effectiveRadius(2, [0, 0.4, 0.43])).toBeCloseTo(0.015, 10);
+  });
+
+  it('falls back to the radius for an unknown index', () => {
+    expect(effectiveRadius(9, [0, 1])).toBe(MAGNET_RADIUS);
+  });
+
+  it('keeps the magnet continuous between two close stops', () => {
+    const close = [0, 0.03];
+    const mid = 0.015;
+    expect(applyMagnet(mid - 1e-9, close)).toBeCloseTo(mid, 6);
+    expect(applyMagnet(mid + 1e-9, close)).toBeCloseTo(mid, 6);
+    expect(isAtStop(mid - 1e-9, close)).toBe(true);
   });
 });

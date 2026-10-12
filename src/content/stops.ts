@@ -1,13 +1,14 @@
 import { z } from 'zod';
 import { StopSchema } from './schema';
 
-// TODO(content): `t` values are even placeholders; Phase 2 tunes them against the route curve.
+// `t` is the arc-length fraction of each stop's point in route.ts. src/scene/Road/route.test.ts
+// fails if the two drift apart; after editing route.ts, update these from that test's output.
 export const stops = z.array(StopSchema).parse([
   { id: 'ignition', order: 0, t: 0, title: 'Ignition', landmark: 'ignition', kind: 'intro' },
   {
     id: 'dispatch',
     order: 1,
-    t: 0.05,
+    t: 0.027,
     title: 'Dispatch',
     landmark: 'dispatch-street',
     kind: 'intro',
@@ -16,7 +17,7 @@ export const stops = z.array(StopSchema).parse([
   {
     id: 'rrc-campus',
     order: 2,
-    t: 0.14,
+    t: 0.081,
     title: 'RRC Polytechnic, Exchange District Campus',
     landmark: 'rrc-campus',
     kind: 'education',
@@ -25,7 +26,7 @@ export const stops = z.array(StopSchema).parse([
   {
     id: 'exchange-warehouses',
     order: 3,
-    t: 0.22,
+    t: 0.134,
     title: 'Exchange District warehouses',
     landmark: 'exchange-warehouses',
     kind: 'project',
@@ -34,7 +35,7 @@ export const stops = z.array(StopSchema).parse([
   {
     id: 'city-services',
     order: 4,
-    t: 0.3,
+    t: 0.189,
     title: 'City services building',
     landmark: 'city-services',
     kind: 'project',
@@ -43,7 +44,7 @@ export const stops = z.array(StopSchema).parse([
   {
     id: 'portage-main',
     order: 5,
-    t: 0.38,
+    t: 0.439,
     title: 'Portage & Main',
     landmark: 'portage-main',
     kind: 'project',
@@ -53,7 +54,7 @@ export const stops = z.array(StopSchema).parse([
   {
     id: 'dashcam',
     order: 6,
-    t: 0.46,
+    t: 0.526,
     title: 'Dashcam moment',
     landmark: 'dashcam',
     kind: 'project',
@@ -62,7 +63,7 @@ export const stops = z.array(StopSchema).parse([
   {
     id: 'arcade',
     order: 7,
-    t: 0.54,
+    t: 0.568,
     title: 'Arcade',
     landmark: 'arcade',
     kind: 'project',
@@ -71,7 +72,7 @@ export const stops = z.array(StopSchema).parse([
   {
     id: 'inspection-building',
     order: 8,
-    t: 0.62,
+    t: 0.613,
     title: 'Building under inspection',
     landmark: 'inspection-building',
     kind: 'project',
@@ -80,7 +81,7 @@ export const stops = z.array(StopSchema).parse([
   {
     id: 'warming-shelter',
     order: 9,
-    t: 0.72,
+    t: 0.66,
     title: 'Warming shelter',
     landmark: 'warming-shelter',
     kind: 'community',
@@ -90,7 +91,7 @@ export const stops = z.array(StopSchema).parse([
   {
     id: 'cmhr-esplanade',
     order: 10,
-    t: 0.84,
+    t: 0.768,
     title: 'Human Rights Museum and Esplanade Riel',
     landmark: 'cmhr-esplanade',
     kind: 'achievement',
