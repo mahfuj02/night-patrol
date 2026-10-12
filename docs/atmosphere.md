@@ -51,3 +51,9 @@ Open `/?quality=high`, `?quality=medium` or `?quality=low`. The tier is pinned a
 - **Material:** dark grey-brown bark from vertex colours, lit by the nearest lamps (the lamp cone uniforms shared with the snow) and the headlights, with upward-facing surfaces blending to snow.
 - **Placement:** regular rows 8 to 10 m apart along both sides, set back behind the plowed ridge, the two rows staggered. Each tree turns its long limbs toward the road, so on a lined avenue the branches from both sides arch over it. Rows follow each zone's `trees` density, stop at intersections and stay clear of lamp poles. The low tier plants half as many.
 - **Cost:** about 1.1k triangles per high tree, about 0.4k per low tree, and two draw calls per shape.
+
+## Post-processing
+
+`Effects/Effects.tsx` (high and medium only): bloom on the bright lamp halos and light-lit snow, ACES tone mapping, a vignette, and film grain. The composer's MSAA (4 samples on high, 2 on medium) keeps the alpha-to-coverage twig edges smooth. Reduced motion drops the grain, because it is constantly shifting noise. The low tier skips post-processing entirely and renders straight to the screen with the renderer's own tone mapping. The choices per tier live in `effectsForTier` in `src/lib/quality.ts`.
+
+Bloom adds blur passes, which count as draw calls: about 46 on high and medium against about 25 on low.

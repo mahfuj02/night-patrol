@@ -29,6 +29,8 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Real 3D procedural winter elms (tapered flared trunk, vase of limbs, branches, twig planes at the tips) in staggered rows behind the snow ridge, with lamp and headlight lighting and snow dusting; placed by a per-zone `trees` density
 - Continuous plowed snow ridge along both road edges, broken only at intersections (`intersections` in `src/content/route.ts`)
 
+- Post-processing on high and medium: bloom, ACES tone mapping, vignette and film grain (grain off under reduced motion); none on low
+
 ### Changed
 
 - Tail-lights are red (`taillightRed` in the world palette)
