@@ -1,33 +1,61 @@
 # Navigation redesign
 
-> **Status:** the station arrival pattern and the Education station are built (Phase 5b); see [docs/stations.md](stations.md) for how. The transit-map menu is built too (Phase 5c, [docs/routemap.md](routemap.md)). Drive-by project stops are lit signs with a slogan, not popups (see [docs/adding-a-stop.md](adding-a-stop.md)); the project details live in the route map and the library. The other stations follow.
+> **Status:** the station arrival pattern and the Education station are built (Phase 5b); see [docs/stations.md](stations.md) for how. The transit-map menu is built too (Phase 5c, [docs/routemap.md](routemap.md)). Drive-by project stops are lit signs with a slogan, not popups (see [docs/adding-a-stop.md](adding-a-stop.md)); the project details live in the route map and the library. The route has been simplified (see [Simplified route](#simplified-route)). The other stations follow.
 
 How visitors move through Night Patrol and read its content: five **section stations** the car parks at, a **transit-map menu** that replaces the Phase 8 mini-map, and the changes to the plan, the code already built and the phase order. This is a plan, not built.
 
 ## Summary
 
-| Before                                                       | After                                                                                      |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| 12 route stops, each a drive-by checkpoint with a side panel | The 12 stops stay as drive-bys. Five **stations** are added: the car pulls in and parks    |
-| Skills on the dashboard (gauges, switches, tooltips)         | Skills are a station building. The dashboard keeps only a hint                             |
-| Experience in a "patrol log" panel                           | Experience is a station: an office with the entries on monitors                            |
-| Projects only as stops along the route                       | A Projects station (the Millennium Library) is the browse hub; each book has "Drive to it" |
-| Mini-map with a stop list (Phase 8)                          | A **transit-map menu**, built earlier, with section buttons                                |
-| Contact at the Forks stop                                    | Contact is a station at The Forks                                                          |
+| Before                                                                                   | After                                                                                                    |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| 12 route stops (before the simplification), each a drive-by checkpoint with a side panel | The remaining drive-by stops stay, as lit signs. Five **stations** are added: the car pulls in and parks |
+| Skills on the dashboard (gauges, switches, tooltips)                                     | Skills are a station building. The dashboard keeps only a hint                                           |
+| Experience in a "patrol log" panel                                                       | Experience is a station: an office with the entries on monitors                                          |
+| Projects only as stops along the route                                                   | A Projects station (the Millennium Library) is the browse hub; each book has "Drive to it"               |
+| Mini-map with a stop list (Phase 8)                                                      | A **transit-map menu**, built earlier, with section buttons                                              |
+| Contact at the Forks stop                                                                | Contact is a station at The Forks                                                                        |
 
 Vocabulary: a **stop** is a point on the route with a landmark and a checkpoint panel (`stops.ts`). A **station** is a section of the portfolio with its own building and a parking bay (`stations.ts`, new). Some stations sit on an existing stop (Education is the RRC campus stop); others have their own spot.
 
+## Simplified route
+
+The route is simpler than the first plan: fewer drive-bys, the same five stations.
+
+**Removed stops:** the Arcade (Akari), the Building under inspection (site audit extension), the Warming shelter and the CMHR. The Canadian Museum for Human Rights and Esplanade Riel stay as **scenery on the avenue** (lit landmarks, no stop, no panel; plain lettering at most, no logos, see rule 10). The warm-windowed residential building where the shelter was stays as **scenery, with no text**. The warming shelter's resource links (Siloam Mission, Main Street Project, Harvest Manitoba) stay on `/simple` only. Scenery is built in its own PR.
+
+**Akari and the site audit extension** are not published yet. They stay in `projects.ts` with `published: false`, so they are hidden everywhere: the route, the map's project list, the library and `/simple`. Remove the flag to publish them.
+
+**Stop order:**
+
+| #   | Stop                                     | Kind                       | Zone        |
+| --- | ---------------------------------------- | -------------------------- | ----------- |
+| 0   | Ignition                                 | intro                      | Exchange    |
+| 1   | Dispatch                                 | intro                      | Exchange    |
+| 2   | RRC Polytechnic (Education station)      | station                    | Exchange    |
+| 3   | Exchange District warehouses (EventFlow) | drive-by sign              | Exchange    |
+| 4   | City services building (CivicTrack)      | drive-by sign              | Exchange    |
+| 5   | Portage & Main (RoleReady)               | drive-by sign              | Downtown    |
+| 6   | Millennium Library (Projects station)    | station, to come (5e)      | Downtown    |
+| 7   | Skills station                           | station, to come (5f)      | Downtown    |
+| 8   | Safe Drive AI dashcam                    | drive-by sign              | Residential |
+| 9   | LIILAB office (Experience station)       | station, to come (5g)      | Avenue      |
+| 10  | The Forks (Contact station)              | station, to come (Phase 7) | Forks       |
+
+The route currently has the 8 stops that exist (Ignition, Dispatch, RRC, EventFlow, CivicTrack, Portage & Main, Dashcam, The Forks). The Library, Skills and LIILAB stops are **not** added yet: each arrives in its own station PR together with its building, so there are no empty stops on the road. The road is already re-cut so the straight stretches for them exist at the planned positions (about 600 m, 700 m and 940 m), and `stationSites.test.ts` keeps those stretches straight.
+
+**Zones**, flowing Exchange, downtown, residential, avenue, Forks: Exchange up to City services; downtown from Portage & Main through the Library and Skills sites; residential around the dashcam stop (with the warm-windowed house); the avenue around the LIILAB office and the museum scenery; the Forks at the end. Until the LIILAB stop exists the atmosphere's avenue and Forks zones hang off The Forks stop by offset, and the transit map has no avenue zone; both anchor on the LIILAB stop when it arrives.
+
 ## The five stations
 
-| Section    | Building                  | Where                                  | What the visitor gets                                              |
-| ---------- | ------------------------- | -------------------------------------- | ------------------------------------------------------------------ |
-| Education  | RRC campus (built)        | Exchange District, stop 3, left        | Campus, years and courses on the lit wall                          |
-| Projects   | The Millennium Library    | Downtown straight, about t 0.245, left | A room of books by category, a catalog, a book view. "Drive to it" |
-| Skills     | A tech building           | Downtown straight, about t 0.33, right | Skill groups on the lit wall                                       |
-| Experience | The LIILAB office         | Downtown, about t 0.483, right         | Experience entries on monitors seen through the glass              |
-| Contact    | The Forks market building | End of the route, about t 0.97         | Email, GitHub, LinkedIn, resume, link to mahfuj.dev                |
+| Section    | Building                  | Where                           | What the visitor gets                                              |
+| ---------- | ------------------------- | ------------------------------- | ------------------------------------------------------------------ |
+| Education  | RRC campus (built)        | Exchange District, stop 3, left | Campus, years and courses on the lit wall                          |
+| Projects   | The Millennium Library    | Downtown, about 600 m, left     | A room of books by category, a catalog, a book view. "Drive to it" |
+| Skills     | A tech building           | Downtown, about 700 m, right    | Skill groups on the lit wall                                       |
+| Experience | The LIILAB office         | The avenue, about 940 m, right  | Experience entries on monitors seen through the glass              |
+| Contact    | The Forks market building | End of the route, about t 0.97  | Email, GitHub, LinkedIn, resume, link to mahfuj.dev                |
 
-Positions are in [Station positions](#station-positions). The 12 route stops stay as they are.
+Positions are in [Station positions](#station-positions). The drive-by stops are listed in [Simplified route](#simplified-route).
 
 ## The station arrival pattern
 
@@ -112,7 +140,7 @@ Replaces the Phase 8 mini-map and **moves earlier** (see [Phases](#phases-and-or
 
 ### Zone colours
 
-Zones follow `atmosphere.ts`: `exchange`, `downtown`, `shelter` (residential), `avenue`, `forks`. The straight between City services and Portage & Main has no zone of its own and takes downtown's colour on the map. Colours are UI tokens (they sit on `night-2`, not in the 3D world palette), proposed as, to be tuned by eye:
+Zones follow `atmosphere.ts`: `exchange`, `downtown`, `residential`, `avenue` (it starts at the LIILAB stop, which arrives with the Experience station), `forks`. The straight between City services and Portage & Main has no zone of its own and takes downtown's colour on the map. Colours are UI tokens (they sit on `night-2`, not in the 3D world palette), proposed as, to be tuned by eye:
 
 | Zone        | Colour                   | Proposed  |
 | ----------- | ------------------------ | --------- |
@@ -140,8 +168,8 @@ The Projects station is the **browse hub** for projects. The route stops stay dr
 ### The building
 
 - **Name and look.** Millennium Library: a stylized silhouette of its downtown glass front (a tall glazed facade with a pale frame, lit from inside), with plain lettering "Millennium Library" in our own type, from `signage.ts`. **No City of Winnipeg logo**, crest, or brand colours or lettering copied from the real signage.
-- **Rule 10.** CLAUDE.md rule 10 gains one more exception: public civic landmarks on the route may be named in plain lettering, in our own type, with the words from `src/content`. No logos, crests or brand marks, and nothing copied from the real signage. The library is the first; the CMHR stop (5d) follows the same rule. (The CLAUDE.md edit goes in this PR.)
-- **Where.** The downtown straight, about t 0.245, on the left (see "Station positions"), with a bay like the other stations.
+- **Rule 10.** CLAUDE.md rule 10 gains one more exception: public civic landmarks on the route may be named in plain lettering, in our own type, with the words from `src/content`. No logos, crests or brand marks, and nothing copied from the real signage. The library is the first; the CMHR scenery follows the same rule. (The CLAUDE.md edit goes in this PR.)
+- **Where.** Downtown, about 600 m along the route, on the left (see "Station positions"), with a bay like the other stations.
 
 ### Arrival
 
@@ -254,19 +282,19 @@ Contact is a station at the Forks market building, the end of the route. The red
 
 ## Station positions
 
-Measured on the current route (1,123 m long). Stops: Ignition 0, Dispatch 30 m, RRC campus 91 m, warehouses 150 m, City services 212 m, Portage & Main 493 m, Dashcam 591 m, Arcade 638 m, Inspection 688 m, Warming shelter 741 m, CMHR 862 m, The Forks 1,123 m. Intersections: Princess St 97 to 117 m, Portage & Main 470 to 515 m.
+Measured on the route after the simplification (1,092 m long). Stops: Ignition 0, Dispatch 31 m, RRC campus 91 m, warehouses 150 m, City services 212 m, Portage & Main 492 m, Dashcam 812 m, The Forks 1,092 m. Intersections: Princess St 97 to 117 m, Portage & Main 470 to 515 m. The road after Portage & Main is re-cut into long gentle bends with a straight at each station site below (the bend over any 30 m of a site is at most 3.5 degrees).
 
-| Station    | t about | Metres | Side  | Turn  | Red light about | Why there                                                                                                                                                                                                                   |
-| ---------- | ------- | ------ | ----- | ----- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Education  | 0.081   | 91     | Left  | Left  | t 0.056         | The RRC campus is already here                                                                                                                                                                                              |
-| Projects   | 0.245   | 275    | Left  | Left  | t 0.222         | The long straight (212 to 470 m, 12 m wide, no intersection). It sits between the early project stops (EventFlow, CivicTrack) and the later ones (RoleReady, Dashcam, Arcade, Inspection), so "Drive to it" goes either way |
-| Skills     | 0.33    | 370    | Right | Right | t 0.307         | The same straight, 95 m on, on the other side so the two patterns differ, and 100 m clear of Portage & Main                                                                                                                 |
-| Experience | 0.483   | 542    | Right | Right | t 0.46          | After the Portage & Main intersection and before Dashcam; the office sits among the downtown towers                                                                                                                         |
-| Contact    | 0.97    | 1,090  | Right | Right | t 0.945         | The market building at The Forks, before the roundabout                                                                                                                                                                     |
+| Station    | t about | Metres | Side  | Turn  | Red light about | Why there                                                                                                                                            |
+| ---------- | ------- | ------ | ----- | ----- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Education  | 0.081   | 91     | Left  | Left  | t 0.056         | The RRC campus is already here                                                                                                                       |
+| Projects   | 0.549   | 600    | Left  | Left  | t 0.528         | The first straight after the Portage & Main intersection (575 to 625 m), among the downtown towers, with room for the red light before it            |
+| Skills     | 0.641   | 700    | Right | Right | t 0.620         | The second straight (675 to 725 m), 100 m on, on the other side so the two patterns differ                                                           |
+| Experience | 0.861   | 940    | Right | Right | t 0.840         | The third straight (915 to 965 m), on the avenue, after the dashcam stop and the residential bend; the office is a small glass building, not a tower |
+| Contact    | 0.97    | 1,090  | Right | Right | t 0.945         | The market building at The Forks, before the roundabout                                                                                              |
 
-- **Skills moves** from the earlier proposal of t 0.30 to **t 0.33** to make room for the library.
+- **Positions moved** when the route was simplified: the Library and Skills now come after Portage & Main (before, they were on the straight before it), and the Experience office is on the avenue, after the dashcam stop.
 - The Library, Skills and Experience stations each need a **bay** (a gap in the plowed ridge and the tree rows, a short road patch, clear ground to the wall) and a **reserved footprint** so ordinary buildings leave it free, as the landmarks do.
-- The magnet radius is 0.025 in `t` (about 28 m). Experience falls between Portage & Main (0.439) and Dashcam (0.526), 0.0435 from each; `effectiveRadius` shrinks the magnets so they do not overlap, and a test checks every station's light and bay are clear of other stops.
+- The magnet radius is 0.025 in `t` (about 27 m). The sites are at least 100 m apart, so `effectiveRadius` has nothing to shrink there; a test checks every station's light and bay are clear of other stops.
 - The red lights are separate from the Princess St and Portage & Main signals, which stay as intersection lights. A station light is a mast arm on its own, or the nearest existing signal when there is one.
 
 ## Changes to what is already built
@@ -309,21 +337,21 @@ Captions use the same caption area as the radio lines, and sound captions come f
 
 The new order, with sizes. A tag at the end of a group is the release.
 
-| Phase | Name                                                   | Size        | What changes                                                                                                                    |
-| ----- | ------------------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| 5a    | First two stops (RRC, EventFlow)                       | done        | Landmark pattern, checkpoint panel, captions                                                                                    |
-| 5b    | **Station arrival pattern** + Education                | L           | State machine, `stations.ts`, parking path, lit wall, red light, bays, convert RRC                                              |
-| 5c    | **Transit-map menu** (moved from Phase 8)              | M           | Left panel and sheet, section buttons, zone colours, jump with cut, live status, resume link, the project list                  |
-| 5d    | Remaining drive-by stops, one PR each                  | S to M each | City services (CivicTrack), Portage & Main (RoleReady), Dashcam, Arcade, Inspection, Warming shelter, CMHR                      |
-| 5e    | **Projects station** (Millennium Library)              | L           | Building, interior, books by category, catalog terminal, book view, phone shelf, "Drive to it". Needs the project signs from 5d |
-| 5f    | **Skills station** + `skills.ts` categories            | M           | Building, wall, content change, `/simple` follows. **v0.5.0** when 5b to 5f are done                                            |
-| 5g    | **Experience station** (LIILAB office)                 | M           | Building, monitors as DOM in 3D (LIILAB and the Sprint-Innovation win)                                                          |
-| 6     | Interior and props (shrunk)                            | M           | Interior view, wipers, props, Skills hint on the dashboard. **v0.6.0**                                                          |
-| 7     | Ignition, The Forks, **Contact station**, end of shift | L           | Loading screen, roundabout, Contact station, sunrise, reset. **v0.7.0**                                                         |
-| 8     | Navigation polish (shrunk)                             | M           | U-turn (shares the path maths with the parking path), mobile polish, shortcut overlay, 2-click e2e. **v0.8.0**                  |
-| 9     | Sound                                                  | M           | Toggle, engine and tires, radio chirp, static bursts, captions. **v0.9.0**                                                      |
-| 10    | Art pass                                               | L           | Hand-modelled landmarks, the car, the library and office detail. **v0.10.0**                                                    |
-| 11    | Performance, accessibility, launch                     | M           | Hardening, Lighthouse, custom domain. **v1.0.0**                                                                                |
+| Phase | Name                                                   | Size        | What changes                                                                                                                                                                                                                     |
+| ----- | ------------------------------------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 5a    | First two stops (RRC, EventFlow)                       | done        | Landmark pattern, checkpoint panel, captions                                                                                                                                                                                     |
+| 5b    | **Station arrival pattern** + Education                | L           | State machine, `stations.ts`, parking path, lit wall, red light, bays, convert RRC                                                                                                                                               |
+| 5c    | **Transit-map menu** (moved from Phase 8)              | M           | Left panel and sheet, section buttons, zone colours, jump with cut, live status, resume link, the project list                                                                                                                   |
+| 5d    | Remaining drive-by stops, one PR each                  | S to M each | City services (CivicTrack), Portage & Main (RoleReady), Dashcam (Safe Drive AI). The Arcade, Inspection, Warming shelter and CMHR stops were removed (see Simplified route); the museum and the residential house become scenery |
+| 5e    | **Projects station** (Millennium Library)              | L           | Building, interior, books by category, catalog terminal, book view, phone shelf, "Drive to it". Needs the project signs from 5d                                                                                                  |
+| 5f    | **Skills station** + `skills.ts` categories            | M           | Building, wall, content change, `/simple` follows. **v0.5.0** when 5b to 5f are done                                                                                                                                             |
+| 5g    | **Experience station** (LIILAB office)                 | M           | Building, monitors as DOM in 3D (LIILAB and the Sprint-Innovation win)                                                                                                                                                           |
+| 6     | Interior and props (shrunk)                            | M           | Interior view, wipers, props, Skills hint on the dashboard. **v0.6.0**                                                                                                                                                           |
+| 7     | Ignition, The Forks, **Contact station**, end of shift | L           | Loading screen, roundabout, Contact station, sunrise, reset. **v0.7.0**                                                                                                                                                          |
+| 8     | Navigation polish (shrunk)                             | M           | U-turn (shares the path maths with the parking path), mobile polish, shortcut overlay, 2-click e2e. **v0.8.0**                                                                                                                   |
+| 9     | Sound                                                  | M           | Toggle, engine and tires, radio chirp, static bursts, captions. **v0.9.0**                                                                                                                                                       |
+| 10    | Art pass                                               | L           | Hand-modelled landmarks, the car, the library and office detail. **v0.10.0**                                                                                                                                                     |
+| 11    | Performance, accessibility, launch                     | M           | Hardening, Lighthouse, custom domain. **v1.0.0**                                                                                                                                                                                 |
 
 Why this order:
 
@@ -354,7 +382,7 @@ Any stop, station, the contact details or the resume is at most **two clicks** f
 | The library interior                    | A room with shelves, nine books, a table, a lamp, a featured stand and a catalog           | Mounted only while the station is open on a wide screen; instanced shelves and books; about 6 interior draw calls (about 10 for the station); no interior on a phone; see the size estimate |
 | Draw calls                              | A building per station                                                                     | 4 to 6 frustum-culled meshes each; five stations add about 30, so about 100 against 150                                                                                                     |
 | Signal state                            | Instance colour writes                                                                     | A handful of heads, written only when a state changes                                                                                                                                       |
-| Menu in the DOM                         | A list of 12 stops, 5 stations and an SVG line, always mounted                             | Small; the car marker moves by transform; no layout work per frame                                                                                                                          |
+| Menu in the DOM                         | A list of 8 stops (11 with the stations) and an SVG line, always mounted                   | Small; the car marker moves by transform; no layout work per frame                                                                                                                          |
 | State machine bugs                      | Scroll, Prev/Next, menu jumps and Esc during a manoeuvre                                   | A pure reducer with exhaustive tests; a Playwright flow per station; manoeuvres are timed and skippable                                                                                     |
 | E2E time                                | SwiftShader is slow and several accessibility tests are already slow                       | Station tests use the `low` tier; one shared flow helper                                                                                                                                    |
 | Accessibility                           | Content in a hidden 3D container, or read twice; 3D books and monitors have no semantics   | The wall, monitors and books each have a real DOM list as their accessible UI; the sheet and the wall are never both exposed; axe on every station                                          |
@@ -367,7 +395,7 @@ Any stop, station, the contact details or the resume is at most **two clicks** f
 - `src/content/library.ts` (new): the category labels and order, call number prefixes and the featured project. `projects.ts`: a `category` field on every project.
 - `signage.ts`: the Millennium Library and LIILAB office wording. `ui.ts`: section labels, the menu, the status line.
 - `projects.ts`: done in the content sync (Connexions Spectrum added as a library book; stacks and case study links follow mahfuj.dev).
-- CLAUDE.md rule 10: the plain-text-name exception (approved earlier) now also covers public civic landmarks on the route (the Millennium Library, the CMHR stop): plain lettering in our own type, no logos.
+- CLAUDE.md rule 10: the plain-text-name exception (approved earlier) now also covers public civic landmarks on the route (the Millennium Library, and the CMHR as scenery): plain lettering in our own type, no logos.
 - Everything unverified is `// TODO(content): verify`.
 
 ## Open questions

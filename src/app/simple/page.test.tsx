@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { projects, simpleCopy, stops } from '@/content';
+import { allProjects, projects, simpleCopy, stops } from '@/content';
 import SimplePage, { metadata } from './page';
 
 describe('/simple page', () => {
@@ -21,6 +21,14 @@ describe('/simple page', () => {
     }
     for (const title of Object.values(simpleCopy.sections)) {
       expect(screen.getByRole('heading', { level: 2, name: title })).toBeInTheDocument();
+    }
+  });
+
+  it('leaves out the projects that are not published yet', () => {
+    render(<SimplePage />);
+    for (const p of allProjects.filter((x) => x.published === false)) {
+      expect(screen.queryByText(p.name)).toBeNull();
+      expect(screen.queryByRole('heading', { name: p.name })).toBeNull();
     }
   });
 

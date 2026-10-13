@@ -80,9 +80,7 @@ describe('content in sync with mahfuj.dev', () => {
       expect(project(id).links.caseStudy).toBe(`https://mahfuj.dev/projects/${slug}`);
     }
     // Not on mahfuj.dev, so no case study.
-    for (const id of ['civictrack', 'akari', 'site-audit-extension']) {
-      expect(project(id).links.caseStudy).toBeUndefined();
-    }
+    expect(project('civictrack').links.caseStudy).toBeUndefined();
   });
 
   it('groups skills into the five categories, with Mobile and Embedded as the owner listed', () => {

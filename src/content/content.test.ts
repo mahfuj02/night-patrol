@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  allProjects,
   atmosphereZones,
   buildingStretches,
   communityNotes,
@@ -36,7 +37,7 @@ const bundle = {
 
 describe('content data', () => {
   it('has one stop per route entry, in order', () => {
-    expect(stops).toHaveLength(12);
+    expect(stops).toHaveLength(8);
     expect(stops.map((s) => s.order)).toEqual(stops.map((_, i) => i));
   });
 
@@ -124,7 +125,7 @@ describe('findContentProblems', () => {
   it('reports a stop that does not reference its project back', () => {
     const swapped = {
       ...bundle,
-      stops: stops.map((s) => (s.id === 'arcade' ? { ...s, contentRef: 'eventflow' } : s)),
+      stops: stops.map((s) => (s.id === 'dashcam' ? { ...s, contentRef: 'eventflow' } : s)),
     };
     expect(findContentProblems(swapped).join('\n')).toContain('does not reference it back');
   });
@@ -140,9 +141,11 @@ describe('findContentProblems', () => {
     });
     const unsigned = {
       ...bundle,
-      projects: projects.map((p) => (p.id === 'akari' ? { ...p, sign: undefined } : p)),
+      projects: projects.map((p) => (p.id === 'safe-drive-ai' ? { ...p, sign: undefined } : p)),
     };
-    expect(findContentProblems(unsigned).join(' | ')).toContain('akari has a stop but no sign');
+    expect(findContentProblems(unsigned).join(' | ')).toContain(
+      'safe-drive-ai has a stop but no sign',
+    );
   });
 
   it('reports duplicate project, experience and radio ids', () => {
@@ -266,12 +269,40 @@ describe('building stretches', () => {
   });
 });
 
+describe('unpublished projects', () => {
+  const hidden = ['akari', 'site-audit-extension'];
+
+  it('keeps Akari and the site audit extension in the data, flagged as not published', () => {
+    for (const id of hidden) {
+      const project = allProjects.find((p) => p.id === id)!;
+      expect(project.published).toBe(false);
+      expect(project.stopId).toBeUndefined();
+    }
+  });
+
+  it('hides them from everything the site shows', () => {
+    expect(projects.map((p) => p.id)).not.toEqual(expect.arrayContaining(hidden));
+    for (const id of hidden) expect(projects.some((p) => p.id === id)).toBe(false);
+    expect(projects.length).toBe(allProjects.length - hidden.length);
+    // No stop or station points at one either: the integrity check fails on an unknown reference.
+    for (const stop of stops) expect(hidden).not.toContain(stop.contentRef);
+  });
+
+  it('reports a stop that points at an unpublished project', () => {
+    const pointed = {
+      ...bundle,
+      stops: stops.map((s) => (s.id === 'dashcam' ? { ...s, contentRef: 'akari' } : s)),
+    };
+    expect(findContentProblems(pointed).join(' | ')).toContain('unknown contentRef');
+  });
+});
+
 describe('atmosphere zones', () => {
   it('cover the route in order and match the planned zones', () => {
     expect(atmosphereZones.map((z) => z.id)).toEqual([
       'exchange',
       'downtown',
-      'shelter',
+      'residential',
       'avenue',
       'forks',
       'sunrise',
@@ -284,7 +315,7 @@ describe('atmosphere zones', () => {
     expect(byId.avenue!.moon).toBe(1);
     expect(byId.exchange!.snow.density).toBe(1);
     expect(byId.exchange!.light.type).toBe('sodium');
-    expect(byId.shelter!.light.intensity).toBeLessThan(byId.downtown!.light.intensity);
+    expect(byId.residential!.light.intensity).toBeLessThan(byId.downtown!.light.intensity);
     expect(byId.downtown!.snow.gust).toBeGreaterThan(byId.exchange!.snow.gust);
     expect(byId.sunrise!.sunrise).toBe(1);
   });
@@ -296,8 +327,8 @@ describe('atmosphere zones', () => {
     expect(byId.downtown!.trees).toBeLessThan(byId.exchange!.trees);
   });
 
-  it('keeps the shelter calm and warm-lit only', () => {
-    const shelter = atmosphereZones.find((z) => z.id === 'shelter')!;
+  it('keeps the residential street calm and warm-lit only', () => {
+    const shelter = atmosphereZones.find((z) => z.id === 'residential')!;
     expect(shelter.windows.cool).toBe(0);
     expect(shelter.snow.gust).toBe(0);
   });
@@ -338,13 +369,7 @@ describe('stations', () => {
 
 describe('transit zones', () => {
   it('colour the route by zone, starting at the first stop and in route order', () => {
-    expect(transitZones.map((z) => z.id)).toEqual([
-      'exchange',
-      'downtown',
-      'residential',
-      'avenue',
-      'forks',
-    ]);
+    expect(transitZones.map((z) => z.id)).toEqual(['exchange', 'downtown', 'residential', 'forks']);
     expect(transitZones[0]!.fromStopId).toBe(stops[0]!.id);
     const orders = transitZones.map((z) => stops.find((s) => s.id === z.fromStopId)!.order);
     expect([...orders]).toEqual([...orders].sort((a, b) => a - b));

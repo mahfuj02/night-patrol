@@ -47,7 +47,7 @@ export const buildingStretches: BuildingStretch[] = [
     id: 'downtown-towers',
     style: 'tower',
     from: 'portage-main',
-    to: 'warming-shelter',
+    to: 'dashcam',
     toOffset: -70,
     setback: 9,
     lotWidth: [14, 26],
@@ -58,13 +58,13 @@ export const buildingStretches: BuildingStretch[] = [
     density: 1,
   },
   {
-    // Warming shelter to Esplanade Riel: houses and garages behind the elm tunnel.
+    // The dashcam stop onward: houses and garages behind the elm tunnel.
     id: 'residential',
     style: 'house',
-    from: 'warming-shelter',
+    from: 'dashcam',
     fromOffset: -70,
-    to: 'cmhr-esplanade',
-    toOffset: 60,
+    to: 'the-forks',
+    toOffset: -60,
     setback: 12,
     lotWidth: [9, 13],
     gap: [2.5, 5],

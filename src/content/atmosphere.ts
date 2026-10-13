@@ -6,8 +6,9 @@ import type { AtmosphereZone } from './schema';
  * where the zone starts. Colours are names from the world palette in src/lib/palette.ts.
  * Zones must stay in route order; `pnpm test` checks that and that blends fit the gaps.
  *
- * t values (from stops.ts): city-services 0.189, portage-main 0.439, inspection 0.613,
- * warming-shelter 0.66, cmhr-esplanade 0.768, the-forks 1.0.
+ * t values (from stops.ts): city-services 0.194, portage-main 0.451, dashcam 0.744, the-forks 1.0.
+ * The avenue and the Forks zones hang off The Forks stop by offset until the LIILAB office stop
+ * exists (the Experience station adds it at about t 0.86, and the avenue then anchors on it).
  * TODO(content): owner to tune the look of each zone by eye.
  */
 export const atmosphereZones: AtmosphereZone[] = [
@@ -32,7 +33,8 @@ export const atmosphereZones: AtmosphereZone[] = [
     // Eases in over the second half of the long straight.
     id: 'downtown',
     from: 'portage-main',
-    to: 'inspection-building',
+    to: 'dashcam',
+    endOffset: -0.075,
     blend: 0.15,
     sky: { zenith: 'night', horizon: 'skyOvercastOrange' },
     fog: { color: 'skyOvercastOrange', near: 24, far: 190 },
@@ -45,12 +47,13 @@ export const atmosphereZones: AtmosphereZone[] = [
     windows: { warm: 0.5, cool: 0.6 },
   },
   {
-    // Warming shelter: cool, dimmer, light quiet snow. Warm windows only (no figures, no drama).
-    id: 'shelter',
-    from: 'warming-shelter',
-    to: 'warming-shelter',
-    startOffset: -0.015,
-    endOffset: 0.015,
+    // Residential street (the dashcam stop and the warm-windowed house): cool, dimmer, light quiet
+    // snow. Warm windows only (no figures, no drama).
+    id: 'residential',
+    from: 'dashcam',
+    to: 'dashcam',
+    startOffset: -0.04,
+    endOffset: 0,
     blend: 0.03,
     sky: { zenith: 'night', horizon: 'skyOvercastGreen' },
     fog: { color: 'skyOvercastGreen', near: 12, far: 90 },
@@ -63,14 +66,14 @@ export const atmosphereZones: AtmosphereZone[] = [
     windows: { warm: 1, cool: 0 },
   },
   {
-    // Avenue toward the Human Rights Museum and Esplanade Riel: cool LED, clear night,
-    // snow stops, big moon.
+    // The avenue (the LIILAB office, then the Human Rights Museum and Esplanade Riel as scenery):
+    // cool LED, clear night, snow stops, big moon.
     id: 'avenue',
-    from: 'cmhr-esplanade',
-    to: 'cmhr-esplanade',
-    startOffset: -0.03,
-    endOffset: 0.03,
-    blend: 0.06,
+    from: 'the-forks',
+    to: 'the-forks',
+    startOffset: -0.235,
+    endOffset: -0.09,
+    blend: 0.02,
     sky: { zenith: 'skyClearZenith', horizon: 'skyClearHorizon' },
     fog: { color: 'skyClearHorizon', near: 60, far: 320 },
     light: { type: 'led', color: 'ledCore', intensity: 1 },
@@ -87,9 +90,9 @@ export const atmosphereZones: AtmosphereZone[] = [
     id: 'forks',
     from: 'the-forks',
     to: 'the-forks',
-    startOffset: -0.16,
-    endOffset: -0.07,
-    blend: 0.04,
+    startOffset: -0.065,
+    endOffset: -0.06,
+    blend: 0.024,
     sky: { zenith: 'skyClearZenith', horizon: 'skyClearHorizon' },
     fog: { color: 'skyClearHorizon', near: 30, far: 200 },
     light: { type: 'warm', color: 'sodium', intensity: 0.8 },
@@ -106,7 +109,7 @@ export const atmosphereZones: AtmosphereZone[] = [
     from: 'the-forks',
     to: 'the-forks',
     startOffset: -0.03,
-    blend: 0.04,
+    blend: 0.029,
     sky: { zenith: 'skyClearHorizon', horizon: 'sunriseOrange' },
     fog: { color: 'sunriseCloud', near: 40, far: 260 },
     light: { type: 'warm', color: 'sodium', intensity: 0.35 },

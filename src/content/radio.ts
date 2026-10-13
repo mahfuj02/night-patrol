@@ -31,10 +31,5 @@ export const radioLines: RadioLine[] = [
     stopId: 'portage-main',
     text: 'Dispatch, the wind at Portage and Main is doing its usual thing. Hold your hat.',
   },
-  {
-    id: 'warming-shelter',
-    stopId: 'warming-shelter',
-    text: 'Quiet block ahead. Warm lights on. Slow down.',
-  },
   { id: 'shift-complete', stopId: 'the-forks', text: 'Shift complete.' },
 ];
