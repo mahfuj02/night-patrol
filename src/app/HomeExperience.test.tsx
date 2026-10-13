@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDriveStore } from '@/store/drive';
@@ -55,7 +55,9 @@ describe('HomeExperience', () => {
     act(() => {
       document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'PageDown', bubbles: true }));
     });
-    expect(screen.getByRole('status')).toHaveTextContent('Stop 2 of 12: Dispatch');
+    // The stop announcement is in the drive controls; the station and the panel have their own.
+    const controls = screen.getByRole('navigation', { name: 'Patrol controls' });
+    expect(within(controls).getByRole('status')).toHaveTextContent('Stop 2 of 12: Dispatch');
   });
 
   it('drives with the wheel over the scene', () => {

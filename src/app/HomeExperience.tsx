@@ -10,6 +10,7 @@ import { useWebGLSupport } from '@/hooks/useWebGLSupport';
 import { CheckpointPanel } from '@/ui/CheckpointPanel';
 import { DriveControls } from '@/ui/DriveControls';
 import { Subtitles } from '@/ui/Hud';
+import { StationControls, StationWall } from '@/ui/Station';
 
 // The 3D scene is only ever loaded in the browser, and only when WebGL is available.
 const Experience = dynamic(() => import('@/scene/Experience').then((m) => m.Experience), {
@@ -56,7 +57,9 @@ export function HomeExperience() {
         )}
       </div>
       <DriveControls />
+      <StationControls />
       <CheckpointPanel />
+      <StationWall />
       <Subtitles />
       <noscript>
         <Link href="/simple" className="text-hud fixed bottom-4 left-4 underline">

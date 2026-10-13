@@ -6,75 +6,13 @@ import { experience } from '@/content/experience';
 import { projects } from '@/content/projects';
 import { stops } from '@/content/stops';
 import { simpleCopy } from '@/content/ui';
-import { resolveCheckpoint, type CheckpointView, type ResolvedCheckpoint } from '@/lib/checkpoint';
+import { resolveCheckpoint, type ResolvedCheckpoint } from '@/lib/checkpoint';
 import { formatTemplate } from '@/lib/template';
 import { useDriveStore } from '@/store/drive';
+import { CheckpointContent } from './CheckpointContent';
 
 const copy = simpleCopy;
 const sources = { checkpoints, experience, projects };
-const chipClass = 'rounded-full border border-night bg-night px-3 py-1 text-sm text-snow';
-const linkKeys = ['live', 'github', 'caseStudy'] as const;
-
-function ExperienceBody({ view }: { view: Extract<CheckpointView, { kind: 'experience' }> }) {
-  return (
-    <>
-      <p className="text-snow mt-1">{view.org}</p>
-      {view.dates && (
-        <p className="text-hud mt-1 font-mono text-sm">
-          <time dateTime={view.isoDate}>{view.dates}</time>
-        </p>
-      )}
-      {view.summary && <p className="text-snow mt-3">{view.summary}</p>}
-      {view.bullets.length > 0 && (
-        <ul className="text-snow mt-3 list-disc pl-5">
-          {view.bullets.map((bullet) => (
-            <li key={bullet}>{bullet}</li>
-          ))}
-        </ul>
-      )}
-    </>
-  );
-}
-
-function ProjectBody({ view }: { view: Extract<CheckpointView, { kind: 'project' }> }) {
-  return (
-    <>
-      <p className="text-snow mt-1">{view.tagline}</p>
-      <dl className="text-snow mt-4 space-y-3">
-        <div>
-          <dt className="text-hud font-mono text-sm">{copy.labels.problem}</dt>
-          <dd>{view.problem}</dd>
-        </div>
-        <div>
-          <dt className="text-hud font-mono text-sm">{copy.labels.built}</dt>
-          <dd>{view.built}</dd>
-        </div>
-      </dl>
-      <h3 className="sr-only">{copy.labels.stack}</h3>
-      <ul className="mt-4 flex flex-wrap gap-2">
-        {view.stack.map((tech) => (
-          <li key={tech} className={chipClass}>
-            {tech}
-          </li>
-        ))}
-      </ul>
-      <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
-        {linkKeys.map((key) => {
-          const href = view.links[key];
-          if (!href) return null;
-          return (
-            <li key={key}>
-              <a href={href} className="text-hud underline underline-offset-4">
-                {copy.links[key]} <span className="sr-only">for {view.title}</span>
-              </a>
-            </li>
-          );
-        })}
-      </ul>
-    </>
-  );
-}
-
 /** Closes the panel for the stop the visitor is at, handing focus back if it was inside. */
 function closePanel(panel: HTMLElement | null) {
   const hadFocus = panel?.contains(document.activeElement) ?? false;
@@ -151,20 +89,7 @@ export function CheckpointPanel() {
         >
           <span aria-hidden="true">×</span>
         </button>
-        <h2 id={headingId} className="text-street pr-8 text-xl font-semibold">
-          {content.main.title}
-        </h2>
-        {content.main.kind === 'experience' ? (
-          <ExperienceBody view={content.main} />
-        ) : (
-          <ProjectBody view={content.main} />
-        )}
-        {content.teaser && (
-          <p className="border-night text-snow mt-4 border-t pt-3 text-sm">
-            <span className="text-hud font-mono">{copy.checkpoint.teaser}:</span>{' '}
-            {content.teaser.title}
-          </p>
-        )}
+        <CheckpointContent content={content} headingId={headingId} />
       </aside>
     </>
   );
