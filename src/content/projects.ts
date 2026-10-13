@@ -2,7 +2,7 @@ import type { Project } from './schema';
 
 // Stacks and links follow mahfuj.dev. Case study links point at its project pages.
 // TODO(content): verify the tagline, problem and built text of each project.
-export const projects: Project[] = [
+export const allProjects: Project[] = [
   {
     id: 'eventflow',
     name: 'EventFlow',
@@ -106,9 +106,8 @@ export const projects: Project[] = [
     stack: ['C++', 'Web'],
     links: {},
     images: [],
-    stopId: 'arcade',
-    // TODO(content): owner to tweak the sign wording.
-    sign: { name: 'Akari', slogan: 'Light up the board.' },
+    // Not published yet: hidden everywhere until the owner publishes it. It has no route stop.
+    published: false,
   },
   {
     id: 'site-audit-extension',
@@ -119,9 +118,8 @@ export const projects: Project[] = [
     stack: ['Browser extension', 'JavaScript'],
     links: {},
     images: [],
-    stopId: 'inspection-building',
-    // TODO(content): owner to tweak the sign wording.
-    sign: { name: 'Site Audit Extension', slogan: 'Every page, inspected.' },
+    // Not published yet: hidden everywhere until the owner publishes it. It has no route stop.
+    published: false,
   },
   {
     id: 'game-hub',
@@ -172,3 +170,6 @@ export const projects: Project[] = [
     ],
   },
 ];
+
+/** The projects the site shows: everything except the ones marked `published: false`. */
+export const projects: Project[] = allProjects.filter((p) => p.published !== false);

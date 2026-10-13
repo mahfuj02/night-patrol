@@ -14,10 +14,6 @@ export const landmarkIds = [
   'city-services',
   'portage-main',
   'dashcam',
-  'arcade',
-  'inspection-building',
-  'warming-shelter',
-  'cmhr-esplanade',
   'the-forks',
 ] as const;
 export const LandmarkIdSchema = z.enum(landmarkIds);
@@ -76,6 +72,11 @@ export const ProjectSchema = z.object({
       caption: z.string().min(1).optional(),
     }),
   ),
+  /**
+   * False for a project that is not published yet: it is hidden everywhere (the route, the map,
+   * the library and /simple) until the flag is removed. Left out means published.
+   */
+  published: z.boolean().optional(),
   /** Projects without a stop appear only in /simple. */
   stopId: kebabId.optional(),
   /** The lit sign on the project's building at its stop: its name and a slogan. */

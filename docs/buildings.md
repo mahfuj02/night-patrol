@@ -6,11 +6,11 @@ Procedural, instanced buildings along the route. No models, no textures per buil
 
 `src/content/buildings.ts` lists stretches in route order. Each stretch runs from one stop to another (plus optional `fromOffset` / `toOffset` in metres along the road) and fills both sides of the road with lots of one style:
 
-| Style       | Where                                               | Look                                                            |
-| ----------- | --------------------------------------------------- | --------------------------------------------------------------- |
-| `warehouse` | Exchange District (Ignition to City services)       | Brick, 10-24 m, dense windows, snow on a flat roof              |
-| `tower`     | The straight into Portage & Main, then downtown     | Concrete and dark glass, 16-95 m, some with a smaller crown     |
-| `house`     | Warming shelter to Esplanade Riel (a neighbourhood) | Siding, gabled or flat roofs, few warm windows, detached garage |
+| Style       | Where                                                                                | Look                                                            |
+| ----------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| `warehouse` | Exchange District (Ignition to City services)                                        | Brick, 10-24 m, dense windows, snow on a flat roof              |
+| `tower`     | The straight into Portage & Main, then downtown                                      | Concrete and dark glass, 16-95 m, some with a smaller crown     |
+| `house`     | The dashcam stop to near The Forks (a neighbourhood, with the station sites cut out) | Siding, gabled or flat roofs, few warm windows, detached garage |
 
 `gap` is the space between neighbouring lots. A stretch whose largest gap is 1.5 m or less is an **attached street wall** (Exchange District, the Portage straight, downtown): lots touch and overlap slightly, run right up to each intersection (the last lot is shortened to fit), and step back a little on tight bends instead of leaving a hole. Houses keep gaps of 2.5-5 m and garages.
 
@@ -48,4 +48,4 @@ See `docs/backlanes.md`.
 
 ## Not yet
 
-The landmarks (RRC campus, Portage & Main, CMHR) come in later slices. Street names and signs arrive with the signs.
+The landmarks (RRC campus, warehouses, City services, Portage & Main) are built; the stations and the museum and house scenery come in later slices. Street names and signs arrive with the signs.

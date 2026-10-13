@@ -1,7 +1,7 @@
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { projects, stations, stops } from '@/content';
+import { allProjects, projects, stations, stops } from '@/content';
 import { INITIAL_STATION } from '@/lib/station';
 import { progress } from '@/scene/progress';
 import { STOP_TS, useDriveStore } from '@/store/drive';
@@ -118,6 +118,15 @@ describe('RouteMap', () => {
     await user.click(screen.getByRole('button', { name: 'Drive to it' }));
     const stop = stops.findIndex((s) => s.id === 'exchange-warehouses');
     expect(state().target).toBe(STOP_TS[stop]);
+  });
+
+  it('lists only the published projects', () => {
+    render(<RouteMap />);
+    for (const p of projects)
+      expect(screen.getByRole('button', { name: p.name })).toBeInTheDocument();
+    for (const p of allProjects.filter((x) => x.published === false)) {
+      expect(screen.queryByRole('button', { name: p.name })).toBeNull();
+    }
   });
 
   it('links to the resume and the contact details', () => {

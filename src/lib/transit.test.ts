@@ -31,9 +31,7 @@ describe('buildTransit', () => {
     expect(byId('ignition').zone).toBe('exchange');
     expect(byId('city-services').zone).toBe('exchange');
     expect(byId('portage-main').zone).toBe('downtown');
-    expect(byId('inspection-building').zone).toBe('downtown');
-    expect(byId('warming-shelter').zone).toBe('residential');
-    expect(byId('cmhr-esplanade').zone).toBe('avenue');
+    expect(byId('dashcam').zone).toBe('residential');
     expect(byId('the-forks').zone).toBe('forks');
   });
 

@@ -14,7 +14,7 @@ import { communityNotes as communityNotesData } from './community';
 import { experience as experienceData } from './experience';
 import { assertContentIntegrity } from './integrity';
 import { profile as profileData } from './profile';
-import { projects as projectsData } from './projects';
+import { allProjects as allProjectsData, projects as projectsData } from './projects';
 import { radioLines as radioLinesData } from './radio';
 import { route as routeData } from './route';
 import {
@@ -47,6 +47,8 @@ export const buildingStretches = z.array(BuildingStretchSchema).parse(buildingSt
 export const communityNotes = z.array(CommunityNoteSchema).parse(communityNotesData);
 export const experience = z.array(ExperienceSchema).parse(experienceData);
 export const profile = ProfileSchema.parse(profileData);
+/** Every project, including the ones not published yet (for tests; the site never uses it). */
+export const allProjects = z.array(ProjectSchema).parse(allProjectsData);
 export const projects = z.array(ProjectSchema).parse(projectsData);
 export const radioLines = z.array(RadioLineSchema).parse(radioLinesData);
 export const route = RouteSchema.parse(routeData);
