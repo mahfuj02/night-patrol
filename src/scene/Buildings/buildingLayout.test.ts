@@ -13,10 +13,10 @@ describe('stretchRange', () => {
   it('starts at the from stop and ends at the to stop, plus offsets', () => {
     const residential = buildingStretches.find((s) => s.id === 'residential')!;
     const [start, end] = stretchRange(routeModel, residential);
-    const shelter = routeModel.stopFractions.get('warming-shelter')! * routeModel.length;
-    const esplanade = routeModel.stopFractions.get('cmhr-esplanade')! * routeModel.length;
-    expect(start).toBeCloseTo(shelter - 70, 6);
-    expect(end).toBeCloseTo(esplanade + 60, 6);
+    const dashcam = routeModel.stopFractions.get('dashcam')! * routeModel.length;
+    const forks = routeModel.stopFractions.get('the-forks')! * routeModel.length;
+    expect(start).toBeCloseTo(dashcam - 70, 6);
+    expect(end).toBeCloseTo(forks - 60, 6);
   });
 
   it('keeps the stretches in route order without overlap', () => {
@@ -152,8 +152,9 @@ describe('buildBuildings', () => {
     expect(buildings.some((b) => b.crown)).toBe(true);
   });
 
-  it('lights windows from the zone: the shelter has warm windows only', () => {
-    const shelter = routeModel.stopFractions.get('warming-shelter')! * routeModel.length;
+  it('lights windows from the zone: the residential street has warm windows only', () => {
+    // A little before the dashcam stop, where the residential street is held at full strength.
+    const shelter = routeModel.stopFractions.get('dashcam')! * routeModel.length - 22;
     const near = buildings.filter((b) => Math.abs(distanceAlong(b) - shelter) < 14);
     expect(near.length).toBeGreaterThan(0);
     for (const b of near) {

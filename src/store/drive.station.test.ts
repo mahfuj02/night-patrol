@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { stations, stops } from '@/content';
+import { route, stations, stops } from '@/content';
 import { INITIAL_STATION } from '@/lib/station';
 import { MAGNET_TS, STATION_LIGHT_TS, STOP_TS, useDriveStore } from './drive';
 
@@ -19,8 +19,8 @@ describe('station magnets', () => {
     expect(lightT).toBeGreaterThan(STOP_TS[RRC - 1]!);
     expect(MAGNET_TS).toHaveLength(STOP_TS.length + STATION_LIGHT_TS.length);
     expect([...MAGNET_TS]).toEqual([...MAGNET_TS].sort((a, b) => a - b));
-    // About 20 m before the stop on a 1,123 m route.
-    expect(STOP_TS[RRC]! - lightT).toBeCloseTo(20 / 1122.84, 6);
+    // About 20 m before the stop, on the route as long as the content says.
+    expect(STOP_TS[RRC]! - lightT).toBeCloseTo(20 / route.lengthMetres, 6);
   });
 });
 

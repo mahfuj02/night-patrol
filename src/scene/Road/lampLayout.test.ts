@@ -35,16 +35,16 @@ describe('buildLamps', () => {
 
   it('follows the zones: sodium in the Exchange, cool LED on the avenue, warm at the Forks', () => {
     expect(near(at('rrc-campus')).every((l) => l.type === 'sodium')).toBe(true);
-    expect(near(at('cmhr-esplanade')).every((l) => l.type === 'led')).toBe(true);
+    // The avenue is cool LED lamps (it hangs off The Forks until the LIILAB stop exists).
+    expect(lamps.some((l) => l.type === 'led' && l.u > 0.8 && l.u < 0.9)).toBe(true);
     expect(lamps.some((l) => l.type === 'warm')).toBe(true);
-    expect(lamps.some((l) => l.type === 'led' && l.u > 0.6)).toBe(true);
   });
 
-  it('makes LED lamps taller and the shelter lamps dimmer than downtown lamps', () => {
+  it('makes LED lamps taller and the residential lamps dimmer than downtown lamps', () => {
     const led = lamps.find((l) => l.type === 'led')!;
     const sodium = lamps.find((l) => l.type === 'sodium')!;
     expect(led.height).toBeGreaterThan(sodium.height);
-    const shelter = near(at('warming-shelter')).find((l) => l.type === 'led')!;
+    const shelter = near(at('dashcam')).find((l) => l.type === 'led')!;
     const downtown = near(at('portage-main'))[0]!;
     expect(shelter.intensity).toBeLessThan(downtown.intensity);
   });

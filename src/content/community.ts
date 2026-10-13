@@ -1,6 +1,7 @@
 import type { CommunityNote } from './schema';
 
-// TODO(content): owner to review this wording. Keep it short and respectful.
+// Shown on /simple only: the warming shelter is no longer a stop on the route. TODO(content): owner to
+// review this wording. Keep it short and respectful.
 export const communityNotes: CommunityNote[] = [
   {
     id: 'warming-shelter',
