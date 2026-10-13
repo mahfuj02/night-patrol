@@ -201,6 +201,20 @@ export const BuildingStretchSchema = z.object({
 export type BuildingStretch = z.infer<typeof BuildingStretchSchema>;
 export type BuildingStyle = BuildingStretch['style'];
 
+export const BackLanesSchema = z.object({
+  /** Distance between power poles along a lane, in metres. */
+  poleSpacing: z.number().positive(),
+  /** How far behind the front of the house row the pole line runs. */
+  poleOffset: z.number().positive(),
+  poleHeight: z.number().positive(),
+  fenceHeight: z.number().positive(),
+  /** Chance that a house has back and side fences. */
+  fenceChance: unit,
+  /** Chance that a house has a pair of city bins. */
+  binChance: unit,
+});
+export type BackLanes = z.infer<typeof BackLanesSchema>;
+
 export const UiCopySchema = z.object({
   site: z.object({ title: z.string(), description: z.string() }),
   home: z.object({ heading: z.string(), intro: z.string(), simpleLink: z.string() }),

@@ -8,6 +8,7 @@
  */
 import { z } from 'zod';
 import { atmosphereZones as atmosphereZonesData } from './atmosphere';
+import { backLanes as backLanesData } from './backLanes';
 import { buildingStretches as buildingStretchesData } from './buildings';
 import { communityNotes as communityNotesData } from './community';
 import { experience as experienceData } from './experience';
@@ -18,6 +19,7 @@ import { radioLines as radioLinesData } from './radio';
 import { route as routeData } from './route';
 import {
   AtmosphereZoneSchema,
+  BackLanesSchema,
   BuildingStretchSchema,
   CommunityNoteSchema,
   ExperienceSchema,
@@ -36,6 +38,7 @@ import { stops as stopsData } from './stops';
 import { simpleCopy as simpleCopyData } from './ui';
 
 export const atmosphereZones = z.array(AtmosphereZoneSchema).parse(atmosphereZonesData);
+export const backLanes = BackLanesSchema.parse(backLanesData);
 export const buildingStretches = z.array(BuildingStretchSchema).parse(buildingStretchesData);
 export const communityNotes = z.array(CommunityNoteSchema).parse(communityNotesData);
 export const experience = z.array(ExperienceSchema).parse(experienceData);
