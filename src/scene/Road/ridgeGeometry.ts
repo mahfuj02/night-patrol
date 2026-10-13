@@ -1,6 +1,6 @@
 import { BufferGeometry, Float32BufferAttribute } from 'three';
 import { noise1 } from '@/lib/noise';
-import type { RouteModel } from './route';
+import type { PathModel } from './route';
 
 export interface RidgeOptions {
   /** Distance between cross-sections along the road, in metres. */
@@ -14,7 +14,7 @@ export interface RidgeOptions {
 const TAPER = 5;
 
 /** Distance in metres from `u` to the nearest intersection (0 inside one). Infinity if none. */
-function distanceToIntersection(model: RouteModel, u: number): number {
+function distanceToIntersection(model: PathModel, u: number): number {
   let best = Infinity;
   for (const { from, to } of model.intersections) {
     const gap = u < from ? from - u : u > to ? u - to : 0;
@@ -34,7 +34,7 @@ const smoothstep = (x: number) => {
  * does. The ridge is broken (tapering to nothing) only where `model.intersections` say side
  * streets cross. The caller owns (and disposes) the geometry.
  */
-export function buildSnowRidge(model: RouteModel, options: RidgeOptions): BufferGeometry {
+export function buildSnowRidge(model: PathModel, options: RidgeOptions): BufferGeometry {
   const { step, profile, seed } = options;
   const samples = Math.max(2, Math.round(model.length / step));
   const columns = profile + 1;

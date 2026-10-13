@@ -9,7 +9,7 @@ import { routeModel } from './route';
 const SURFACE_SAMPLES = 700;
 
 /** Textured once the maps load; until then the flat fallback below shows. */
-function RoadSurface({ tier }: { tier: QualityTier }) {
+export function RoadSurface({ tier }: { tier: QualityTier }) {
   const textures = useSurfaceTextures(tier);
   const material = useMemo(() => createRoadMaterial(textures), [textures]);
   useEffect(() => () => material.dispose(), [material]);

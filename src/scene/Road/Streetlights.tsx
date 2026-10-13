@@ -8,29 +8,16 @@ import {
   Vector3,
   type InstancedMesh,
 } from 'three';
-import { additive, billboardVertex, haloFragment } from '../Materials/haloMaterial';
+import {
+  additive,
+  billboardVertex,
+  haloFragment,
+  poolFragment,
+  poolVertex,
+} from '../Materials/haloMaterial';
 import { lamps } from './lamps';
 
 const HALO_SIZE = { sodium: 7, led: 9, warm: 5 } as const;
-
-const poolVertex = /* glsl */ `
-  varying vec2 vUv;
-  varying vec3 vColor;
-  void main() {
-    vUv = uv;
-    vColor = instanceColor;
-    gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.0);
-  }
-`;
-
-const poolFragment = /* glsl */ `
-  varying vec2 vUv;
-  varying vec3 vColor;
-  void main() {
-    float d = clamp(length(vUv - 0.5) * 2.0, 0.0, 1.0);
-    gl_FragColor = vec4(vColor, pow(1.0 - d, 1.8) * 0.55);
-  }
-`;
 
 /**
  * Poles, arms, glowing heads, soft halos and light pools for every lamp: five instanced meshes,

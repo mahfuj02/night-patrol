@@ -28,6 +28,25 @@ export const haloFragment = /* glsl */ `
   }
 `;
 
+export const poolVertex = /* glsl */ `
+  varying vec2 vUv;
+  varying vec3 vColor;
+  void main() {
+    vUv = uv;
+    vColor = instanceColor;
+    gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.0);
+  }
+`;
+
+export const poolFragment = /* glsl */ `
+  varying vec2 vUv;
+  varying vec3 vColor;
+  void main() {
+    float d = clamp(length(vUv - 0.5) * 2.0, 0.0, 1.0);
+    gl_FragColor = vec4(vColor, pow(1.0 - d, 1.8) * 0.55);
+  }
+`;
+
 export function additive(vertexShader: string, fragmentShader: string) {
   return new ShaderMaterial({
     vertexShader,

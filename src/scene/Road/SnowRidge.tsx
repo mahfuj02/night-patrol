@@ -8,7 +8,7 @@ import { routeModel } from './route';
 
 const SEED = 2025;
 
-function RidgeSnow({ tier }: { tier: QualityTier }) {
+export function RidgeSnow({ tier }: { tier: QualityTier }) {
   const textures = useSurfaceTextures(tier);
   // Plowed snow collects road grime near the ground.
   const material = useMemo(() => createSnowMaterial(textures, { dirt: 0.45 }), [textures]);

@@ -1,4 +1,4 @@
-import { CatmullRomCurve3, Vector3 } from 'three';
+import { CatmullRomCurve3, Vector3, type Curve } from 'three';
 import { route as routeContent } from '@/content/route';
 import type { Route } from '@/content/schema';
 import { driveOffset } from '@/lib/lanes';
@@ -8,6 +8,20 @@ const DEFAULT_WIDTH = 8;
 const laneTangent = new Vector3();
 /** Arc-length samples per curve segment; keeps control point fractions accurate. */
 const DIVISIONS_PER_SEGMENT = 200;
+
+/**
+ * What the ridge and building layouts need from a road: the route itself, or a cross street. `zoneU`
+ * says where on the route to read the atmosphere (a cross street shares its crossing's zone).
+ */
+export interface PathModel {
+  curve: Curve<Vector3>;
+  length: number;
+  widthAt: (u: number) => number;
+  stopFractions: Map<string, number>;
+  intersections: { id: string; from: number; to: number }[];
+  inIntersection: (u: number, margin?: number) => boolean;
+  zoneU?: number;
+}
 
 export interface RouteModel {
   curve: CatmullRomCurve3;
