@@ -9,7 +9,7 @@ import { surfaceUniforms } from '../Materials/surfaceUniforms';
 import { progress } from '../progress';
 
 const AMBIENT_GAIN = 3.4;
-const MOONLIGHT_GAIN = 0.7;
+const MOONLIGHT_GAIN = 1;
 /** Share of the ambient light that snow also glows with, as a stand-in for light bounced from the sky. */
 const SNOW_GLOW = 0.4;
 /** How far the glow colour is pulled toward white, so coloured light does not turn snow muddy. */
@@ -54,7 +54,7 @@ export function AtmosphereDriver() {
   return (
     <>
       <ambientLight ref={ambient} />
-      <directionalLight ref={moonlight} position={[60, 80, 40]} color={world.moonLow} />
+      <directionalLight ref={moonlight} position={[60, 50, 40]} color={world.moonLow} />
     </>
   );
 }
