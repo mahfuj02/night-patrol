@@ -6,6 +6,9 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ### Added
 
+- Phase 4, the first checkpoint end to end (RRC Polytechnic, Exchange District Campus): the reusable `Landmark` pattern (a glow that eases up as the car approaches, holds at the stop and fades, a cut under reduced motion; the camera leans toward a lit landmark), the RRC campus landmark (glass curtain wall with dark mullions, a printed-heritage glass panel with an original arched-window drawing, rooftop letters, limestone and red-brick neighbours), the DOM `CheckpointPanel` (right side on desktop, bottom sheet on a phone, Escape and close button, no focus stealing, announced politely), and HUD radio captions
+- `src/content/checkpoints.ts` chooses which stops open a panel; the RRC radio line and rooftop wording are in `radio.ts` and `signage.ts`
+- `docs/adding-a-stop.md`: the exact steps for a new stop
 - Back lanes behind the houses: wooden power poles with cross arms and sagging wires, fences along the back and one side of the lots, and pairs of city bins (`src/content/backLanes.ts`)
 - Cross streets at the intersections (road and plowed ridges, buildings along the first 70 m), traffic lights at Princess St and Portage & Main (fixed green on the route, red on the cross street, emissive lamps with bloom and a faint coloured tint on the snow), and stop signs on the three residential cross streets (`street` and `control` in `route.ts`, lettering in `src/content/signage.ts`)
 - Buildings: procedural instanced warehouses, towers and houses with detached garages along the route, from `src/content/buildings.ts`: continuous attached street walls in the Exchange District and downtown (broken only at intersections), spaced houses with garages and warm porch lights, one emissive window shader (warm/cool/unlit per window, no texture per building), brick normal map on high and medium, and snow on roofs
