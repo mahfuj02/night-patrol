@@ -56,7 +56,7 @@ Stylized realistic, not low-poly. Think of a graded film still: believable mater
 
 ### Back lanes (side-detail stretches)
 
-In the scene these belong to the residential stretch (warming shelter through the avenue): houses and garages set back behind the elm rows, with the lanes running behind them.
+In the scene these belong to the residential stretch (the dashcam stop through the avenue): houses and garages set back behind the elm rows, with the lanes running behind them.
 
 - Wooden utility poles with crossarms, drooping wires, and a lamp bracket. Poles are tall, grey-brown and weathered.
 - City bins (blue recycling, dark green or charcoal garbage), usually lined along the fence.
@@ -169,8 +169,8 @@ Notes:
 | Exchange District (stops 1-4)                    | Overcast, grey-brown with a sodium tint        | Sodium lamps on short poles, warm window glow, RRC glass wall glowing               | Brick low-rises with faded signs, limestone neighbour, narrow packed-snow streets, bare small trees, back-lane props |
 | Portage & Main approach (stop 5)                 | Overcast, wind-blown snow                      | Wide avenue, cool LED cobra-heads with big halos, tall towers with lit-window grids | Slush with dark ruts, the open "windy" feel: heavier snow streaks, banks along both edges                            |
 | Downtown (stops 6-8)                             | Orange-tinged overcast                         | Strong sodium wash, tower windows, signal accents                                   | Dense towers (instanced), steam, a heritage corner building                                                          |
-| Warming shelter (stop 9)                         | Calm, snow thinner                             | Warm lit windows only; no figures, no drama                                         | Low building, soft light spill on snow, quiet                                                                        |
-| Human Rights Museum and Esplanade Riel (stop 10) | The clear stretch: deep blue with the low moon | Glowing tower, lit bridge spire, coloured accent light                              | Elm silhouettes arching over the road before the clearing                                                            |
+| Residential house scenery (near the dashcam)     | Calm, snow thinner                             | Warm lit windows only; no figures, no drama                                         | Low building, soft light spill on snow, quiet                                                                        |
+| Human Rights Museum and Esplanade Riel (scenery) | The clear stretch: deep blue with the low moon | Glowing tower, lit bridge spire, coloured accent light                              | Elm silhouettes arching over the road before the clearing                                                            |
 | The Forks (stop 11)                              | Clear to sunrise: blue to peach and gold       | Magenta accent fades into dawn light                                                | Frozen-river trail lights, market building, sunrise grade                                                            |
 
 ## Implementation guidance

@@ -43,17 +43,19 @@ Winter night in Winnipeg. Snow is falling. The visitor rides along on Mahfuj's p
 | 4 | **City services building** | Civic building with a "311" sign | **CivicTrack** checkpoint |
 | 5 | **Portage & Main** | Wide intersection, tall towers, wind-blown snow | **RoleReady** checkpoint (office tower, one lit window = interview in progress). Radio joke about the wind. |
 | 6 | **Dashcam moment** | Overlay on the visitor's own view | **Safe Drive AI** checkpoint: dashcam UI switches on, detection boxes appear on road objects |
-| 7 | **Arcade / corner shop** | Neon-lit storefront | **Akari puzzle game** checkpoint |
-| 8 | **Building under inspection** | Scanner beam sweeping floors | **Site audit extension** checkpoint |
-| 9 | **Warming shelter** | Warm-lit windows, no people depicted | Quiet, honest note about people sleeping out downtown in −30°. Links to Siloam Mission, Main Street Project, Winnipeg Harvest. No sad music, no figures. |
-| 10 | **Canadian Museum for Human Rights + Esplanade Riel** | Glass Tower of Hope lit, cable-stayed bridge spire glowing | Sprint-Innovation 2025 trophy landmark |
+| 7 | ~~Arcade / corner shop~~ | Removed from the route: the Akari puzzle game is not published yet (`published: false`) | |
+| 8 | ~~Building under inspection~~ | Removed from the route: the site audit extension is not published yet (`published: false`) | |
+| 9 | ~~Warming shelter~~ | Removed as a stop. A warm-windowed residential house stays as scenery (no text, no figures); the resource links (Siloam Mission, Main Street Project, Winnipeg Harvest) stay on `/simple` only | |
+| 10 | ~~Canadian Museum for Human Rights + Esplanade Riel~~ | Removed as a stop. Stay as lit scenery on the avenue (no stop, no panel) | |
 | 11 | **The Forks: End of shift** | Market building, frozen river skating trail with lights, sunrise | Radio: "Shift complete." Contact: email, GitHub, LinkedIn, resume PDF, link back to mahfuj.dev |
+
+**Simplified route (see `docs/navigation-redesign.md`):** Ignition, Dispatch, RRC (Education station), EventFlow, CivicTrack, Portage & Main (RoleReady), Millennium Library (Projects station), Skills station, Safe Drive AI dashcam, LIILAB office (Experience station), The Forks (Contact station). Stops 7 to 10 above are removed; the three new station stops arrive with their station PRs.
 
 **Distant skyline elements** (always visible, cheap billboards or simple silhouettes): Golden Boy on the Legislative Building, downtown towers, Esplanade Riel spire.
 
 **Ambient life:** a generic city bus (no logos or livery), parked cars buried in snow with block heater cords, snowbanks, bare elms arching over streets, back-lane details (wooden power poles with wires, bins, fences, garages), streetlights, occasional passing car headlights.
 
-**Setting by stretch:** the Exchange District is brick warehouses and low-rises; downtown and Portage & Main are towers; from the warming shelter through the avenue to the Human Rights Museum and Esplanade Riel the route runs through a **residential Winnipeg neighbourhood** (houses, garages, back lanes with wooden power poles and wires, city bins) under the elm tunnel. Cross streets branch off at intersections, with traffic lights at the corners, so it feels like a city grid; the car never leaves the route.
+**Setting by stretch:** the Exchange District is brick warehouses and low-rises; downtown and Portage & Main are towers; from the dashcam stop through the avenue (with the Human Rights Museum and Esplanade Riel as scenery) the route runs through a **residential Winnipeg neighbourhood** (houses, garages, back lanes with wooden power poles and wires, city bins) under the elm tunnel. Cross streets branch off at intersections, with traffic lights at the corners, so it feels like a city grid; the car never leaves the route.
 
 ### 2.3 In-car UI (always available)
 - **Dashboard = Skills.** Gauges and indicator lights, each one a skill. Hover/focus shows a tooltip with level and where it was used.
@@ -86,7 +88,7 @@ Winter night in Winnipeg. Snow is falling. The visitor rides along on Mahfuj's p
 - **Off by default.** Speaker toggle in HUD; preference saved in localStorage (wrapped in try/catch).
 - Layers: engine idle hum, tire-on-snow, wiper swish, radio static + short dispatch blips.
 - Radio lines are **text first** (subtitles on HUD). Optional voice later.
-- No dramatic or sad music at the warming shelter stop. Silence or just wind.
+- No dramatic or sad music near the residential house scenery. Silence or just wind.
 
 ### 2.7 Art direction
 Full style guide: **`docs/art-reference.md`** (written from reference photos in `design/reference/`, which are git-ignored and never committed, shipped or used as textures).
@@ -368,15 +370,15 @@ Style guide: `docs/art-reference.md`. Two branches, merged in order:
 
 **3b. Branch `feat/p3-buildings`**
 
-**Decision:** the stretch from the warming shelter through the avenue to the Human Rights Museum and Esplanade Riel is a **residential Winnipeg neighbourhood** under the elm tunnel. Downtown stays towers; the Exchange District stays brick warehouses and low-rises.
+**Decision:** the stretch from the dashcam stop through the avenue is a **residential Winnipeg neighbourhood** under the elm tunnel. Downtown stays towers; the Exchange District stays brick warehouses and low-rises.
 
 - **First commit of this branch: the lane offset.** The car, the chase camera and everything placed along the road (lamps, tree rows, the snow ridge, buildings) are positioned relative to correct lanes. The car drives in the **right-hand lane** (Canada drives on the right) instead of on the centre line, and the road's ruts line up with the lane the car uses. This lands before any buildings so nothing has to be re-placed later; Phase 8 then reuses it for the opposite lane in the U-turn.
 - **Intersections anchored to stops:** intersections in `src/content/route.ts` are anchored to a stop plus an offset in metres, so they can sit between stops. The list is agreed with the owner before it is built.
 - Procedural, instanced buildings by stretch:
   - Exchange District: brick warehouses and low-rises
   - Downtown and Portage & Main: varied towers
-  - Shelter and avenue: houses (gabled and flat-roofed, snow on the roofs) and detached garages, set back behind the tree rows
-- Window shader: emissive grid, random lit/unlit windows, warm and cool tones, no texture per building. Houses show a few warm windows; the shelter stop shows warm windows only (rule 9: no figures).
+  - Residential street and avenue: houses (gabled and flat-roofed, snow on the roofs) and detached garages, set back behind the tree rows
+- Window shader: emissive grid, random lit/unlit windows, warm and cool tones, no texture per building. Houses show a few warm windows; the residential house scenery shows warm windows only (rule 9: no figures).
 - Back lanes (instanced) behind the houses: wooden power poles with wires, city bins, fences and garages, seen between the houses
 - **Cross streets at intersections:** roads branching off the route into the distance, with traffic lights (yellow-housed signals on mast arms) at the corners, so it reads as a city grid. The car never leaves the route. Intersections come from `intersections` in `src/content/route.ts`; the snow ridge and tree rows already break at each one. The residential stretch gets its own intersections (the owner adds them there).
 - `low` tier: fewer buildings and houses, fewer back-lane props, colour-only 512² maps
@@ -393,10 +395,10 @@ Branch: `feat/p4-checkpoint-rrc`
 - **Done when:** the full checkpoint pattern works for one stop and is documented in `docs/adding-a-stop.md`.
 
 ### Phase 5: All stops  → `v0.5.0`
-One branch per stop or small group, e.g. `feat/p5-stop-exchange-eventflow`, `feat/p5-stop-civictrack`, `feat/p5-stop-portage-main-roleready`, `feat/p5-stop-dashcam-safedrive`, `feat/p5-stop-arcade-akari`, `feat/p5-stop-inspection-extension`, `feat/p5-stop-warming-shelter`, `feat/p5-stop-cmhr-esplanade`
+One branch per stop or small group, e.g. `feat/p5-stop-exchange-eventflow`, `feat/p5-stop-civictrack`, `feat/p5-stop-portage-main-roleready`, `feat/p5-stop-dashcam-safedrive`
 - Each landmark as a stylized blockout first (silhouette recognizable, glowing windows), detail later
 - Safe Drive AI dashcam overlay (DOM/canvas overlay with bounding boxes on scene objects)
-- Warming shelter: warm windows, no figures, quiet radio line, resource links
+- Scenery (its own PR): the Human Rights Museum and Esplanade Riel lit on the avenue, and a warm-windowed residential house, no figures, no text
 - Distant skyline: Golden Boy, towers
 - **Done when:** every stop in §2.2 is reachable and shows its panel.
 

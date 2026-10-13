@@ -8,14 +8,14 @@ How lighting and weather change along the route.
 
 `pnpm test` checks that zones are in order, refer to real stops, and that each blend fits the gap before it.
 
-| Zone       | Stops                               | Look                                                                                                  |
-| ---------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `exchange` | ignition to city-services           | Sodium lamps, heavy snow, orange-tinged overcast                                                      |
-| `downtown` | portage-main to inspection-building | Sodium with cool windows, snow with strong gusts. Eases in over the second half of the long straight. |
-| `shelter`  | warming-shelter                     | Cool, dimmer, light quiet snow                                                                        |
-| `avenue`   | around cmhr-esplanade               | Cool LED, clear night, snow stops, big moon                                                           |
-| `forks`    | late route                          | Warm lights, thin snow returns                                                                        |
-| `sunrise`  | the end                             | Peach and gold sky                                                                                    |
+| Zone          | Stops                                        | Look                                                                                                         |
+| ------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `exchange`    | ignition to city-services                    | Sodium lamps, heavy snow, orange-tinged overcast                                                             |
+| `downtown`    | portage-main to the dashcam (minus a little) | Sodium with cool windows, snow with strong gusts. Eases in over the second half of the long straight.        |
+| `residential` | around dashcam                               | Cool, dimmer, light quiet snow, warm windows only (the residential street and its warm-windowed house)       |
+| `avenue`      | late route, around the LIILAB office         | Cool LED, clear night, snow stops, big moon. Hangs off The Forks stop by offset until the LIILAB stop exists |
+| `forks`       | late route                                   | Warm lights, thin snow returns                                                                               |
+| `sunrise`     | the end                                      | Peach and gold sky                                                                                           |
 
 ## Blending
 
