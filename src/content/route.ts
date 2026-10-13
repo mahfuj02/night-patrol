@@ -40,13 +40,48 @@ export const route: Route = {
   // Side streets cross here, so the plowed ridge and the tree rows are broken. Each is measured
   // in metres from a stop, so it can sit between stops. Stops stay mid-block, except Portage &
   // Main, which is the intersection. Residential gaps are 8 m each side; the street names (Princess
-  // St) arrive with the signs.
+  // St) arrive with the signs. `street` is the cross street (always square for now) and `control`
+  // is what stands at the corners: traffic lights downtown, stop signs in the neighbourhood.
   // TODO(content): owner to review the positions along the route.
   intersections: [
-    { id: 'princess-st', stopId: 'rrc-campus', offset: 16, halfLength: 10 },
-    { id: 'portage-main', stopId: 'portage-main', halfLength: 22 },
-    { id: 'residential-a', stopId: 'warming-shelter', offset: -28, halfLength: 8 },
-    { id: 'residential-b', stopId: 'warming-shelter', offset: 40, halfLength: 8 },
-    { id: 'residential-c', stopId: 'cmhr-esplanade', offset: -30, halfLength: 8 },
+    {
+      id: 'princess-st',
+      stopId: 'rrc-campus',
+      offset: 16,
+      halfLength: 10,
+      street: { width: 8, length: 120 },
+      control: 'signals',
+    },
+    {
+      id: 'portage-main',
+      stopId: 'portage-main',
+      halfLength: 22,
+      street: { width: 12, length: 140 },
+      control: 'signals',
+    },
+    {
+      id: 'residential-a',
+      stopId: 'warming-shelter',
+      offset: -28,
+      halfLength: 8,
+      street: { width: 7, length: 110 },
+      control: 'stop',
+    },
+    {
+      id: 'residential-b',
+      stopId: 'warming-shelter',
+      offset: 40,
+      halfLength: 8,
+      street: { width: 7, length: 110 },
+      control: 'stop',
+    },
+    {
+      id: 'residential-c',
+      stopId: 'cmhr-esplanade',
+      offset: -30,
+      halfLength: 8,
+      street: { width: 7, length: 110 },
+      control: 'stop',
+    },
   ],
 };

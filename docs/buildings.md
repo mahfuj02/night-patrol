@@ -38,6 +38,14 @@ The moon is a directional light that only the zones with `moon` above 0 use (the
 
 Four instanced draw calls on every tier (walls, gables, snow slabs, porch lights). About 97 buildings (134 wall boxes, 9 gables, 125 slabs, 20 porch lights): roughly 3,200 triangles. The `low` tier keeps the attached street walls whole and builds every other house (about 2,800 triangles). Textures: the brick colour map on every tier, plus the 512 normal map (81 KB) on high and medium.
 
+## Cross streets
+
+The first 70 m of every cross street is lined in the style of the stretch it crosses (see `docs/streets.md`).
+
+## Back lanes
+
+See `docs/backlanes.md`.
+
 ## Not yet
 
-Back lanes (poles, bins, fences), cross streets and traffic lights, and the landmarks (RRC campus, Portage & Main, CMHR) come in later slices. Street names and signs arrive with the signs.
+The landmarks (RRC campus, Portage & Main, CMHR) come in later slices. Street names and signs arrive with the signs.

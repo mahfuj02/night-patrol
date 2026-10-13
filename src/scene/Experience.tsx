@@ -7,6 +7,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { dprForTier, parseQualityParam } from '@/lib/quality';
 import { palette } from '@/lib/palette';
 import { useQualityStore } from '@/store/quality';
+import { BackLanes } from './BackLanes';
 import { Buildings } from './Buildings';
 import { Car } from './Car/Car';
 import { Effects } from './Effects/Effects';
@@ -17,9 +18,12 @@ import { Ground } from './Environment/Ground';
 import { Sky } from './Environment/Sky';
 import { Snow } from './Environment/Snow';
 import { ProgressDriver } from './ProgressDriver';
+import { CrossStreetRoads } from './Road/CrossStreetRoads';
 import { Road } from './Road/Road';
 import { SnowRidge } from './Road/SnowRidge';
 import { Streetlights } from './Road/Streetlights';
+import { Signals } from './Signals/Signals';
+import { StopSigns } from './Signals/StopSigns';
 
 // Dev-only overlay. The ternary is folded away in production builds, so the lazy
 // import is never bundled.
@@ -59,11 +63,15 @@ export function Experience() {
       <Ground tier={tier} />
       <Road tier={tier} />
       <SnowRidge tier={tier} />
+      <CrossStreetRoads tier={tier} />
       <Suspense fallback={null}>
         <Buildings tier={tier} />
       </Suspense>
+      <BackLanes tier={tier} />
       <Trees tier={tier} />
       <Streetlights />
+      <Signals />
+      <StopSigns />
       <Car />
       <Snow tier={tier} reducedMotion={reducedMotion} />
       <CameraRig reducedMotion={reducedMotion} />

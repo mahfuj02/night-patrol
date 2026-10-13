@@ -140,6 +140,18 @@ export const IntersectionSchema = z.object({
   offset: z.number().optional(),
   /** Half the length of the gap, in metres along the road. */
   halfLength: z.number().positive(),
+  /** The side street that crosses here. Without it the gap stays empty. */
+  street: z
+    .object({
+      width: z.number().positive(),
+      /** How far the street runs each side of the route, in metres. */
+      length: z.number().positive(),
+      /** Degrees off square to the route. */
+      skew: z.number().optional(),
+    })
+    .optional(),
+  /** Traffic lights, stop signs on the cross street, or nothing. */
+  control: z.enum(['signals', 'stop', 'none']).optional(),
 });
 export const RouteSchema = z.object({
   points: z.array(RoutePointSchema).min(2),
@@ -147,6 +159,9 @@ export const RouteSchema = z.object({
   intersections: z.array(IntersectionSchema).optional(),
 });
 export type Intersection = z.infer<typeof IntersectionSchema>;
+
+export const SignageSchema = z.object({ stop: z.string().min(1).max(8) });
+export type Signage = z.infer<typeof SignageSchema>;
 export type RoutePoint = z.infer<typeof RoutePointSchema>;
 export type Route = z.infer<typeof RouteSchema>;
 
@@ -185,6 +200,20 @@ export const BuildingStretchSchema = z.object({
 });
 export type BuildingStretch = z.infer<typeof BuildingStretchSchema>;
 export type BuildingStyle = BuildingStretch['style'];
+
+export const BackLanesSchema = z.object({
+  /** Distance between power poles along a lane, in metres. */
+  poleSpacing: z.number().positive(),
+  /** How far behind the front of the house row the pole line runs. */
+  poleOffset: z.number().positive(),
+  poleHeight: z.number().positive(),
+  fenceHeight: z.number().positive(),
+  /** Chance that a house has back and side fences. */
+  fenceChance: unit,
+  /** Chance that a house has a pair of city bins. */
+  binChance: unit,
+});
+export type BackLanes = z.infer<typeof BackLanesSchema>;
 
 export const UiCopySchema = z.object({
   site: z.object({ title: z.string(), description: z.string() }),

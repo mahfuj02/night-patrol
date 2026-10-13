@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { buildingStretches, stops } from '@/content';
 import { rectsOverlap } from '@/lib/footprint';
+import { rectOutline } from '@/lib/footprint';
+import { crossings } from '../Road/crossings';
 import { routeModel } from '../Road/route';
 import { buildBuildings, selectBuildingsForTier, stretchRange } from './buildingLayout';
 
@@ -165,6 +167,56 @@ describe('buildBuildings', () => {
     const houses = buildings.filter((b) => b.style === 'house').map((b) => b.warm + b.cool);
     const towers = buildings.filter((b) => b.style === 'tower').map((b) => b.warm + b.cool);
     expect(mean(houses)).toBeLessThan(mean(towers));
+  });
+});
+
+describe('buildings along cross streets', () => {
+  const withStreets = buildBuildings(routeModel, buildingStretches, crossings);
+  const arms = withStreets.filter((b) => b.armOf);
+  const main = withStreets.filter((b) => !b.armOf);
+
+  it('leaves the main layout exactly as it was', () => {
+    expect(main).toEqual(buildings);
+  });
+
+  it('lines every cross street, in the style of the stretch it crosses', () => {
+    for (const crossing of crossings) {
+      const own = arms.filter((b) => b.armOf === crossing.id);
+      expect(own.length).toBeGreaterThan(2);
+      const nearest = main.reduce((best, b) =>
+        Math.abs(b.u - crossing.u) < Math.abs(best.u - crossing.u) ? b : best,
+      );
+      expect(own.every((b) => b.style === nearest.style)).toBe(true);
+    }
+    expect(crossings.some((c) => arms.some((b) => b.armOf === c.id && b.style === 'house'))).toBe(
+      true,
+    );
+  });
+
+  it('keeps clear of the main road, the cross streets and every other building', () => {
+    for (const b of arms) {
+      const crossing = crossings.find((c) => c.id === b.armOf)!;
+      for (const [x, z] of rectOutline(b.footprint)) {
+        // Distance from the cross street's centre line, and from the main road's.
+        const dx = x - crossing.centre.x;
+        const dz = z - crossing.centre.z;
+        const alongMain = Math.abs(dx * crossing.tangent.x + dz * crossing.tangent.z);
+        const acrossMain = Math.abs(dx * crossing.right.x + dz * crossing.right.z);
+        expect(alongMain).toBeGreaterThanOrEqual(crossing.street.width / 2 + 2);
+        expect(acrossMain).toBeGreaterThanOrEqual(crossing.mainHalf + 2);
+      }
+    }
+    const rects = arms.map((b) => b.footprint);
+    const others = main.map((b) => b.footprint);
+    for (const rect of rects) {
+      for (const other of others) expect(rectsOverlap(rect, other)).toBe(false);
+    }
+  });
+
+  it('shares the zone lighting of its crossing', () => {
+    const shelterStreet = arms.filter((b) => b.armOf === 'residential-b');
+    expect(shelterStreet.length).toBeGreaterThan(0);
+    for (const b of shelterStreet) expect(b.warm).toBeGreaterThan(0);
   });
 });
 
