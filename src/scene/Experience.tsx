@@ -7,6 +7,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { dprForTier, parseQualityParam } from '@/lib/quality';
 import { palette } from '@/lib/palette';
 import { useQualityStore } from '@/store/quality';
+import { BackLanes } from './BackLanes';
 import { Buildings } from './Buildings';
 import { Car } from './Car/Car';
 import { Effects } from './Effects/Effects';
@@ -66,6 +67,7 @@ export function Experience() {
       <Suspense fallback={null}>
         <Buildings tier={tier} />
       </Suspense>
+      <BackLanes tier={tier} />
       <Trees tier={tier} />
       <Streetlights />
       <Signals />
