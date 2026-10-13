@@ -2,13 +2,7 @@ import { Vector3 } from 'three';
 import { describe, expect, it } from 'vitest';
 import { rectOutline } from '@/lib/footprint';
 import { routeModel } from '../Road/route';
-import {
-  landmarkFrame,
-  landmarkPlacements,
-  reservedRect,
-  rrcPlacement,
-  warehousesPlacement,
-} from './placement';
+import { landmarkFrame, landmarkPlacements, reservedRect, rrcPlacement } from './placement';
 
 const frame = landmarkFrame(routeModel, rrcPlacement);
 /** World position of a point at local (x, z) in the landmark frame. */
@@ -126,9 +120,16 @@ describe('every landmark', () => {
     },
   );
 
-  it('keeps the two landmarks apart', () => {
-    const a = reservedRect(landmarkFrame(routeModel, rrcPlacement), rrcPlacement);
-    const b = reservedRect(landmarkFrame(routeModel, warehousesPlacement), warehousesPlacement);
-    expect(Math.hypot(a.x - b.x, a.z - b.z)).toBeGreaterThan(40);
+  it('keeps the landmarks apart along the road', () => {
+    // Local +x runs back along the road, so a reserved stretch covers these distances along it.
+    const ranges = landmarkPlacements
+      .map((p) => {
+        const at = routeModel.stopFractions.get(p.stopId)! * routeModel.length + p.offset;
+        return [at - p.reserved.max, at - p.reserved.min] as const;
+      })
+      .sort((x, y) => x[0] - y[0]);
+    for (let i = 1; i < ranges.length; i++) {
+      expect(ranges[i]![0]).toBeGreaterThan(ranges[i - 1]![1]);
+    }
   });
 });

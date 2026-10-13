@@ -48,8 +48,26 @@ export const warehousesPlacement: LandmarkPlacement = {
   reserved: { min: -19, max: 19 },
 };
 
+/**
+ * The City services building: a civic hall on the left of the route at the stop, on the outer side
+ * of the gentle right bend, with a lower brick annex behind it (toward +x). The route is straight
+ * and clear of intersections here.
+ */
+export const cityServicesPlacement: LandmarkPlacement = {
+  stopId: 'city-services',
+  offset: 0,
+  side: -1,
+  depth: 14,
+  setback: 7.5,
+  reserved: { min: -12, max: 28 },
+};
+
 /** Every landmark that stands on the route, so ordinary buildings can leave its ground free. */
-export const landmarkPlacements: readonly LandmarkPlacement[] = [rrcPlacement, warehousesPlacement];
+export const landmarkPlacements: readonly LandmarkPlacement[] = [
+  rrcPlacement,
+  warehousesPlacement,
+  cityServicesPlacement,
+];
 
 export interface LandmarkFrame {
   /** Centre of the footprint at ground level. */
