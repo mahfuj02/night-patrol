@@ -2,7 +2,13 @@ import { Vector3 } from 'three';
 import { describe, expect, it } from 'vitest';
 import { rectOutline } from '@/lib/footprint';
 import { routeModel } from '../Road/route';
-import { landmarkFrame, reservedRect, rrcPlacement } from './placement';
+import {
+  landmarkFrame,
+  landmarkPlacements,
+  reservedRect,
+  rrcPlacement,
+  warehousesPlacement,
+} from './placement';
 
 const frame = landmarkFrame(routeModel, rrcPlacement);
 /** World position of a point at local (x, z) in the landmark frame. */
@@ -85,5 +91,44 @@ describe('reservedRect', () => {
       );
       expect(inside).toBe(true);
     }
+  });
+});
+
+describe('every landmark', () => {
+  const crossings = routeModel.intersections;
+
+  it.each(landmarkPlacements.map((p) => [p.stopId, p] as const))(
+    '%s stands on the left, clear of the intersections and of the road',
+    (_name, placement) => {
+      const f = landmarkFrame(routeModel, placement);
+      const at = (x: number, z: number) => {
+        const p = new Vector3(
+          f.position.x + Math.cos(f.yaw) * x + Math.sin(f.yaw) * z,
+          0,
+          f.position.z - Math.sin(f.yaw) * x + Math.cos(f.yaw) * z,
+        );
+        return onRoute(p);
+      };
+      expect(onRoute(f.position).across).toBeLessThan(0);
+      const { min, max } = placement.reserved;
+      for (const x of [min, max, (min + max) / 2]) {
+        const front = at(x, -placement.depth / 2);
+        const half = routeModel.widthAt(front.along / routeModel.length) / 2;
+        // The front corner stays off the road by more than the plowed ridge.
+        expect(Math.abs(front.across)).toBeGreaterThan(half + 2);
+        const along = at(x, 0).along;
+        for (const gap of crossings) {
+          expect(along < gap.from * routeModel.length || along > gap.to * routeModel.length).toBe(
+            true,
+          );
+        }
+      }
+    },
+  );
+
+  it('keeps the two landmarks apart', () => {
+    const a = reservedRect(landmarkFrame(routeModel, rrcPlacement), rrcPlacement);
+    const b = reservedRect(landmarkFrame(routeModel, warehousesPlacement), warehousesPlacement);
+    expect(Math.hypot(a.x - b.x, a.z - b.z)).toBeGreaterThan(40);
   });
 });

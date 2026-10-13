@@ -295,3 +295,77 @@ export function createRooftopSignMaterial(map: Texture) {
     },
   };
 }
+
+/**
+ * The marquee board: the drawing is both the colour and the emission, so the bulbs and letters
+ * light up. `update` sets its brightness from the landmark glow each frame; it is bright enough at
+ * full glow that the bloom pass gives the bulbs a halo.
+ */
+export function createMarqueeMaterial(map: Texture) {
+  const material = new MeshStandardMaterial({
+    map,
+    emissiveMap: map,
+    emissive: '#ffffff',
+    emissiveIntensity: 0.25,
+    roughness: 0.5,
+    metalness: 0,
+  });
+  return {
+    material,
+    update: (glow: number) => {
+      material.emissiveIntensity = 0.25 + 1.6 * glow;
+    },
+  };
+}
+
+/**
+ * Faded painted signs on brick: pale paint over the wall, only lightly lit, a little clearer as
+ * the car arrives. Drawn just off the wall with a depth offset so they never flicker against it.
+ */
+export function createGhostSignMaterial(map: Texture) {
+  const material = new MeshStandardMaterial({
+    map,
+    transparent: true,
+    depthWrite: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -2,
+    polygonOffsetUnits: -2,
+    // Pale paint catches the street light, so it needs a little glow of its own to read at night.
+    emissiveMap: map,
+    emissive: '#ffffff',
+    emissiveIntensity: 0.32,
+    roughness: 1,
+    metalness: 0,
+    opacity: 0.6,
+  });
+  return {
+    material,
+    update: (glow: number) => {
+      material.opacity = 0.55 + 0.25 * glow;
+      material.emissiveIntensity = 0.32 + 0.3 * glow;
+    },
+  };
+}
+
+/** The warehouses: brick with small regular windows, a few lit warm, tinted per body by vertex colour. */
+export function createWarehouseBrickMaterial(glow: GlowUniform): MeshStandardMaterial {
+  return createGridWallMaterial(
+    {
+      bay: 3.2,
+      storey: 3.6,
+      plinth: 0,
+      mode: 'windows',
+      mullion: 0,
+      fill: [0.4, 0.58],
+      cross: 0,
+      warm: 0.32,
+      cool: 0.04,
+      idle: 0.4,
+      gain: 0.9,
+      frame: world.brickNight,
+    },
+    glow,
+    '#ffffff',
+    true,
+  );
+}

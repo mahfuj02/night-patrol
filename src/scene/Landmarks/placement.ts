@@ -33,6 +33,24 @@ export const rrcPlacement: LandmarkPlacement = {
   reserved: { min: -10, max: 44 },
 };
 
+/**
+ * The Exchange District warehouses: three attached brick warehouses on the left of the route, from
+ * 10 m before the stop to 26 m past it (the route bends left here, so the left side is the inner
+ * bend; this spot keeps clear of the road and of the Princess St intersection). The venue with the
+ * marquee sign is the middle one.
+ */
+export const warehousesPlacement: LandmarkPlacement = {
+  stopId: 'exchange-warehouses',
+  offset: 8,
+  side: -1,
+  depth: 12,
+  setback: 7.5,
+  reserved: { min: -19, max: 19 },
+};
+
+/** Every landmark that stands on the route, so ordinary buildings can leave its ground free. */
+export const landmarkPlacements: readonly LandmarkPlacement[] = [rrcPlacement, warehousesPlacement];
+
 export interface LandmarkFrame {
   /** Centre of the footprint at ground level. */
   position: Vector3;
