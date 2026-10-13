@@ -25,10 +25,12 @@ import {
   ProjectSchema,
   RadioLineSchema,
   RouteSchema,
+  SignageSchema,
   SkillSchema,
   StopSchema,
   UiCopySchema,
 } from './schema';
+import { signage as signageData } from './signage';
 import { skills as skillsData } from './skills';
 import { stops as stopsData } from './stops';
 import { simpleCopy as simpleCopyData } from './ui';
@@ -41,6 +43,7 @@ export const profile = ProfileSchema.parse(profileData);
 export const projects = z.array(ProjectSchema).parse(projectsData);
 export const radioLines = z.array(RadioLineSchema).parse(radioLinesData);
 export const route = RouteSchema.parse(routeData);
+export const signage = SignageSchema.parse(signageData);
 export const skills = z.array(SkillSchema).parse(skillsData);
 export const stops = z.array(StopSchema).parse(stopsData);
 export const simpleCopy = UiCopySchema.parse(simpleCopyData);

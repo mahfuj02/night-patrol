@@ -120,6 +120,9 @@ UI colours (night, night-2, snow, street, hud, brick, sunrise) are unchanged and
 | `led-halo`            | `#8EAABA`              | Sampled: `image5` glow region (cool, bluish)                                                       |
 | `lantern`             | `#E1E1DD`              | Sampled: `image2` lantern                                                                          |
 | `signal-yellow`       | `#E0A63E`              | Sampled: `image7` warm highlights (signal housing and lamp)                                        |
+| `signal-green`        | `#4FE08A`              | Derived: lit green lamp on the traffic lights (tune by eye)                                        |
+| `signal-pole`         | `#3C4046`              | Derived: dark steel for signal masts and sign posts                                                |
+| `sign-red`            | `#B3262B`              | Derived: stop sign red (generic; no logos or lettering other than STOP)                            |
 | `taillight-red`       | `#E0262E`              | Derived: saturated red for tail-lights; `image4` shows them red, sampled highlights are washed out |
 | `window-warm`         | `#E8B27A`              | Derived: `image5` `#D19A6F` lifted for emissive use                                                |
 | `window-cool`         | `#B9D3E0`              | Derived: `image5` `#C2C9C9` and `image1` `#E4F5FB`, cooled                                         |

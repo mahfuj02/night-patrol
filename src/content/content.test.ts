@@ -8,6 +8,7 @@ import {
   projects,
   radioLines,
   route,
+  signage,
   skills,
   stops,
   ProfileSchema,
@@ -170,6 +171,32 @@ describe('route integrity', () => {
     expect(findContentProblems({ ...bundle, route: { points: swapped } }).join('\n')).toContain(
       'in stop order',
     );
+  });
+});
+
+describe('cross streets', () => {
+  it('give signals to Princess St and Portage & Main and stop signs to the residential crossings', () => {
+    const control = Object.fromEntries((route.intersections ?? []).map((x) => [x.id, x.control]));
+    expect(control).toEqual({
+      'princess-st': 'signals',
+      'portage-main': 'signals',
+      'residential-a': 'stop',
+      'residential-b': 'stop',
+      'residential-c': 'stop',
+    });
+    expect(signage.stop).toBe('STOP');
+  });
+
+  it('reject a gap narrower than its street, and control without a street', () => {
+    const base = route.intersections![0]!;
+    const narrow = { ...base, halfLength: 3 };
+    const noStreet = { id: 'bare', stopId: base.stopId, halfLength: 10, control: 'stop' as const };
+    const problems = findContentProblems({
+      ...bundle,
+      route: { ...route, intersections: [narrow, noStreet] },
+    }).join(' | ');
+    expect(problems).toContain('narrower than its cross street');
+    expect(problems).toContain('stop control needs a street');
   });
 });
 

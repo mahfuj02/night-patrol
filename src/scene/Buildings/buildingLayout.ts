@@ -5,7 +5,8 @@ import { rectOutline, rectsOverlap, type Rect } from '@/lib/footprint';
 import type { QualityTier } from '@/lib/quality';
 import { createRandom, range } from '@/lib/random';
 import { resolvedZones } from '../atmosphere';
-import type { RouteModel } from '../Road/route';
+import type { Crossing } from '../Road/crossStreets';
+import type { PathModel } from '../Road/route';
 
 export interface Building {
   stretchId: string;
@@ -28,6 +29,8 @@ export interface Building {
   porch?: { x: number; y: number; z: number };
   /** Index into the style's colour list. */
   colour: number;
+  /** Set on buildings along a cross street: the id of its crossing. */
+  armOf?: string;
   /** Whole-number seed for the window pattern. */
   seed: number;
   /** Share of windows lit warm and cool, already scaled for the stretch and the zone. */
@@ -48,6 +51,9 @@ const NEIGHBOUR_CLEARANCE = 1;
 /** On a tight bend a lot that touches the road steps back by these extra metres until it fits. */
 const STEP_BACK = [0, 1.5, 3, 4.5];
 const COLOUR_COUNT = 4;
+/** Buildings line a cross street from here to here, in metres from the main road's edge. */
+const JUNCTION_LOTS_FROM = 4;
+const STREET_BUILT_LENGTH = 70;
 const SAMPLE_STEP = 4;
 /** Chance that a house has a porch light, and its height above the ground. */
 const PORCH_CHANCE = 0.8;
@@ -59,7 +65,7 @@ interface RoadSample {
   reach: number;
 }
 
-function sampleRoad(model: RouteModel): RoadSample[] {
+function sampleRoad(model: PathModel): RoadSample[] {
   const samples: RoadSample[] = [];
   const point = new Vector3();
   const steps = Math.ceil(model.length / SAMPLE_STEP);
@@ -78,7 +84,7 @@ function touchesRoad(rect: Rect, samples: readonly RoadSample[]): boolean {
 }
 
 /** Arc-length range of a stretch, in metres, clamped to the route. */
-export function stretchRange(model: RouteModel, stretch: BuildingStretch): [number, number] {
+export function stretchRange(model: PathModel, stretch: BuildingStretch): [number, number] {
   const from = model.stopFractions.get(stretch.from) ?? 0;
   const to = model.stopFractions.get(stretch.to) ?? 1;
   const start = from * model.length + (stretch.fromOffset ?? 0);
@@ -102,22 +108,29 @@ interface Placed {
  * stretch. Deterministic: every lot draws the same random numbers whether it is built or not.
  */
 export function buildBuildings(
-  model: RouteModel,
+  model: PathModel,
   stretches: readonly BuildingStretch[],
+  crossings: readonly Crossing[] = [],
 ): Building[] {
-  const samples = sampleRoad(model);
+  const mainSamples = sampleRoad(model);
   const buildings: Building[] = [];
   const taken: Placed[] = [];
   const centre = new Vector3();
   const tangent = new Vector3();
-  // Intersection gaps in metres along the road, widened by the margin.
-  const gaps = model.intersections.map((x): [number, number] => [
-    x.from * model.length - INTERSECTION_MARGIN,
-    x.to * model.length + INTERSECTION_MARGIN,
-  ]);
 
-  stretches.forEach((stretch, stretchIndex) => {
-    const [start, end] = stretchRange(model, stretch);
+  const lay = (
+    path: PathModel,
+    stretch: BuildingStretch,
+    stretchIndex: number,
+    [start, end]: [number, number],
+    samples: readonly RoadSample[],
+    armOf?: string,
+  ) => {
+    // Intersection gaps in metres along the road, widened by the margin.
+    const gaps = path.intersections.map((x): [number, number] => [
+      x.from * path.length - INTERSECTION_MARGIN,
+      x.to * path.length + INTERSECTION_MARGIN,
+    ]);
     const attached = stretch.gap[1] <= ATTACHED_MAX_GAP;
     const minWidth = stretch.lotWidth[0] * 0.5;
 
@@ -169,10 +182,10 @@ export function buildBuildings(
 
         if (present > stretch.density) continue;
         const at = lotStart + width / 2;
-        const u = at / model.length;
+        const u = at / path.length;
 
-        model.curve.getPointAt(u, centre);
-        model.curve.getTangentAt(u, tangent);
+        path.curve.getPointAt(u, centre);
+        path.curve.getTangentAt(u, tangent);
         // Right of travel, and the yaw that turns local +x onto the tangent.
         const rightX = -tangent.z;
         const rightZ = tangent.x;
@@ -180,7 +193,7 @@ export function buildBuildings(
 
         let footprint: Rect | undefined;
         for (const extra of attached ? STEP_BACK : [0]) {
-          const out = side * (model.widthAt(u) / 2 + stretch.setback + extra + depth / 2);
+          const out = side * (path.widthAt(u) / 2 + stretch.setback + extra + depth / 2);
           const candidate: Rect = {
             x: centre.x + rightX * out,
             z: centre.z + rightZ * out,
@@ -236,13 +249,14 @@ export function buildBuildings(
           };
         }
 
-        const atmosphere = sampleAtmosphere(resolvedZones, u);
+        const atmosphere = sampleAtmosphere(resolvedZones, path.zoneU ?? u);
         buildings.push({
           stretchId: stretch.id,
           style: stretch.style,
           u,
           side,
           attached,
+          ...(armOf ? { armOf } : {}),
           footprint,
           height,
           roof,
@@ -258,6 +272,39 @@ export function buildBuildings(
         if (garageRect) taken.push({ rect: garageRect, stretchIndex, side, attached: false });
       }
     }
+  };
+
+  stretches.forEach((stretch, index) =>
+    lay(model, stretch, index, stretchRange(model, stretch), mainSamples),
+  );
+
+  // Cross streets: the same style as the stretch the crossing sits in, along the first stretch of
+  // each arm. They avoid the main road, every cross street and the buildings already placed.
+  const armSamples = crossings.flatMap((c) => c.arms.flatMap((arm) => sampleRoad(arm.model)));
+  const roadSamples = [...mainSamples, ...armSamples];
+  crossings.forEach((crossing, crossingIndex) => {
+    const at = crossing.u * model.length;
+    const index = stretches.findIndex((s) => {
+      const [from, to] = stretchRange(model, s);
+      return at >= from && at <= to;
+    });
+    const stretch = stretches[index];
+    if (!stretch) return;
+    crossing.arms.forEach((arm, armIndex) => {
+      const lane = { ...stretch, id: `${crossing.id}-street` };
+      const range: [number, number] = [
+        JUNCTION_LOTS_FROM,
+        Math.min(arm.length, STREET_BUILT_LENGTH),
+      ];
+      lay(
+        arm.model,
+        lane,
+        stretches.length + crossingIndex * 2 + armIndex,
+        range,
+        roadSamples,
+        crossing.id,
+      );
+    });
   });
   return buildings;
 }

@@ -4,13 +4,14 @@ import { buildingStretches } from '@/content/buildings';
 import type { QualityTier } from '@/lib/quality';
 import { createBuildingMaterial, createRoofMaterial } from '../Materials/buildingMaterials';
 import { useBrickTextures } from '../Materials/useBrickTextures';
+import { crossings } from '../Road/crossings';
 import { routeModel } from '../Road/route';
 import { createBodyGeometry, createBoxGeometry, createGableGeometry } from './buildingGeometry';
 import { buildBuildings, selectBuildingsForTier } from './buildingLayout';
 import { CAP_HEIGHT, buildParts } from './buildingParts';
 import { PorchLights } from './PorchLights';
 
-const allBuildings = buildBuildings(routeModel, buildingStretches);
+const allBuildings = buildBuildings(routeModel, buildingStretches, crossings);
 
 interface Placement {
   x: number;
