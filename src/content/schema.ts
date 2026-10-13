@@ -14,6 +14,7 @@ export const landmarkIds = [
   'city-services',
   'portage-main',
   'millennium-library',
+  'skills-station',
   'dashcam',
   'the-forks',
 ] as const;
@@ -397,6 +398,12 @@ export const UiCopySchema = z.object({
     resume: z.string(),
     contact: z.string(),
     projectDetails: z.string(),
+  }),
+  skills: z.object({
+    /** A skill's level as text: `{n}` is 1 to 5. */
+    levelOf: z.string(),
+    /** The heading of the lines that are not graded skills (from `profile.highlights`). */
+    also: z.string(),
   }),
   library: z.object({
     /** The catalog terminal: its name, the search box and the filter group. */

@@ -11,6 +11,7 @@ import { DriveControls } from '@/ui/DriveControls';
 import { Subtitles } from '@/ui/Hud';
 import { LibraryPanel } from '@/ui/Library';
 import { RouteMap } from '@/ui/RouteMap';
+import { SkillsPanel } from '@/ui/Skills';
 import { StationControls, StationWall } from '@/ui/Station';
 
 // The 3D scene is only ever loaded in the browser, and only when WebGL is available.
@@ -62,6 +63,7 @@ export function HomeExperience() {
       <RouteMap />
       <StationWall />
       <LibraryPanel />
+      <SkillsPanel />
       <Subtitles />
       <noscript>
         <Link href="/simple" className="text-hud fixed bottom-4 left-4 underline">

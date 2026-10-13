@@ -41,6 +41,7 @@ export const simpleCopy: UiCopy = {
     contact: 'Contact details',
     projectDetails: 'Project details',
   },
+  skills: { levelOf: 'Level {n} of 5', also: 'Also' },
   library: {
     catalog: 'Catalog',
     searchLabel: 'Search the catalog',

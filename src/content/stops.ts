@@ -62,8 +62,16 @@ export const stops: Stop[] = [
     kind: 'section',
   },
   {
-    id: 'dashcam',
+    id: 'skills-station',
     order: 7,
+    t: 0.641,
+    title: 'Skills station',
+    landmark: 'skills-station',
+    kind: 'section',
+  },
+  {
+    id: 'dashcam',
+    order: 8,
     t: 0.744,
     title: 'Dashcam moment',
     landmark: 'dashcam',
@@ -72,7 +80,7 @@ export const stops: Stop[] = [
   },
   {
     id: 'the-forks',
-    order: 8,
+    order: 9,
     t: 1,
     title: 'The Forks: End of shift',
     landmark: 'the-forks',
