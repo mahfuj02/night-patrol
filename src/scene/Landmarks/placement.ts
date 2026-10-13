@@ -62,11 +62,26 @@ export const cityServicesPlacement: LandmarkPlacement = {
   reserved: { min: -12, max: 28 },
 };
 
+/**
+ * The RoleReady tower: on the left of the route just past the Portage & Main intersection, which
+ * ends 22 m after the stop (the stop is the intersection itself, so a landmark cannot stand at it).
+ * The camera at the stop sees it ahead on the left.
+ */
+export const roleReadyPlacement: LandmarkPlacement = {
+  stopId: 'portage-main',
+  offset: 38,
+  side: -1,
+  depth: 14,
+  setback: 7.5,
+  reserved: { min: -13, max: 13 },
+};
+
 /** Every landmark that stands on the route, so ordinary buildings can leave its ground free. */
 export const landmarkPlacements: readonly LandmarkPlacement[] = [
   rrcPlacement,
   warehousesPlacement,
   cityServicesPlacement,
+  roleReadyPlacement,
 ];
 
 export interface LandmarkFrame {
