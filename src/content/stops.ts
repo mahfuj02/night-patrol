@@ -21,6 +21,7 @@ export const stops: Stop[] = [
     landmark: 'rrc-campus',
     kind: 'education',
     contentRef: 'rrc-diploma',
+    radioId: 'rrc-campus',
   },
   {
     id: 'exchange-warehouses',

@@ -105,12 +105,13 @@ interface Placed {
  * continuous street wall: lots touch, overlap slightly, and run right up to each intersection,
  * where the last lot is shortened to fit. A lot that would touch the road on a bend steps back a
  * little instead of leaving a hole. Window lighting comes from the zone at each lot, scaled by the
- * stretch. Deterministic: every lot draws the same random numbers whether it is built or not.
+ * stretch. `reserved` is ground held for landmarks: no lot overlaps it. Deterministic: every lot draws the same random numbers whether it is built or not.
  */
 export function buildBuildings(
   model: PathModel,
   stretches: readonly BuildingStretch[],
   crossings: readonly Crossing[] = [],
+  reserved: readonly Rect[] = [],
 ): Building[] {
   const mainSamples = sampleRoad(model);
   const buildings: Building[] = [];
@@ -137,6 +138,7 @@ export function buildBuildings(
     for (const side of [-1, 1] as const) {
       const free = (rect: Rect) =>
         !touchesRoad(rect, samples) &&
+        !reserved.some((r) => rectsOverlap(rect, r, NEIGHBOUR_CLEARANCE)) &&
         !taken.some(
           (t) =>
             !(attached && t.attached && t.stretchIndex === stretchIndex && t.side === side) &&

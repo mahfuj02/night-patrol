@@ -4,6 +4,7 @@ import type {
   BuildingStretch,
   CommunityNote,
   Experience,
+  Checkpoint,
   Project,
   RadioLine,
   Route,
@@ -13,6 +14,7 @@ import type {
 export interface ContentBundle {
   atmosphere: AtmosphereZone[];
   buildings: BuildingStretch[];
+  checkpoints: Checkpoint[];
   route: Route;
   stops: Stop[];
   projects: Project[];
@@ -72,6 +74,21 @@ export function findContentProblems(c: ContentBundle): string[] {
     }
     if (stop.radioId && !radioIds.has(stop.radioId)) {
       problems.push(`Stop ${stop.id}: unknown radioId ${stop.radioId}`);
+    }
+  }
+  checkDuplicates(
+    'checkpoint',
+    c.checkpoints.map((k) => k.stopId),
+  );
+  for (const checkpoint of c.checkpoints) {
+    const stop = stopsById.get(checkpoint.stopId);
+    if (!stop) {
+      problems.push(`Checkpoint for unknown stop ${checkpoint.stopId}`);
+    } else if (!stop.contentRef) {
+      problems.push(`Checkpoint ${stop.id}: the stop has no contentRef to show`);
+    }
+    if (checkpoint.teaserRef && !refIds.has(checkpoint.teaserRef)) {
+      problems.push(`Checkpoint ${checkpoint.stopId}: unknown teaserRef ${checkpoint.teaserRef}`);
     }
   }
   for (const project of c.projects) {

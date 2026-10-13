@@ -2,7 +2,7 @@
 
 A cinematic, scroll-driven 3D night drive through a low-poly winter Winnipeg. Each stop on the patrol route is a chapter of Mahfuj's career. Full spec: [PROJECT_PLAN.md](PROJECT_PLAN.md).
 
-> **Status:** Phase 2 (road, car, scroll drive). `/` is a placeholder 3D drive along the route; `/simple` is the complete HTML portfolio. Content is edited in `src/content/` (see [docs/content-guide.md](docs/content-guide.md)); how the drive works is in [docs/drive.md](docs/drive.md).
+> **Status:** Phase 4 (first checkpoint). `/` is a 3D night drive along the route with buildings, cross streets, back lanes and the first landmark, the RRC campus, which opens a checkpoint panel; `/simple` is the complete HTML portfolio. Content is edited in `src/content/` (see [docs/content-guide.md](docs/content-guide.md)); how the drive works is in [docs/drive.md](docs/drive.md); how to add a stop is in [docs/adding-a-stop.md](docs/adding-a-stop.md).
 
 <!-- TODO: screenshot or GIF -->
 <!-- TODO: live link once the domain is decided -->

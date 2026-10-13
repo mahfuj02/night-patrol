@@ -15,6 +15,7 @@ import { CameraRig } from './CameraRig';
 import { AtmosphereDriver } from './Environment/AtmosphereDriver';
 import { Trees } from './Environment/Trees';
 import { Ground } from './Environment/Ground';
+import { Landmarks } from './Landmarks';
 import { Sky } from './Environment/Sky';
 import { Snow } from './Environment/Snow';
 import { ProgressDriver } from './ProgressDriver';
@@ -67,6 +68,7 @@ export function Experience() {
       <Suspense fallback={null}>
         <Buildings tier={tier} />
       </Suspense>
+      <Landmarks reducedMotion={reducedMotion} />
       <BackLanes tier={tier} />
       <Trees tier={tier} />
       <Streetlights />

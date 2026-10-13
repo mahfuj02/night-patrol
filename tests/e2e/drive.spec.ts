@@ -2,7 +2,9 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { stops } from '../../src/content';
 
-const status = (page: Page) => page.getByRole('status');
+// The stop announcement lives in the drive controls; the checkpoint panel has its own status region.
+const status = (page: Page) =>
+  page.getByRole('navigation', { name: 'Patrol controls' }).getByRole('status');
 const total = stops.length;
 
 // Behaviour tests run on the low tier: they are about navigation, not looks, and the low tier

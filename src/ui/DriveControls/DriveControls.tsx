@@ -64,6 +64,7 @@ export function DriveControls() {
           <button
             type="button"
             className={buttonClass}
+            data-drive-next
             onClick={atLast ? undefined : next}
             aria-disabled={atLast}
           >

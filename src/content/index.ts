@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { atmosphereZones as atmosphereZonesData } from './atmosphere';
 import { backLanes as backLanesData } from './backLanes';
 import { buildingStretches as buildingStretchesData } from './buildings';
+import { checkpoints as checkpointsData } from './checkpoints';
 import { communityNotes as communityNotesData } from './community';
 import { experience as experienceData } from './experience';
 import { assertContentIntegrity } from './integrity';
@@ -20,6 +21,7 @@ import { route as routeData } from './route';
 import {
   AtmosphereZoneSchema,
   BackLanesSchema,
+  CheckpointSchema,
   BuildingStretchSchema,
   CommunityNoteSchema,
   ExperienceSchema,
@@ -40,6 +42,7 @@ import { simpleCopy as simpleCopyData } from './ui';
 export const atmosphereZones = z.array(AtmosphereZoneSchema).parse(atmosphereZonesData);
 export const backLanes = BackLanesSchema.parse(backLanesData);
 export const buildingStretches = z.array(BuildingStretchSchema).parse(buildingStretchesData);
+export const checkpoints = z.array(CheckpointSchema).parse(checkpointsData);
 export const communityNotes = z.array(CommunityNoteSchema).parse(communityNotesData);
 export const experience = z.array(ExperienceSchema).parse(experienceData);
 export const profile = ProfileSchema.parse(profileData);
@@ -54,6 +57,7 @@ export const simpleCopy = UiCopySchema.parse(simpleCopyData);
 assertContentIntegrity({
   atmosphere: atmosphereZones,
   buildings: buildingStretches,
+  checkpoints,
   route,
   stops,
   projects,

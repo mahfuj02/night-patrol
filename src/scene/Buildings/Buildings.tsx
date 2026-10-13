@@ -1,17 +1,15 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { Color, Euler, Matrix4, Quaternion, Vector3, type InstancedMesh } from 'three';
-import { buildingStretches } from '@/content/buildings';
 import type { QualityTier } from '@/lib/quality';
 import { createBuildingMaterial, createRoofMaterial } from '../Materials/buildingMaterials';
 import { useBrickTextures } from '../Materials/useBrickTextures';
-import { crossings } from '../Road/crossings';
-import { routeModel } from '../Road/route';
 import { createBodyGeometry, createBoxGeometry, createGableGeometry } from './buildingGeometry';
-import { buildBuildings, selectBuildingsForTier } from './buildingLayout';
+import { selectBuildingsForTier } from './buildingLayout';
+import { sceneBuildings } from './sceneBuildings';
 import { CAP_HEIGHT, buildParts } from './buildingParts';
 import { PorchLights } from './PorchLights';
 
-const allBuildings = buildBuildings(routeModel, buildingStretches, crossings);
+const allBuildings = sceneBuildings;
 
 interface Placement {
   x: number;

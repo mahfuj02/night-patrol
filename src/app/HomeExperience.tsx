@@ -7,7 +7,9 @@ import { simpleCopy } from '@/content/ui';
 import { useDriveInput } from '@/hooks/useDriveInput';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useWebGLSupport } from '@/hooks/useWebGLSupport';
+import { CheckpointPanel } from '@/ui/CheckpointPanel';
 import { DriveControls } from '@/ui/DriveControls';
+import { Subtitles } from '@/ui/Hud';
 
 // The 3D scene is only ever loaded in the browser, and only when WebGL is available.
 const Experience = dynamic(() => import('@/scene/Experience').then((m) => m.Experience), {
@@ -54,6 +56,8 @@ export function HomeExperience() {
         )}
       </div>
       <DriveControls />
+      <CheckpointPanel />
+      <Subtitles />
       <noscript>
         <Link href="/simple" className="text-hud fixed bottom-4 left-4 underline">
           {copy.home.simpleLink}
