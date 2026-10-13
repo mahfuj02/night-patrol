@@ -1,7 +1,7 @@
-import type { Checkpoint, Experience, Project, Station, Stop } from '@/content/schema';
+import type { Experience, Project, Station, Stop } from '@/content/schema';
 import { formatDateRange } from './dates';
 
-/** What the checkpoint panel shows for an experience or education entry. */
+/** What a station wall or project details shows for an experience or education entry. */
 export interface ExperienceView {
   kind: 'experience';
   title: string;
@@ -14,7 +14,7 @@ export interface ExperienceView {
   bullets: string[];
 }
 
-/** What the checkpoint panel shows for a project. */
+/** What project details show for a project. */
 export interface ProjectView {
   kind: 'project';
   title: string;
@@ -35,7 +35,6 @@ export interface ResolvedCheckpoint {
 }
 
 export interface CheckpointSources {
-  checkpoints: readonly Checkpoint[];
   experience: readonly Experience[];
   projects: readonly Project[];
 }
@@ -69,19 +68,20 @@ function viewOf(ref: string, sources: CheckpointSources): CheckpointView | undef
 }
 
 /**
- * The checkpoint panel content for a stop, or null when the stop has no checkpoint (or points at
- * content that does not exist; the content integrity check catches that at build time).
+ * The content behind a stop's `contentRef` (an experience entry or a project), with an optional
+ * teaser from another entry, or null when it points at content that does not exist (the content
+ * integrity check catches that at build time). Drive-by stops show a lit sign, not this content;
+ * stations and the route map's project list show it.
  */
 export function resolveCheckpoint(
   stop: Pick<Stop, 'id' | 'contentRef'> | undefined,
   sources: CheckpointSources,
+  teaserRef?: string,
 ): ResolvedCheckpoint | null {
   if (!stop?.contentRef) return null;
-  const checkpoint = sources.checkpoints.find((c) => c.stopId === stop.id);
-  if (!checkpoint) return null;
   const main = viewOf(stop.contentRef, sources);
   if (!main) return null;
-  const teaser = checkpoint.teaserRef ? viewOf(checkpoint.teaserRef, sources) : undefined;
+  const teaser = teaserRef ? viewOf(teaserRef, sources) : undefined;
   return {
     stopId: stop.id,
     main,
@@ -97,35 +97,28 @@ export function resolveCheckpoint(
 }
 
 /**
- * What a station shows on its wall: the same content as a checkpoint panel, from the station's
+ * What a station shows on its wall: from the station's
  * `contentRef` and `teaserRef`, so there is one resolver and no second copy of the words.
  */
 export function resolveStation(
   station: Pick<Station, 'stopId' | 'contentRef' | 'teaserRef'>,
-  sources: Omit<CheckpointSources, 'checkpoints'>,
+  sources: CheckpointSources,
 ): ResolvedCheckpoint | null {
   return resolveCheckpoint(
     { id: station.stopId, contentRef: station.contentRef },
-    {
-      ...sources,
-      checkpoints: [
-        { stopId: station.stopId, ...(station.teaserRef ? { teaserRef: station.teaserRef } : {}) },
-      ],
-    },
+    sources,
+    station.teaserRef,
   );
 }
 
 /**
- * The details of a project, for the route map's project list: the same content a project stop shows
- * in its side panel, so every project is readable without driving to it or entering the library.
+ * The details of a project, for the route map's project list: the same content a station wall shows,
+ * so every project is readable without driving to it or entering the library.
  */
 export function resolveProjectDetails(
   projectId: string,
-  sources: Omit<CheckpointSources, 'checkpoints'>,
+  sources: CheckpointSources,
 ): ResolvedCheckpoint | null {
   if (!sources.projects.some((p) => p.id === projectId)) return null;
-  return resolveCheckpoint(
-    { id: 'project', contentRef: projectId },
-    { ...sources, checkpoints: [{ stopId: 'project' }] },
-  );
+  return resolveCheckpoint({ id: 'project', contentRef: projectId }, sources);
 }

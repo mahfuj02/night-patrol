@@ -4,7 +4,6 @@ import type {
   BuildingStretch,
   CommunityNote,
   Experience,
-  Checkpoint,
   Project,
   RadioLine,
   Route,
@@ -16,7 +15,6 @@ import type {
 export interface ContentBundle {
   atmosphere: AtmosphereZone[];
   buildings: BuildingStretch[];
-  checkpoints: Checkpoint[];
   stations: Station[];
   transitZones: TransitZone[];
   route: Route;
@@ -81,21 +79,6 @@ export function findContentProblems(c: ContentBundle): string[] {
     }
   }
   checkDuplicates(
-    'checkpoint',
-    c.checkpoints.map((k) => k.stopId),
-  );
-  for (const checkpoint of c.checkpoints) {
-    const stop = stopsById.get(checkpoint.stopId);
-    if (!stop) {
-      problems.push(`Checkpoint for unknown stop ${checkpoint.stopId}`);
-    } else if (!stop.contentRef) {
-      problems.push(`Checkpoint ${stop.id}: the stop has no contentRef to show`);
-    }
-    if (checkpoint.teaserRef && !refIds.has(checkpoint.teaserRef)) {
-      problems.push(`Checkpoint ${checkpoint.stopId}: unknown teaserRef ${checkpoint.teaserRef}`);
-    }
-  }
-  checkDuplicates(
     'station',
     c.stations.map((s) => s.id),
   );
@@ -109,10 +92,6 @@ export function findContentProblems(c: ContentBundle): string[] {
     }
     for (const ref of [station.contentRef, station.teaserRef]) {
       if (ref && !refIds.has(ref)) problems.push(`Station ${station.id}: unknown content ${ref}`);
-    }
-    // A stop that is a station opens its content on the wall, not in the side panel.
-    if (c.checkpoints.some((k) => k.stopId === station.stopId)) {
-      problems.push(`Station ${station.id}: stop ${station.stopId} also has a checkpoint panel`);
     }
   }
   checkDuplicates(
@@ -139,6 +118,8 @@ export function findContentProblems(c: ContentBundle): string[] {
     } else if (stop.contentRef !== project.id) {
       problems.push(`Project ${project.id}: stop ${stop.id} does not reference it back`);
     }
+    // A drive-by project stop is a lit sign on its building, so it needs the sign wording.
+    if (!project.sign) problems.push(`Project ${project.id} has a stop but no sign`);
   }
   const pinned = c.route.points.flatMap((p) => (p.stopId ? [p.stopId] : []));
   checkDuplicates('route stop pin', pinned);

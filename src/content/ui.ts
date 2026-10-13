@@ -21,13 +21,8 @@ export const simpleCopy: UiCopy = {
     loading: 'Starting the engine…',
     noWebGL: 'This browser cannot show the 3D drive, but the simple version has everything.',
   },
-  checkpoint: {
-    label: 'Checkpoint: {title}',
-    close: 'Close checkpoint',
-    opened: 'Checkpoint opened: {title}. Press Escape to close it.',
-    teaser: 'Also',
-  },
-  hud: { radioLabel: 'Dispatch radio' },
+  checkpoint: { teaser: 'Also' },
+  hud: { radioLabel: 'Dispatch radio', sign: 'Sign: {name}. {slogan}' },
   menu: {
     toggle: 'Route map',
     label: 'Route map',

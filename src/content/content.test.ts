@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   atmosphereZones,
   buildingStretches,
-  checkpoints,
   communityNotes,
   stations,
   transitZones,
@@ -25,7 +24,6 @@ import { assertContentIntegrity, findContentProblems } from './integrity';
 const bundle = {
   atmosphere: atmosphereZones,
   buildings: buildingStretches,
-  checkpoints,
   stations,
   transitZones,
   route,
@@ -131,6 +129,22 @@ describe('findContentProblems', () => {
     expect(findContentProblems(swapped).join('\n')).toContain('does not reference it back');
   });
 
+  it('gives every project stop a sign, and reports one without', () => {
+    for (const project of projects.filter((p) => p.stopId)) {
+      expect(project.sign?.name).toBeTruthy();
+      expect(project.sign?.slogan).toBeTruthy();
+    }
+    expect(projects.find((p) => p.id === 'civictrack')!.sign).toEqual({
+      name: 'CivicTrack',
+      slogan: 'Help make Winnipeg better. Report it, track it, fixed.',
+    });
+    const unsigned = {
+      ...bundle,
+      projects: projects.map((p) => (p.id === 'akari' ? { ...p, sign: undefined } : p)),
+    };
+    expect(findContentProblems(unsigned).join(' | ')).toContain('akari has a stop but no sign');
+  });
+
   it('reports duplicate project, experience and radio ids', () => {
     const problems = findContentProblems({
       ...bundle,
@@ -180,19 +194,15 @@ describe('route integrity', () => {
   });
 });
 
-describe('checkpoints', () => {
-  it('keep the RRC campus out of the panel list, because it is a station', () => {
-    expect(checkpoints.find((c) => c.stopId === 'rrc-campus')).toBeUndefined();
+describe('stop signs', () => {
+  it('keeps the RRC campus radio line and rooftop words', () => {
     expect(radioLines.find((r) => r.id === 'rrc-campus')?.text).toContain(
       'RRC campus on your left',
     );
     expect(signage.rrcRooftop).toBe('RRC Polytechnic');
   });
 
-  it('opens the EventFlow panel at the Exchange District warehouses, with its links', () => {
-    expect(checkpoints.find((c) => c.stopId === 'exchange-warehouses')).toEqual({
-      stopId: 'exchange-warehouses',
-    });
+  it('links EventFlow from the warehouses stop', () => {
     expect(radioLines.find((r) => r.id === 'exchange-warehouses')?.text).toBe(
       'Show tonight at the old warehouse. Tickets running through EventFlow, on your left.',
     );
@@ -201,30 +211,15 @@ describe('checkpoints', () => {
     expect(eventflow.links.live).toBeDefined();
   });
 
-  it('keeps the ghost signs and the marquee line generic and in content', () => {
+  it('keeps the ghost signs generic and in content', () => {
     expect(Object.values(signage.ghostSigns)).toEqual([
       'DRY GOODS',
       'WHOLESALE',
       'WAREHOUSE',
       'GRAIN EXCHANGE SUPPLY',
     ]);
-    expect(signage.marqueeSubtitle).toBe('Tickets · Hosts · Payments');
     expect(signage.cityRooftop).toBe('City Services');
     expect(signage.requestBoard.statuses).toEqual(['Received', 'In progress', 'Resolved']);
-  });
-
-  it('reject unknown stops and refs, duplicates, and stops without content', () => {
-    const broken = [
-      { stopId: 'nowhere' },
-      { stopId: 'rrc-campus', teaserRef: 'missing' },
-      { stopId: 'rrc-campus' },
-      { stopId: 'ignition' },
-    ];
-    const problems = findContentProblems({ ...bundle, checkpoints: broken }).join(' | ');
-    expect(problems).toContain('unknown stop nowhere');
-    expect(problems).toContain('unknown teaserRef missing');
-    expect(problems).toContain('Duplicate checkpoint id');
-    expect(problems).toContain('Checkpoint ignition: the stop has no contentRef');
   });
 });
 
@@ -323,17 +318,16 @@ describe('stations', () => {
     expect(education.light.offset).toBeLessThan(0);
   });
 
-  it('rejects unknown stops and content, duplicates, and a stop that also has a panel', () => {
+  it('rejects unknown stops and content, and duplicates', () => {
     const base = stations[0]!;
     const broken = [
       { ...base, stopId: 'nowhere' },
       { ...base, id: 'again', contentRef: 'missing' },
-      { ...base, id: 'both', section: 'contact' as const, stopId: 'exchange-warehouses' },
+      { ...base, id: 'both', section: 'contact' as const },
     ];
     const problems = findContentProblems({ ...bundle, stations: broken }).join(' | ');
     expect(problems).toContain('unknown stop nowhere');
     expect(problems).toContain('unknown content missing');
-    expect(problems).toContain('also has a checkpoint panel');
     expect(problems).toContain('Duplicate station section');
   });
 
