@@ -13,7 +13,7 @@ Under reduced motion every manoeuvre is a cut: the scene jumps to the parked vie
 
 ## Data: `src/content/stations.ts`
 
-Everything that differs between stations is data (see the comment at the top of the file): the stop the distances are measured from, the red light's distance before it, the bay (which way to turn, nose-to-wall gap, width, how much road edge to clear), the parked camera (metres back, metres up, field of view), the lit wall rectangle in the landmark's own frame, and the content (`contentRef`, `teaserRef`). `pnpm test` checks the stop, the content and that a station's stop has no side panel of its own.
+Everything that differs between stations is data (see the comment at the top of the file): the stop the distances are measured from, the red light's distance before it, the bay (which way to turn, nose-to-wall gap, width, how much road edge to clear), the parked camera (metres back, metres up, field of view), the lit wall rectangle in the landmark's own frame, and the content (`contentRef`, `teaserRef`). `pnpm test` checks the stop, the content
 
 `route.lengthMetres` (in `route.ts`) is the length of the route curve; a test keeps it equal to the real curve. It lets the store place a light from metres without any 3D code.
 
@@ -44,9 +44,8 @@ When the wall is too small to read (its on-screen width is under `MIN_WALL_SCALE
 
 1. Add a landmark for the building (see `docs/adding-a-stop.md`) with a flat wall facing the road.
 2. Add an entry to `stations.ts`, choosing the stop the distances are measured from. The wall rectangle is in the landmark's frame; the bay follows from it.
-3. A stop that is a station is not in `checkpoints.ts` (the integrity check enforces this).
-4. Check the bay is clear: `stationGeometry.test.ts` covers trees, lamps, the road edge and the order of the light, bay and stop. Add a Playwright flow like `tests/e2e/station.spec.ts`.
-5. Report draw calls and triangles per tier in the PR.
+3. Check the bay is clear: `stationGeometry.test.ts` covers trees, lamps, the road edge and the order of the light, bay and stop. Add a Playwright flow like `tests/e2e/station.spec.ts`.
+4. Report draw calls and triangles per tier in the PR.
 
 ## Cost
 
