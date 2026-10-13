@@ -306,3 +306,69 @@ export function createRequestBoardTexture(
     });
   });
 }
+
+/**
+ * A lit sign board for a project: a dark panel with an accent bar, the project name in big capitals,
+ * the slogan over one or two lines and two speech bubbles with typing dots (a question and an
+ * answer, for RoleReady's interview practice). The wording comes from the project's `sign` in
+ * `src/content/projects.ts`. Bright pixels are what glow.
+ */
+export function createBillboardTexture(
+  title: string,
+  slogan: string,
+  width = 1024,
+  height = 376,
+): CanvasTexture {
+  return canvasTexture(width, height, (ctx) => {
+    const gradient = ctx.createLinearGradient(0, 0, width, 0);
+    gradient.addColorStop(0, '#0d1a2b');
+    gradient.addColorStop(1, '#16304f');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = '#4FE3E3';
+    ctx.fillRect(0, 0, 16, height);
+    ctx.fillRect(16, height - 10, width - 16, 10);
+    // Two speech bubbles on the right, the second one answering the first.
+    const bubble = (
+      x: number,
+      y: number,
+      w: number,
+      h: number,
+      fill: string,
+      tailRight: boolean,
+    ) => {
+      ctx.fillStyle = fill;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, 24);
+      ctx.fill();
+      const tailX = tailRight ? x + w - 46 : x + 30;
+      ctx.beginPath();
+      ctx.moveTo(tailX, y + h - 2);
+      ctx.lineTo(tailX + 22, y + h - 2);
+      ctx.lineTo(tailX + (tailRight ? 22 : 0), y + h + 26);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#0d1a2b';
+      for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.arc(x + w / 2 - 34 + i * 34, y + h / 2, 9, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    };
+    bubble(width - 330, 46, 250, 96, '#9FE8E8', false);
+    bubble(width - 260, 180, 230, 96, '#FFB25C', true);
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+    ctx.shadowColor = 'rgba(79, 227, 227, 0.6)';
+    ctx.shadowBlur = 14;
+    ctx.fillStyle = '#F2FAFA';
+    ctx.font = `900 ${Math.round(height * 0.3)}px 'Arial Black', Impact, sans-serif`;
+    ctx.fillText(title, 56, height * 0.25, width * 0.58);
+    ctx.shadowBlur = 6;
+    ctx.fillStyle = '#B8EEEE';
+    ctx.font = `600 ${Math.round(height * 0.115)}px 'Trebuchet MS', sans-serif`;
+    sloganLines(slogan, 28).forEach((line, i) => {
+      ctx.fillText(line, 56, height * (0.54 + i * 0.15), width * 0.58);
+    });
+  });
+}
