@@ -1,0 +1,61 @@
+import { describe, expect, it } from 'vitest';
+import { checkpoints } from '@/content/checkpoints';
+import { experience } from '@/content/experience';
+import { projects } from '@/content/projects';
+import { stops } from '@/content/stops';
+import { resolveCheckpoint } from './checkpoint';
+
+const sources = { checkpoints, experience, projects };
+const stop = (id: string) => stops.find((s) => s.id === id);
+
+describe('resolveCheckpoint', () => {
+  it('shows the diploma at the RRC campus, with the Sprint-Innovation win as the teaser', () => {
+    const result = resolveCheckpoint(stop('rrc-campus'), sources)!;
+    expect(result.stopId).toBe('rrc-campus');
+    expect(result.main.kind).toBe('experience');
+    expect(result.main.title).toBe('Diploma in Full Stack Web Development');
+    if (result.main.kind === 'experience') {
+      expect(result.main.org).toBe('Red River College Polytechnic');
+      expect(result.main.dates).toBe('Sep 2023 \u2013 Aug 2025');
+      expect(result.main.isoDate).toBe('2023-09');
+    }
+    expect(result.teaser?.title).toBe('Sprint-Innovation 2025: Winner');
+  });
+
+  it('returns null for stops without a checkpoint or without content', () => {
+    expect(resolveCheckpoint(stop('ignition'), sources)).toBeNull();
+    expect(resolveCheckpoint(stop('exchange-warehouses'), sources)).toBeNull();
+    expect(resolveCheckpoint(undefined, sources)).toBeNull();
+  });
+
+  it('shows a project when the stop points at one', () => {
+    const project = projects[0]!;
+    const result = resolveCheckpoint(
+      { id: 'demo', contentRef: project.id },
+      { checkpoints: [{ stopId: 'demo' }], experience, projects },
+    )!;
+    expect(result.main.kind).toBe('project');
+    if (result.main.kind === 'project') {
+      expect(result.main.title).toBe(project.name);
+      expect(result.main.stack).toEqual(project.stack);
+    }
+    expect(result.teaser).toBeUndefined();
+  });
+
+  it('returns null when the content it points at is missing', () => {
+    expect(
+      resolveCheckpoint(
+        { id: 'demo', contentRef: 'nothing' },
+        { checkpoints: [{ stopId: 'demo' }], experience, projects },
+      ),
+    ).toBeNull();
+  });
+
+  it('leaves out a teaser that does not exist', () => {
+    const result = resolveCheckpoint(stop('rrc-campus'), {
+      ...sources,
+      checkpoints: [{ stopId: 'rrc-campus', teaserRef: 'missing' }],
+    })!;
+    expect(result.teaser).toBeUndefined();
+  });
+});
