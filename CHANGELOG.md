@@ -18,8 +18,23 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - WebGL fallback to the simple view, reduced-motion stepping between stops, quality tiers with adaptive resolution
 - Dev-only performance overlay (fps, draw calls, triangles)
 
+- Lighting and weather zones in `src/content/atmosphere.ts` (Exchange, Downtown, Shelter, Avenue, Forks, Sunrise) with smooth blending as `t` changes
+- Zone-driven sky (overcast glow, clear night with a big moon, sunrise), fog, ambient light and moonlight
+- Instanced streetlights in three types (sodium, cool LED, warm) with halos and light pools; car headlights
+- GPU snowfall: one draw call, depth layers, wind and gusts, flakes that brighten in lamp and headlight cones; 14k / 7k / 2.5k flakes by quality tier
+- `?quality=high|medium|low` URL override that pins the quality tier and disables adaptation
+- CC0 textures (Poly Haven asphalt snow, snow, factory brick) with a conversion script and a dev-only preview page, and the world palette
+
+- Rut-mask road (asphalt_snow in the wheel ruts, snow_02 on ridges and edges) and snow ground with world-space two-scale snow so marks never repeat
+- Real 3D procedural winter elms (tapered flared trunk, vase of limbs, branches, twig planes at the tips) in staggered rows behind the snow ridge, with lamp and headlight lighting and snow dusting; placed by a per-zone `trees` density
+- Continuous plowed snow ridge along both road edges, broken only at intersections (`intersections` in `src/content/route.ts`)
+
+- Post-processing on high and medium: bloom, ACES tone mapping, vignette and film grain (grain off under reduced motion); none on low
+
 ### Changed
 
+- Tail-lights are red (`taillightRed` in the world palette)
+- The painted centre line is gone: lane markings are buried under snow
 - Content data files are plain typed data; `src/content/index.ts` validates them. Keeps zod out of the client bundle.
 - Stop `t` values now match the route curve
 

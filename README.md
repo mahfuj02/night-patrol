@@ -40,7 +40,15 @@ Hosted on Vercel with a preview deploy per PR. See [docs/vercel-setup.md](docs/v
 
 ## Credits
 
-Audio credits will be listed here (Phase 9). All models and textures are original.
+All models are original (procedural or hand-modelled). Third-party assets are CC0 only.
+
+**Textures** (CC0, [Poly Haven](https://polyhaven.com)). Full details in [public/textures/CREDITS.md](public/textures/CREDITS.md).
+
+- [Asphalt Snow](https://polyhaven.com/a/asphalt_snow) by eye-candy.xyz
+- [Snow 02](https://polyhaven.com/a/snow_02) by Rob Tuytel
+- [Factory Brick](https://polyhaven.com/a/factory_brick) by Rob Tuytel
+
+Audio credits will be listed here (Phase 9).
 
 ## License
 

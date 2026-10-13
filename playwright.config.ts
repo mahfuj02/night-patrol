@@ -4,6 +4,9 @@ const port = 3100;
 
 export default defineConfig({
   testDir: './tests/e2e',
+  // The 3D scene runs on a software renderer in CI and headless, which is slow with post-processing.
+  timeout: 60_000,
+  expect: { timeout: 15_000 },
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',

@@ -11,11 +11,20 @@ interface RibbonOptions {
   dash?: { on: number; off: number };
 }
 
-/** Flat strip following the route curve, facing up. The caller owns (and disposes) the geometry. */
+/**
+ * Flat strip following the route curve, facing up. The caller owns (and disposes) the geometry.
+ *
+ * Besides position and normal it carries two attributes for road shading:
+ * - `uv`: (lateral offset, distance along the route), both in metres, so a texture tile maps to
+ *   its real-world size with `repeat = 1 / tileMetres`;
+ * - `aRoad`: (lateral offset, distance along, half the road width), all in metres.
+ */
 export function buildRibbon(model: RouteModel, options: RibbonOptions): BufferGeometry {
   const { samples, extent, y, dash } = options;
   const positions = new Float32Array((samples + 1) * 2 * 3);
   const normals = new Float32Array((samples + 1) * 2 * 3);
+  const uvs = new Float32Array((samples + 1) * 2 * 2);
+  const road = new Float32Array((samples + 1) * 2 * 3);
 
   for (let i = 0; i <= samples; i++) {
     const u = i / samples;
@@ -24,10 +33,14 @@ export function buildRibbon(model: RouteModel, options: RibbonOptions): BufferGe
     // Lateral direction in the ground plane.
     const nx = tangent.z;
     const nz = -tangent.x;
-    const [from, to] = extent(model.widthAt(u));
+    const width = model.widthAt(u);
+    const [from, to] = extent(width);
+    const along = u * model.length;
     const a = i * 6;
     positions.set([p.x + nx * from, y, p.z + nz * from, p.x + nx * to, y, p.z + nz * to], a);
     normals.set([0, 1, 0, 0, 1, 0], a);
+    uvs.set([from, along, to, along], i * 4);
+    road.set([from, along, width / 2, to, along, width / 2], a);
   }
 
   const indices: number[] = [];
@@ -43,6 +56,8 @@ export function buildRibbon(model: RouteModel, options: RibbonOptions): BufferGe
   const geometry = new BufferGeometry();
   geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
   geometry.setAttribute('normal', new Float32BufferAttribute(normals, 3));
+  geometry.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
+  geometry.setAttribute('aRoad', new Float32BufferAttribute(road, 3));
   geometry.setIndex(indices);
   geometry.computeBoundingSphere();
   return geometry;

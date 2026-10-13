@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  atmosphereZones,
   communityNotes,
   experience,
   profile,
@@ -16,7 +17,15 @@ import {
 } from './index';
 import { assertContentIntegrity, findContentProblems } from './integrity';
 
-const bundle = { route, stops, projects, experience, communityNotes, radioLines };
+const bundle = {
+  atmosphere: atmosphereZones,
+  route,
+  stops,
+  projects,
+  experience,
+  communityNotes,
+  radioLines,
+};
 
 describe('content data', () => {
   it('has one stop per route entry, in order', () => {
@@ -127,6 +136,15 @@ describe('findContentProblems', () => {
 });
 
 describe('route integrity', () => {
+  it('breaks the ridge and tree rows at Portage & Main, and rejects unknown intersection stops', () => {
+    expect(route.intersections?.map((x) => x.stopId)).toEqual(['portage-main']);
+    const broken = {
+      ...bundle,
+      route: { ...route, intersections: [{ stopId: 'nope', halfLength: 5 }] },
+    };
+    expect(findContentProblems(broken).join(' | ')).toContain('unknown stop nope');
+  });
+
   it('pins every stop exactly once, in order', () => {
     const pins = route.points.flatMap((p) => (p.stopId ? [p.stopId] : []));
     expect(pins).toEqual(stops.map((s) => s.id));
@@ -149,5 +167,47 @@ describe('route integrity', () => {
     expect(findContentProblems({ ...bundle, route: { points: swapped } }).join('\n')).toContain(
       'in stop order',
     );
+  });
+});
+
+describe('atmosphere zones', () => {
+  it('cover the route in order and match the planned zones', () => {
+    expect(atmosphereZones.map((z) => z.id)).toEqual([
+      'exchange',
+      'downtown',
+      'shelter',
+      'avenue',
+      'forks',
+      'sunrise',
+    ]);
+  });
+
+  it('puts snow off and the moon up on the avenue, and heavy snow in the Exchange', () => {
+    const byId = Object.fromEntries(atmosphereZones.map((z) => [z.id, z]));
+    expect(byId.avenue!.snow.density).toBe(0);
+    expect(byId.avenue!.moon).toBe(1);
+    expect(byId.exchange!.snow.density).toBe(1);
+    expect(byId.exchange!.light.type).toBe('sodium');
+    expect(byId.shelter!.light.intensity).toBeLessThan(byId.downtown!.light.intensity);
+    expect(byId.downtown!.snow.gust).toBeGreaterThan(byId.exchange!.snow.gust);
+    expect(byId.sunrise!.sunrise).toBe(1);
+  });
+
+  it('lines the avenue with elms and keeps downtown nearly bare', () => {
+    const byId = Object.fromEntries(atmosphereZones.map((z) => [z.id, z]));
+    expect(byId.avenue!.trees).toBe(1);
+    expect(byId.downtown!.trees).toBeLessThan(byId.avenue!.trees);
+    expect(byId.downtown!.trees).toBeLessThan(byId.exchange!.trees);
+  });
+
+  it('keeps the shelter calm and warm-lit only', () => {
+    const shelter = atmosphereZones.find((z) => z.id === 'shelter')!;
+    expect(shelter.windows.cool).toBe(0);
+    expect(shelter.snow.gust).toBe(0);
+  });
+
+  it('reports zone problems through the integrity check', () => {
+    const broken = { ...bundle, atmosphere: [{ ...atmosphereZones[0]!, from: 'nowhere' }] };
+    expect(findContentProblems(broken).join('\n')).toContain('unknown stop nowhere');
   });
 });

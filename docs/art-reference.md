@@ -30,7 +30,7 @@ Stylized realistic, not low-poly. Think of a graded film still: believable mater
 - Roads are never clean black. They are packed snow and slush with two dark tyre ruts per lane, a lighter ridge between them, and slush banked along the edge. Lane markings are mostly invisible.
 - Under blue twilight the road reads blue-grey (`#27375B` average); under sodium it reads warm grey-beige; in fog it reads green-grey. The same material, tinted by the light.
 - Back lanes and side streets are fresher snow with a few tyre tracks and footprints. Sidewalks are trampled white.
-- Snowbanks are big, soft, sculpted, and slightly dirty near the road. The current box banks should become rounded, noisier shapes.
+- Snowbanks are big, soft, sculpted, and slightly dirty near the road. In the scene they are one continuous plowed ridge along each road edge with gentle lumpy variation, broken only at intersections.
 - Specular: dull, with a soft sheen on the ruts where slush is wet. No mirror reflections.
 
 ### Lighting
@@ -52,7 +52,7 @@ Stylized realistic, not low-poly. Think of a graded film still: believable mater
 
 - Winnipeg's avenue canopy is elm. Trunks are thick and forked low, branches arch up and across the street and interlock overhead. In the dark they are near-black silhouettes against the lit haze.
 - Frosted trees (`image2`) go light grey-white and catch lamp light. Use for a few hero moments.
-- Implementation: instanced branch-cluster cards or a handful of procedural trunk and canopy variants, tinted by distance fog. Never individual twigs.
+- Implementation: real 3D procedural trees (3 to 4 merged variants, instanced with a random turn and about 15% scale variation): a tapered trunk with a slight base flare that forks at 2 to 3 m into 3 to 5 limbs arching up and outward in a vase shape, then smaller branches, with small twig planes at the tips only. Dark grey-brown bark (never black), lit by lamps and headlights, with snow dusting upward-facing surfaces. No canopy picture cards and no trunk in any texture. Rows stand behind the snow ridge with the long limbs turned to the road, so avenue branches arch over it.
 
 ### Back lanes (side-detail stretches)
 
@@ -103,43 +103,45 @@ From `image7.png`. Model it as a stylized silhouette, not a copy.
 
 UI colours (night, night-2, snow, street, hud, brick, sunrise) are unchanged and keep their jobs in HUD and panels. The **world palette** below is for the 3D scene and was sampled with a script (k-means clusters, region means, and brightest-1% means) from the photos. Camera white balance is unreliable, so "Basis" says what was sampled and what was adjusted.
 
-| Token                 | Hex                    | Basis                                                                                   |
-| --------------------- | ---------------------- | --------------------------------------------------------------------------------------- |
-| `sky-clear-zenith`    | `#24437E`              | Sampled: `image4` sky, top                                                              |
-| `sky-clear-horizon`   | `#3F5B98`              | Sampled: `image4` sky, near horizon                                                     |
-| `moon-low`            | `#BC90A5`              | Sampled: `image4` moon disc (low, pinkish)                                              |
-| `sky-overcast-green`  | `#5E6B60`              | Sampled: `preview` sky (lane haze)                                                      |
-| `sky-overcast-grey`   | `#4A4647`              | Sampled: `image2` sky near horizon                                                      |
-| `sky-overcast-orange` | `#77614C`              | Derived: `sky-overcast-grey` blended 25% toward `street` (no photo shows this directly) |
-| `night`               | `#0B1426`              | Kept. Matches the darkest samples (`#0A0D17`, `#0A0D19`)                                |
-| `shadow`              | `#050809`              | Sampled: `image5` darkest cluster                                                       |
-| `sodium`              | `#FFB25C`              | Kept as `street`. Samples of warm highlights: `#D19A6F` to `#E3A18D`                    |
-| `sodium-glow`         | `#C3A465`              | Sampled: `image` road glow mean                                                         |
-| `sodium-core`         | `#FDE2A4`              | Sampled: `image` warm highlights (lamp cores)                                           |
-| `led-core`            | `#DDDFD7`              | Sampled: `image5` lamp core                                                             |
-| `led-halo`            | `#8EAABA`              | Sampled: `image5` glow region (cool, bluish)                                            |
-| `lantern`             | `#E1E1DD`              | Sampled: `image2` lantern                                                               |
-| `signal-yellow`       | `#E0A63E`              | Sampled: `image7` warm highlights (signal housing and lamp)                             |
-| `window-warm`         | `#E8B27A`              | Derived: `image5` `#D19A6F` lifted for emissive use                                     |
-| `window-cool`         | `#B9D3E0`              | Derived: `image5` `#C2C9C9` and `image1` `#E4F5FB`, cooled                              |
-| `glass-day`           | `#8FA3B5`              | Sampled: `image7` glass                                                                 |
-| `glass-glow`          | `#3B5D78`              | Sampled: `image1` atrium body at night. Hot spots go to `#E4F5FB`                       |
-| `mullion`             | `#242426`              | Sampled: `image7` dark cluster                                                          |
-| `brick`               | `#8A4B3A`              | Kept (daylight brick)                                                                   |
-| `brick-night`         | `#5D3C39`              | Sampled: `image1` brick under night light                                               |
-| `brick-faded`         | `#77625E`              | Sampled: `image7` wall with faded signs                                                 |
-| `limestone`           | `#B5AB9E`              | Sampled: `image7` cream limestone (day; multiply down at night)                         |
-| `snow`                | `#E8EEF5`              | Kept (highlights, fresh snow)                                                           |
-| `snow-packed`         | `#969089`              | Sampled: `image2` snow under haze                                                       |
-| `snow-twilight`       | `#27375B`              | Sampled: `image4` road and snow under blue light                                        |
-| `slush`               | `#B2A9A1`              | Sampled: `image7` pavement slush (day; multiply down at night)                          |
-| `rut`                 | `#181C28`              | Derived: between `image4` `#141D35` and `image2` `#1C1B1B`                              |
-| `tree-silhouette`     | `#060E11`              | Derived: `image5` clusters `#050809` and `#07161A`                                      |
-| `wood-pole`           | `#4B4238`              | Derived: `preview` pole `#51584B` with its green cast removed                           |
-| `bin-blue`            | `#2D4A6B`              | Derived: blue bins in `preview` (no clean sample)                                       |
-| `forks-magenta`       | `#AD76AE`              | Sampled: `image8` sign glow. Deep `#791F7C`, pale core `#E8BDE2`                        |
-| `sunrise-cloud`       | `#F0CBBF`              | Sampled: `image9` warm highlights, used for cloud tint only                             |
-| `sunrise`             | `#FF8A5B` to `#FFD27A` | Kept                                                                                    |
+| Token                 | Hex                    | Basis                                                                                              |
+| --------------------- | ---------------------- | -------------------------------------------------------------------------------------------------- |
+| `sky-clear-zenith`    | `#24437E`              | Sampled: `image4` sky, top                                                                         |
+| `sky-clear-horizon`   | `#3F5B98`              | Sampled: `image4` sky, near horizon                                                                |
+| `moon-low`            | `#BC90A5`              | Sampled: `image4` moon disc (low, pinkish)                                                         |
+| `sky-overcast-green`  | `#5E6B60`              | Sampled: `preview` sky (lane haze)                                                                 |
+| `sky-overcast-grey`   | `#4A4647`              | Sampled: `image2` sky near horizon                                                                 |
+| `sky-overcast-orange` | `#77614C`              | Derived: `sky-overcast-grey` blended 25% toward `street` (no photo shows this directly)            |
+| `night`               | `#0B1426`              | Kept. Matches the darkest samples (`#0A0D17`, `#0A0D19`)                                           |
+| `shadow`              | `#050809`              | Sampled: `image5` darkest cluster                                                                  |
+| `sodium`              | `#FFB25C`              | Kept as `street`. Samples of warm highlights: `#D19A6F` to `#E3A18D`                               |
+| `sodium-glow`         | `#C3A465`              | Sampled: `image` road glow mean                                                                    |
+| `sodium-core`         | `#FDE2A4`              | Sampled: `image` warm highlights (lamp cores)                                                      |
+| `led-core`            | `#DDDFD7`              | Sampled: `image5` lamp core                                                                        |
+| `led-halo`            | `#8EAABA`              | Sampled: `image5` glow region (cool, bluish)                                                       |
+| `lantern`             | `#E1E1DD`              | Sampled: `image2` lantern                                                                          |
+| `signal-yellow`       | `#E0A63E`              | Sampled: `image7` warm highlights (signal housing and lamp)                                        |
+| `taillight-red`       | `#E0262E`              | Derived: saturated red for tail-lights; `image4` shows them red, sampled highlights are washed out |
+| `window-warm`         | `#E8B27A`              | Derived: `image5` `#D19A6F` lifted for emissive use                                                |
+| `window-cool`         | `#B9D3E0`              | Derived: `image5` `#C2C9C9` and `image1` `#E4F5FB`, cooled                                         |
+| `glass-day`           | `#8FA3B5`              | Sampled: `image7` glass                                                                            |
+| `glass-glow`          | `#3B5D78`              | Sampled: `image1` atrium body at night. Hot spots go to `#E4F5FB`                                  |
+| `mullion`             | `#242426`              | Sampled: `image7` dark cluster                                                                     |
+| `brick`               | `#8A4B3A`              | Kept (daylight brick)                                                                              |
+| `brick-night`         | `#5D3C39`              | Sampled: `image1` brick under night light                                                          |
+| `brick-faded`         | `#77625E`              | Sampled: `image7` wall with faded signs                                                            |
+| `limestone`           | `#B5AB9E`              | Sampled: `image7` cream limestone (day; multiply down at night)                                    |
+| `snow`                | `#E8EEF5`              | Kept (highlights, fresh snow)                                                                      |
+| `snow-packed`         | `#969089`              | Sampled: `image2` snow under haze                                                                  |
+| `snow-twilight`       | `#27375B`              | Sampled: `image4` road and snow under blue light                                                   |
+| `slush`               | `#B2A9A1`              | Sampled: `image7` pavement slush (day; multiply down at night)                                     |
+| `rut`                 | `#181C28`              | Derived: between `image4` `#141D35` and `image2` `#1C1B1B`                                         |
+| `tree-silhouette`     | `#060E11`              | Derived: `image5` clusters `#050809` and `#07161A`                                                 |
+| `wood-pole`           | `#4B4238`              | Derived: `preview` pole `#51584B` with its green cast removed                                      |
+| `bark`                | `#3A332C`              | Derived: dark grey-brown elm bark from the trunk tones in `image5` and `image6` (never pure black) |
+| `bin-blue`            | `#2D4A6B`              | Derived: blue bins in `preview` (no clean sample)                                                  |
+| `forks-magenta`       | `#AD76AE`              | Sampled: `image8` sign glow. Deep `#791F7C`, pale core `#E8BDE2`                                   |
+| `sunrise-cloud`       | `#F0CBBF`              | Sampled: `image9` warm highlights, used for cloud tint only                                        |
+| `sunrise`             | `#FF8A5B` to `#FFD27A` | Kept                                                                                               |
 
 Notes:
 

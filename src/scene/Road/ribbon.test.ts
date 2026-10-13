@@ -43,6 +43,25 @@ describe('buildRibbon', () => {
     expect(width).toBeCloseTo(routeModel.widths[0]!, 4);
   });
 
+  it('carries metric uv and road attributes for shading', () => {
+    const uv = road.getAttribute('uv');
+    const aRoad = road.getAttribute('aRoad');
+    expect(uv.count).toBe(road.getAttribute('position').count);
+    expect(aRoad.count).toBe(uv.count);
+    // Both vertices of the first sample sit at the start (along = 0), on opposite edges.
+    const half = routeModel.widths[0]! / 2;
+    expect(aRoad.getY(0)).toBe(0);
+    expect(aRoad.getX(0)).toBeCloseTo(-half, 6);
+    expect(aRoad.getX(1)).toBeCloseTo(half, 6);
+    expect(aRoad.getZ(0)).toBeCloseTo(half, 6);
+    expect(uv.getX(0)).toBeCloseTo(-half, 6);
+    // The last sample is a full route length along.
+    const last = uv.count - 1;
+    expect(uv.getY(last)).toBeCloseTo(routeModel.length, 3);
+    // Distance along grows monotonically.
+    for (let i = 2; i < uv.count; i += 2) expect(uv.getY(i)).toBeGreaterThan(uv.getY(i - 2));
+  });
+
   it('skips quads to make dashes', () => {
     const dashed = buildRibbon(routeModel, {
       samples,

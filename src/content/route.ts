@@ -37,4 +37,7 @@ export const route: Route = {
     { x: 830, z: 420, width: 10 },
     { x: 860, z: 500, width: 10, stopId: 'the-forks' },
   ],
+  // Side streets cross here, so the plowed ridge and the tree rows are broken.
+  // TODO(content): owner to add the other intersections along the route.
+  intersections: [{ stopId: 'portage-main', halfLength: 22 }],
 };

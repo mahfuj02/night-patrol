@@ -56,6 +56,18 @@ describe('route model', () => {
     expect(portage).toBeGreaterThan(exchange);
   });
 
+  it('finds the intersection at Portage & Main and nowhere else', () => {
+    expect(routeModel.intersections).toHaveLength(1);
+    const { from, to } = routeModel.intersections[0]!;
+    const centre = routeModel.stopFractions.get('portage-main')!;
+    expect(from).toBeLessThan(centre);
+    expect(to).toBeGreaterThan(centre);
+    expect((to - from) * routeModel.length).toBeCloseTo(44, 3);
+    expect(routeModel.inIntersection(centre)).toBe(true);
+    expect(routeModel.inIntersection(centre + 0.2)).toBe(false);
+    expect(routeModel.inIntersection(to + 2 / routeModel.length, 4)).toBe(true);
+  });
+
   it('uses the default width when a point has none', () => {
     const model = createRouteModel({
       points: [
@@ -66,5 +78,7 @@ describe('route model', () => {
     expect(model.widths).toEqual([8, 8]);
     expect(model.widthAt(0.5)).toBe(8);
     expect(model.stopFractions.size).toBe(0);
+    expect(model.intersections).toEqual([]);
+    expect(model.inIntersection(0.5)).toBe(false);
   });
 });

@@ -18,6 +18,10 @@ export interface RouteModel {
   stopFractions: Map<string, number>;
   /** Road width at arc-length fraction `u`. */
   widthAt: (u: number) => number;
+  /** Stretches of road (as arc-length fractions) where side streets cross. */
+  intersections: { from: number; to: number }[];
+  /** True if `u` falls inside an intersection, widened by `margin` metres either side. */
+  inIntersection: (u: number, margin?: number) => boolean;
 }
 
 export function createRouteModel(route: Route): RouteModel {
@@ -37,6 +41,13 @@ export function createRouteModel(route: Route): RouteModel {
     if (p.stopId) stopFractions.set(p.stopId, fractions[i]!);
   });
 
+  const intersections = (route.intersections ?? []).flatMap((crossing) => {
+    const centre = stopFractions.get(crossing.stopId);
+    if (centre === undefined) return [];
+    const half = crossing.halfLength / length;
+    return [{ from: centre - half, to: centre + half }];
+  });
+
   return {
     curve,
     length,
@@ -44,6 +55,11 @@ export function createRouteModel(route: Route): RouteModel {
     widths,
     stopFractions,
     widthAt: (u) => interpolateWidth(fractions, widths, u),
+    intersections,
+    inIntersection: (u, margin = 0) =>
+      intersections.some(
+        ({ from, to }) => u >= from - margin / length && u <= to + margin / length,
+      ),
   };
 }
 

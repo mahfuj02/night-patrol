@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { world, type WorldToken } from '../lib/palette';
 
 const url = z.url();
 /** YYYY or YYYY-MM */
@@ -131,9 +132,18 @@ export const RoutePointSchema = z.object({
   /** Pins a stop to this point. Every stop appears on exactly one point. */
   stopId: kebabId.optional(),
 });
+export const IntersectionSchema = z.object({
+  /** The stop the intersection is centred on. */
+  stopId: kebabId,
+  /** Half the length of the gap, in metres along the road. */
+  halfLength: z.number().positive(),
+});
 export const RouteSchema = z.object({
   points: z.array(RoutePointSchema).min(2),
+  /** Gaps in the plowed snowbank ridge and the tree rows, where side streets cross. */
+  intersections: z.array(IntersectionSchema).optional(),
 });
+export type Intersection = z.infer<typeof IntersectionSchema>;
 export type RoutePoint = z.infer<typeof RoutePointSchema>;
 export type Route = z.infer<typeof RouteSchema>;
 
@@ -181,3 +191,38 @@ export const UiCopySchema = z.object({
   labels: z.object({ stack: z.string(), problem: z.string(), built: z.string() }),
 });
 export type UiCopy = z.infer<typeof UiCopySchema>;
+
+// Lighting and weather by route zone (see src/content/atmosphere.ts).
+const worldTokens = Object.keys(world) as [WorldToken, ...WorldToken[]];
+export const WorldTokenSchema = z.enum(worldTokens);
+export const lampTypes = ['sodium', 'led', 'warm'] as const;
+export type LampType = (typeof lampTypes)[number];
+
+const unit = z.number().min(0).max(1);
+
+export const AtmosphereZoneSchema = z.object({
+  id: kebabId,
+  /** The zone holds its values from the `from` stop to the `to` stop (plus offsets, in `t`). */
+  from: kebabId,
+  to: kebabId,
+  startOffset: z.number().optional(),
+  endOffset: z.number().optional(),
+  /** Length in `t` over which the previous zone eases into this one, ending where this zone starts. */
+  blend: z.number().min(0),
+  sky: z.object({ zenith: WorldTokenSchema, horizon: WorldTokenSchema }),
+  fog: z.object({ color: WorldTokenSchema, near: z.number().min(0), far: z.number().positive() }),
+  light: z.object({
+    type: z.enum(lampTypes),
+    color: WorldTokenSchema,
+    intensity: z.number().min(0),
+  }),
+  ambient: z.object({ color: WorldTokenSchema, intensity: z.number().min(0) }),
+  snow: z.object({ density: unit, wind: unit, gust: unit }),
+  /** How densely bare elms line the road in this zone, 0..1. */
+  trees: unit,
+  moon: unit,
+  sunrise: unit,
+  /** Mix of lit window tones; used by the buildings in Phase 3b. */
+  windows: z.object({ warm: unit, cool: unit }),
+});
+export type AtmosphereZone = z.infer<typeof AtmosphereZoneSchema>;

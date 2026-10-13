@@ -85,7 +85,7 @@ test.describe('seo files', () => {
 });
 
 test('home links to /simple', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/?quality=low');
   await page.getByRole('link', { name: 'Simple view' }).click();
   await expect(page).toHaveURL(/\/simple$/);
 });
