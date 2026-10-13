@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { stops } from '../../src/content';
 
-// The stop announcement lives in the drive controls; the checkpoint panel has its own status region.
+// The stop announcement lives in the drive controls; the radio region has the caption and the sign text.
 const status = (page: Page) =>
   page.getByRole('navigation', { name: 'Patrol controls' }).getByRole('status');
 const total = stops.length;
