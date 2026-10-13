@@ -9,4 +9,6 @@ import type { Checkpoint } from './schema';
 export const checkpoints: Checkpoint[] = [
   // The EventFlow project, from projects.ts: tagline, problem, what was built, stack and links.
   { stopId: 'exchange-warehouses' },
+  // The CivicTrack project.
+  { stopId: 'city-services' },
 ];
