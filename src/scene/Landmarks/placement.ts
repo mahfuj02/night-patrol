@@ -84,6 +84,57 @@ export const landmarkPlacements: readonly LandmarkPlacement[] = [
   roleReadyPlacement,
 ];
 
+/**
+ * Scenery: lit buildings beside the route with no stop and no panel. Each is anchored to a stop that
+ * exists (the dashcam, The Forks) by an offset in metres, like a landmark, but is kept apart from
+ * `landmarkPlacements` because it belongs to no stop. Ordinary buildings leave its ground free.
+ */
+export interface SceneryPlacement extends LandmarkPlacement {
+  id: 'warm-house' | 'museum' | 'esplanade-riel';
+}
+
+/**
+ * The warm-windowed house on the residential street, just past the dashcam stop on the left, so it
+ * is in view while parked there. It has warm windows only: no figures, no text (CLAUDE.md rule 9).
+ */
+export const warmHousePlacement: SceneryPlacement = {
+  id: 'warm-house',
+  stopId: 'dashcam',
+  offset: 14,
+  side: -1,
+  depth: 9,
+  setback: 12,
+  reserved: { min: -12, max: 12 },
+};
+
+/** The Canadian Museum for Human Rights, on the avenue: a lit glass tower on a stone base, no lettering. */
+export const museumPlacement: SceneryPlacement = {
+  id: 'museum',
+  stopId: 'the-forks',
+  offset: -112,
+  side: -1,
+  depth: 22,
+  setback: 14,
+  reserved: { min: -26, max: 26 },
+};
+
+/** Esplanade Riel: a footbridge with a glowing spire and cable stays, beyond the museum. */
+export const esplanadePlacement: SceneryPlacement = {
+  id: 'esplanade-riel',
+  stopId: 'the-forks',
+  offset: -52,
+  side: -1,
+  depth: 6,
+  setback: 24,
+  reserved: { min: -20, max: 20 },
+};
+
+export const sceneryPlacements: readonly SceneryPlacement[] = [
+  warmHousePlacement,
+  museumPlacement,
+  esplanadePlacement,
+];
+
 export interface LandmarkFrame {
   /** Centre of the footprint at ground level. */
   position: Vector3;
@@ -129,4 +180,15 @@ export function reservedRect(frame: LandmarkFrame, placement: LandmarkPlacement)
     width: max - min,
     depth: placement.depth,
   };
+}
+
+/**
+ * The frame of a piece of scenery. It has no stop of its own, so its `stopT` is the route position
+ * of its own centre: the glow rises as the car approaches it and falls as it leaves (scenery also
+ * keeps a steady light, see `Landmark`'s `minGlow`).
+ */
+export function sceneryFrame(model: RouteModel, placement: SceneryPlacement): LandmarkFrame {
+  const frame = landmarkFrame(model, placement);
+  const stopFraction = model.stopFractions.get(placement.stopId)!;
+  return { ...frame, stopT: stopFraction + placement.offset / model.length };
 }

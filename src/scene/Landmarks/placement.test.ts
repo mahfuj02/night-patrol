@@ -2,7 +2,14 @@ import { Vector3 } from 'three';
 import { describe, expect, it } from 'vitest';
 import { rectOutline } from '@/lib/footprint';
 import { routeModel } from '../Road/route';
-import { landmarkFrame, landmarkPlacements, reservedRect, rrcPlacement } from './placement';
+import {
+  landmarkFrame,
+  landmarkPlacements,
+  reservedRect,
+  rrcPlacement,
+  sceneryFrame,
+  sceneryPlacements,
+} from './placement';
 
 const frame = landmarkFrame(routeModel, rrcPlacement);
 /** World position of a point at local (x, z) in the landmark frame. */
@@ -131,5 +138,66 @@ describe('every landmark', () => {
     for (let i = 1; i < ranges.length; i++) {
       expect(ranges[i]![0]).toBeGreaterThan(ranges[i - 1]![1]);
     }
+  });
+});
+
+describe('scenery', () => {
+  const crossings = routeModel.intersections;
+  const alongOf = (placement: (typeof sceneryPlacements)[number], x: number, z = 0) => {
+    const f = sceneryFrame(routeModel, placement);
+    return onRoute(
+      new Vector3(
+        f.position.x + Math.cos(f.yaw) * x + Math.sin(f.yaw) * z,
+        0,
+        f.position.z - Math.sin(f.yaw) * x + Math.cos(f.yaw) * z,
+      ),
+    );
+  };
+
+  it.each(sceneryPlacements.map((p) => [p.id, p] as const))(
+    '%s stands on the left, clear of the road and of the cross streets',
+    (_id, placement) => {
+      expect(onRoute(sceneryFrame(routeModel, placement).position).across).toBeLessThan(0);
+      const { min, max } = placement.reserved;
+      for (const x of [min, max, (min + max) / 2]) {
+        const front = alongOf(placement, x, -placement.depth / 2);
+        const half = routeModel.widthAt(front.along / routeModel.length) / 2;
+        expect(Math.abs(front.across)).toBeGreaterThan(half + 2);
+        const along = alongOf(placement, x).along;
+        for (const gap of crossings) {
+          expect(along < gap.from * routeModel.length || along > gap.to * routeModel.length).toBe(
+            true,
+          );
+        }
+      }
+    },
+  );
+
+  it('keeps the scenery clear of the landmarks and of each other along the road', () => {
+    const range = (p: (typeof landmarkPlacements)[number]) => {
+      const at = routeModel.stopFractions.get(p.stopId)! * routeModel.length + p.offset;
+      return [at - p.reserved.max, at - p.reserved.min] as const;
+    };
+    const all = [...landmarkPlacements, ...sceneryPlacements]
+      .map(range)
+      .sort((a, b) => a[0] - b[0]);
+    for (let i = 1; i < all.length; i++) {
+      expect(all[i]![0]).toBeGreaterThan(all[i - 1]![1]);
+    }
+  });
+
+  it('lights each piece from its own position, not from a stop', () => {
+    for (const placement of sceneryPlacements) {
+      const frame = sceneryFrame(routeModel, placement);
+      const expected =
+        routeModel.stopFractions.get(placement.stopId)! + placement.offset / routeModel.length;
+      expect(frame.stopT).toBeCloseTo(expected, 10);
+      expect(frame.stopT).toBeGreaterThan(0);
+      expect(frame.stopT).toBeLessThan(1);
+    }
+  });
+
+  it('does not take over a stop: no scenery placement is one of the landmark placements', () => {
+    for (const p of sceneryPlacements) expect(landmarkPlacements).not.toContain(p);
   });
 });
