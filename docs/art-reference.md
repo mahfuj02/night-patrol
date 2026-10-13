@@ -130,6 +130,13 @@ UI colours (night, night-2, snow, street, hud, brick, sunrise) are unchanged and
 | `brick-night`         | `#5D3C39`              | Sampled: `image1` brick under night light                                                          |
 | `brick-faded`         | `#77625E`              | Sampled: `image7` wall with faded signs                                                            |
 | `limestone`           | `#B5AB9E`              | Sampled: `image7` cream limestone (day; multiply down at night)                                    |
+| `tower-concrete`      | `#6E7279`              | Derived: grey concrete towers (day; tune by eye)                                                   |
+| `tower-glass`         | `#3A4656`              | Derived: dark glass curtain wall (tune by eye)                                                     |
+| `siding-cream`        | `#A39C8E`              | Derived: house siding, pale (tune by eye)                                                          |
+| `siding-blue`         | `#66737F`              | Derived: house siding, blue-grey (tune by eye)                                                     |
+| `siding-grey`         | `#7C7F80`              | Derived: house siding, grey (tune by eye)                                                          |
+| `siding-red`          | `#7A4A44`              | Derived: house siding, brick red (tune by eye)                                                     |
+| `snow-roof`           | `#B9BDC4`              | Derived: snow on roofs, a little darker than fresh snow                                            |
 | `snow`                | `#E8EEF5`              | Kept (highlights, fresh snow)                                                                      |
 | `snow-packed`         | `#969089`              | Sampled: `image2` snow under haze                                                                  |
 | `snow-twilight`       | `#27375B`              | Sampled: `image4` road and snow under blue light                                                   |
