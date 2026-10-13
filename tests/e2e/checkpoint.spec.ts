@@ -4,7 +4,7 @@ import { stops } from '../../src/content';
 
 const total = stops.length;
 // EventFlow, the Exchange District warehouses, is a drive-by stop with a side panel. The RRC campus
-// before it is a station (see station.spec.ts), and the stop after it has no panel yet.
+// before it is a station (see station.spec.ts); City services, after it, is the next panel.
 const warehouses = stops.findIndex((s) => s.id === 'exchange-warehouses');
 const panel = (page: Page) => page.getByRole('complementary', { name: 'EventFlow' });
 const status = (page: Page) =>
@@ -17,6 +17,31 @@ async function driveToWarehouses(page: Page) {
   for (let i = 0; i < warehouses; i++) await page.keyboard.press('PageDown');
   await expect(status(page)).toContainText(`Stop ${warehouses + 1} of ${total}`);
 }
+
+test.describe('City services checkpoint', () => {
+  test('opens at the City services building with CivicTrack and the radio caption, and has no axe violations', async ({
+    page,
+  }) => {
+    test.setTimeout(120_000);
+    const city = stops.findIndex((s) => s.id === 'city-services');
+    await page.goto('/?quality=low');
+    await expect(page.locator('canvas')).toBeVisible();
+    for (let i = 0; i < city; i++) await page.keyboard.press('PageDown');
+    await expect(status(page)).toContainText(`Stop ${city + 1} of ${total}`);
+    const civic = page.getByRole('complementary', { name: 'CivicTrack' });
+    await expect(civic).toBeVisible();
+    await expect(civic).toContainText('311-style civic service request tracker.');
+    await expect(civic.getByRole('link', { name: /GitHub repository/ })).toHaveAttribute(
+      'href',
+      'https://github.com/mahfuj02/civictrack',
+    );
+    await expect(page.getByRole('region', { name: 'Dispatch radio' })).toContainText(
+      'City services building on your left.',
+    );
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
+  });
+});
 
 test.describe('checkpoint panel', () => {
   test('opens at the Exchange District warehouses with EventFlow and the radio caption', async ({
