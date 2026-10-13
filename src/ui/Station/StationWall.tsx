@@ -11,6 +11,7 @@ import { wallDom } from '@/lib/wallDom';
 import { useDriveStore } from '@/store/drive';
 import { CheckpointContent } from '../CheckpointPanel/CheckpointContent';
 import { LibraryWall } from '../Library/LibraryWall';
+import { SkillsWall } from '../Skills/SkillsWall';
 
 const sources = { experience, projects };
 
@@ -53,12 +54,13 @@ export function StationWall() {
   }, [designHeight]);
 
   const parked = phase === 'parked';
-  // The library has no single entry: its wall is a stack of titles, a picture only (the accessible
-  // shelf is the library panel), so it never opens the sheet or the accessible wall.
-  const isLibrary = shown?.section === 'projects' && !shown.contentRef;
-  const sheet = parked && !legible && !isLibrary;
+  // A station with no single entry (the library, the skills building) shows a picture on its wall
+  // and has its own panel as the accessible interface, so it never opens the sheet or an
+  // accessible wall.
+  const hasPanel = shown !== undefined && !shown.contentRef;
+  const sheet = parked && !legible && !hasPanel;
   // The wall is accessible while parked and readable; otherwise it is just a picture.
-  const wallAccessible = parked && legible && !isLibrary;
+  const wallAccessible = parked && legible && !hasPanel;
 
   return (
     <>
@@ -80,9 +82,9 @@ export function StationWall() {
         }}
         className="text-snow bg-night/60 z-10 overflow-hidden rounded-lg border border-white/20 p-8 shadow-2xl backdrop-blur-[2px] [&_dd]:text-xl [&_h2]:text-4xl [&_li]:text-xl [&_p]:text-xl"
       >
-        {isLibrary ? (
+        {hasPanel ? (
           <div aria-hidden="true">
-            <LibraryWall />
+            {shown?.section === 'skills' ? <SkillsWall /> : <LibraryWall />}
           </div>
         ) : content && wallAccessible ? (
           <section aria-labelledby={wallHeading}>
