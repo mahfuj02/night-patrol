@@ -6,6 +6,9 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ### Added
 
+- Lane offset: the car and chase camera follow the right-hand lane, and the road shader draws wheel ruts at the same lane centres (`src/lib/lanes.ts`)
+- Stop-anchored intersections (metre offset from a stop): Princess St, Portage & Main and three residential crossings
+
 - Zod content schemas and typed content for profile, projects, skills, experience, stops, radio and the community note, with cross-reference validation
 - `/simple` page: hero, projects, skills, experience and education, community note, contact and resume link
 - Page metadata, canonical URL, Open Graph tags, `sitemap.xml`, `robots.txt` and Person JSON-LD
