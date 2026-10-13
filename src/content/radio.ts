@@ -15,6 +15,12 @@ export const radioLines: RadioLine[] = [
     text: 'Unit 02, Exchange District. RRC campus on your left. This is where my Winnipeg tech journey started.',
   },
   {
+    id: 'exchange-warehouses',
+    stopId: 'exchange-warehouses',
+    // TODO(content): owner to tweak the wording.
+    text: 'Show tonight at the old warehouse. Tickets running through EventFlow, on your left.',
+  },
+  {
     id: 'portage-main',
     stopId: 'portage-main',
     text: 'Dispatch, the wind at Portage and Main is doing its usual thing. Hold your hat.',

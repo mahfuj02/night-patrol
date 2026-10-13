@@ -163,6 +163,13 @@ export type Intersection = z.infer<typeof IntersectionSchema>;
 export const SignageSchema = z.object({
   stop: z.string().min(1).max(8),
   rrcRooftop: z.string().min(1).max(30),
+  ghostSigns: z.object({
+    dryGoods: z.string().min(1).max(30),
+    wholesale: z.string().min(1).max(30),
+    warehouse: z.string().min(1).max(30),
+    grainExchangeSupply: z.string().min(1).max(30),
+  }),
+  marqueeSubtitle: z.string().min(1).max(40),
 });
 export type Signage = z.infer<typeof SignageSchema>;
 export type RoutePoint = z.infer<typeof RoutePointSchema>;

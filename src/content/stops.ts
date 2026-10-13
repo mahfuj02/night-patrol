@@ -31,6 +31,7 @@ export const stops: Stop[] = [
     landmark: 'exchange-warehouses',
     kind: 'project',
     contentRef: 'eventflow',
+    radioId: 'exchange-warehouses',
   },
   {
     id: 'city-services',
