@@ -6,6 +6,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ### Added
 
+- Phase 5, stop 4 (Exchange District warehouses, EventFlow): three attached brick warehouses with faded painted ghost signs (generic trades, plus a Winnipeg grain-trade one) and a venue under a marquee sign that names the project, which lights up as the car arrives; the EventFlow checkpoint panel with its links; and a radio caption (`checkpoints.ts`, `radio.ts` and `signage.ts`)
 - Phase 4, the first checkpoint end to end (RRC Polytechnic, Exchange District Campus): the reusable `Landmark` pattern (a glow that eases up as the car approaches, holds at the stop and fades, a cut under reduced motion; the camera leans toward a lit landmark), the RRC campus landmark (glass curtain wall with dark mullions, a printed-heritage glass panel with an original arched-window drawing, rooftop letters, limestone and red-brick neighbours), the DOM `CheckpointPanel` (right side on desktop, bottom sheet on a phone, Escape and close button, no focus stealing, announced politely), and HUD radio captions
 - `src/content/checkpoints.ts` chooses which stops open a panel; the RRC radio line and rooftop wording are in `radio.ts` and `signage.ts`
 - `docs/adding-a-stop.md`: the exact steps for a new stop
