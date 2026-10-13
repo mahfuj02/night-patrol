@@ -105,6 +105,7 @@ Replaces the Phase 8 mini-map and **moves earlier** (see [Phases](#phases-and-or
   - Coloured per zone: **sodium orange** Exchange District, **red-orange** downtown, **grey-green** residential, **blue** avenue, **gold** The Forks.
   - **Small dots** are the stops; **larger ringed circles** are the section stations, each with a coloured tag (the section name).
   - A **cyan ring with a small car** marks "you are here". It moves along the line as the car drives.
+- **Project list:** below the route, every project in `projects.ts` (the six with a route stop, plus Game Hub and AV Device Controller, which have none). Choosing one opens its details (the same content as the checkpoint panel, in the side panel or the sheet), so **every project is readable without entering the library**. A project with a route stop also has a "Drive to it" button there.
 - **Footer:** the resume (PDF) and a link to the Contact station, so the resume and contact details are reachable in two clicks on every device.
 
 ### Zone colours
@@ -123,6 +124,7 @@ Each must keep at least 3:1 contrast against `night-2` for the line and dots (WC
 
 ### Behaviour
 
+- Choosing a project from the list **opens its details** in place; the car does not move unless the visitor presses "Drive to it".
 - Choosing a stop or station **drives there**. Under reduced motion the car **cuts** there. Going to a station drives to its red light and opens it for you; going to a stop drives to the stop.
 - A **live status line** (`role="status"`) announces progress: "Driving to Portage & Main…", then "Arrived: Portage & Main" (the checkpoint panel's own announcement is not repeated).
 - **Keyboard:** the menu is a `nav` landmark ("Route map") with the section buttons and an ordered list of buttons. Each button's name says what it is and its state ("Portage & Main, stop 6 of 12", "Education, section station, current"). The current item has `aria-current="location"`. The collapse button has `aria-expanded`. Esc closes the sheet on a phone and returns focus to the button that opened it. Tab order: drive controls, menu, panel.
@@ -134,18 +136,18 @@ Each must keep at least 3:1 contrast against `night-2` for the line and dots (WC
 The Projects station is the **browse hub** for projects. The route stops stay as drive-bys; the library lists the same projects and sends the visitor to them.
 
 - **Arrival.** The usual red light and Open button, then the car parks in front of the library. The camera then **moves inside**, through the door, to a room where **projects are books on a shelf**. Under reduced motion it cuts inside.
-- **The room.** A real interior inside the library's footprint (the shell is hollow), warm light, one instanced shelf, and one book (instanced box) per project in `projects.ts`. A desk lamp glows. It only draws when the camera is near.
+- **The room.** A real interior inside the library's footprint (the shell is hollow), warm light, one instanced shelf, and one book (instanced box) per project in `projects.ts`, **all of them**, including the two with no route stop (Game Hub and AV Device Controller). A desk lamp glows. It only draws when the camera is near.
 - **Selecting a book.** Each book is also a button in a real DOM list (the shelf's accessible UI; the 3D books are the visuals that follow the selection). Arrow keys move along the shelf, Enter opens a book. The book's details open as DOM, reusing the checkpoint panel content (`resolveCheckpoint`): tagline, problem, what was built, stack and links.
-- **"Drive to it".** A button on the details. It leaves the library (camera back out, car backs out of the bay, or a cut under reduced motion), drives to that project's stop and opens its checkpoint panel. Projects that have no route stop (`stopId` unset in `projects.ts`) show the details without the button.
+- **"Drive to it".** A button on the details. It leaves the library (camera back out, car backs out of the bay, or a cut under reduced motion), drives to that project's stop and opens its checkpoint panel. Projects that have no route stop (`stopId` unset in `projects.ts`: Game Hub and AV Device Controller) show the details without the button; for them the library is the only place in the 3D world, and the menu project list and `/simple` also have them.
 - **Esc** from a book returns to the shelf; Esc from the shelf backs out of the station.
 - The library's front wall also shows the lit-wall version of the shelf list for the moment before the camera goes inside (the stack of titles), so the station is never an empty wall.
 
 ## Experience station: the LIILAB office
 
-- **Building.** An office with a glass front. The sign reads "LIILAB · Sylhet office (remote)", with the wording in `src/content/signage.ts` and the place from `experience.ts` (`Sylhet, Bangladesh`). The "(remote)" part is new content and is marked `// TODO(content): verify`.
+- **Building.** An office with a glass front. The sign reads **"LIILAB · Sylhet, Bangladesh"**, in plain lettering, with the wording in `src/content/signage.ts` (the place matches `experience.ts`). The owner worked there in person, so there is no "(remote)".
 - **Arrival.** The standard pattern: park in front of the glass, headlights light the front.
-- **Monitors.** Behind the glass, desks with monitors. Each **monitor screen is real DOM placed in 3D** (the same transform as the wall content, one per monitor), showing one experience entry from `experience.ts`: the LIILAB role first, and the other entries the visitor should see (the Sprint-Innovation win, for example; the owner decides). The list is also a normal list for keyboard and screen readers, in the same order.
-- **Rule 10 note.** CLAUDE.md rule 10 says "no logos or trademarks of real organizations … in signage". A sign with an employer's name as plain words is not a logo, but the rule should say so: add an exception for **plain-text names of the owner's own school, employers and projects, with no logo, colour scheme or lettering copied from the real brand** (as "RRC Polytechnic" already is). The owner approves the wording before this station is built.
+- **Monitors.** Behind the glass, desks with monitors. Each **monitor screen is real DOM placed in 3D** (the same transform as the wall content, one per monitor), showing one entry from `experience.ts`: the **LIILAB** entries, and the **Sprint-Innovation 2025 win**. The list is also a normal list for keyboard and screen readers, in the same order.
+- **Rule 10 note.** CLAUDE.md rule 10 says "no logos or trademarks of real organizations … in signage". A sign with an employer's name as plain words is not a logo, so the rule now says so. **Approved by the owner and updated in this PR:** the owner's own school, employers and projects may appear as plain lettering (as "RRC Polytechnic" already does); still no logos, crests, banners or brand marks, and no lettering, colours or typography copied from the real brand.
 
 ## Skills station
 
@@ -155,21 +157,21 @@ Skills move from the dashboard to their own **tech building** using the standard
 
 | Group    | Skills                                                                        |
 | -------- | ----------------------------------------------------------------------------- |
-| Web      | TypeScript, React, Next.js, Vue, Angular, Tailwind                            |
+| Web      | TypeScript, React, Next.js, Vue, Angular, Tailwind, WordPress                 |
 | Backend  | Node.js, Django, C# / .NET, SQL, Prisma, MongoDB, Firebase, Netlify Functions |
-| Embedded | C, C++, Arduino, I2C (the AV Device Controller project)                       |
+| Embedded | C, C++, Arduino, I2C                                                          |
 | AI tools | Gemini, Groq Whisper, Claude Code                                             |
 | Mobile   | [framework used]                                                              |
 | Also     | Competitive programming (1000+ problems solved)                               |
 
-All of it is `// TODO(content): verify`, including the levels, which are placeholders until the owner reviews them. The Mobile framework is not named yet.
+All of it is `// TODO(content): verify`, including the levels, which are placeholders until the owner reviews them. The Mobile framework is not named yet, so it stays `// TODO(content)`.
 
 ### Changes to `skills.ts`
 
 - A `category` field (`web`, `backend`, `embedded`, `ai`, `mobile`, `also`) replaces the dashboard `group` (`gauge`, `switch`, `indicator`, `preset`). `ui.ts` gets the group labels.
 - **New:** Tailwind, Netlify Functions, Arduino, I2C, the Mobile framework and the competitive programming line. `C / C++` becomes two entries, `C` and `C++`. `Claude` becomes `Claude Code`. `Groq / Whisper` becomes `Groq Whisper`.
-- **Not on the wall as listed:** WordPress (it stays in the LIILAB experience entry). Say if you want it back as a Web or Backend skill.
-- **New project to add:** the **AV Device Controller** (the I2C note points at it). It needs a `projects.ts` entry or the note should be dropped; the content is the owner's to supply.
+- **WordPress stays**, under Web (the existing entry and its note, "Theme performance at LIILAB").
+- **The AV Device Controller is already in `projects.ts`** (a C++17 command-line system simulating control of AV displays, with a GitHub link and no route stop), so it is a library book only, as asked. Its stack there is C++17 and CMake, with no Arduino or I2C. See the open questions.
 - The `/simple` skills list follows the same categories.
 
 ### What the dashboard keeps
@@ -241,11 +243,11 @@ The new order, with sizes. A tag at the end of a group is the release.
 | ----- | ------------------------------------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------- |
 | 5a    | First two stops (RRC, EventFlow)                       | done        | Landmark pattern, checkpoint panel, captions                                                                   |
 | 5b    | **Station arrival pattern** + Education                | L           | State machine, `stations.ts`, parking path, lit wall, red light, bays, convert RRC                             |
-| 5c    | **Transit-map menu** (moved from Phase 8)              | M           | Left panel and sheet, section buttons, zone colours, jump with cut, live status, resume link                   |
+| 5c    | **Transit-map menu** (moved from Phase 8)              | M           | Left panel and sheet, section buttons, zone colours, jump with cut, live status, resume link, the project list |
 | 5d    | Remaining drive-by stops, one PR each                  | S to M each | City services (CivicTrack), Portage & Main (RoleReady), Dashcam, Arcade, Inspection, Warming shelter, CMHR     |
 | 5e    | **Projects station** (library)                         | M to L      | Building, interior room, books, details, "Drive to it". Needs the project stops from 5d                        |
 | 5f    | **Skills station** + `skills.ts` categories            | M           | Building, wall, content change, `/simple` follows. **v0.5.0** when 5b to 5f are done                           |
-| 5g    | **Experience station** (LIILAB office)                 | M           | Building, monitors as DOM in 3D, the rule 10 wording                                                           |
+| 5g    | **Experience station** (LIILAB office)                 | M           | Building, monitors as DOM in 3D (LIILAB and the Sprint-Innovation win)                                         |
 | 6     | Interior and props (shrunk)                            | M           | Interior view, wipers, props, Skills hint on the dashboard. **v0.6.0**                                         |
 | 7     | Ignition, The Forks, **Contact station**, end of shift | L           | Loading screen, roundabout, Contact station, sunrise, reset. **v0.7.0**                                        |
 | 8     | Navigation polish (shrunk)                             | M           | U-turn (shares the path maths with the parking path), mobile polish, shortcut overlay, 2-click e2e. **v0.8.0** |
@@ -268,7 +270,7 @@ Any stop, station, the contact details or the resume is at most **two clicks** f
 - **Stop or station:** open the menu (one click, none on a desktop where it is already open), choose it (one click).
 - **A station:** a section button, one click (two on a phone, where the sheet opens first).
 - **Contact and resume:** the menu footer, or the Contact section button.
-- **A project:** the library shelf, or its stop in the menu.
+- **A project:** the menu's project list, one click to open its details (so it is readable without entering the library, including the two with no route stop), or the library shelf, or its stop in the menu.
 
 `/simple` is unchanged and still has all content, from the same files. It gains section anchors (`#education`, `#projects`, `#experience`, `#skills`, `#contact`). The `/simple` link stays in the corner and in the no-WebGL fallback. A Playwright test checks the two-click rule for every destination, with axe.
 
@@ -293,14 +295,12 @@ Any stop, station, the contact details or the resume is at most **two clicks** f
 - `src/content/stations.ts` (new), validated, with integrity checks (known stops and landmarks, lights clear of other stops).
 - `skills.ts`: the `category` field and the new list above; `/simple` follows.
 - `signage.ts`: the library and LIILAB office wording. `ui.ts`: section labels, the menu, the status line.
-- `projects.ts`: the AV Device Controller, if it is to be a project.
-- CLAUDE.md rule 10: the plain-text-name exception (the owner decides the wording).
+- `projects.ts`: no new entry is needed (AV Device Controller exists); its stack may change (see the open questions).
+- CLAUDE.md rule 10: updated in this PR (the plain-text-name exception, approved).
 - Everything unverified is `// TODO(content): verify`.
 
 ## Open questions
 
-1. **Experience monitors.** Which entries besides LIILAB go on the monitors: the Sprint-Innovation win, the RRC diploma (it is also Education), a "current roles" screen?
-2. **The AV Device Controller.** Is it a project that needs an entry, or a line in the Embedded group?
-3. **WordPress.** Dropped from the skills wall as listed; keep it?
-4. **Rule 10.** Approve the exception for plain-text names of the owner's own school, employers and projects?
-5. **Library details.** Where books come from (all of `projects.ts`, including projects without a stop), and whether the visitor can also read details without going inside (the lit wall shows only titles).
+1. **AV Device Controller and the Embedded group.** The existing project is a C++17 command-line simulation (CMake). Are Arduino and I2C part of it, or a different embedded project? If part of it, its `stack` should change; if different, say what it is and whether it is a project too.
+2. **Golden Rule.** Do the volunteer website for the senior resource centre and its entry go on an Experience monitor? It is not in `experience.ts`, and the owner supplies the wording and dates.
+3. **Mobile framework.** Which one? It stays `// TODO(content)` until named.
