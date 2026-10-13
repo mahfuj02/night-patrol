@@ -99,8 +99,8 @@ describe('CheckpointPanel', () => {
   it('slides out when the visitor drives on, and opens again on the way back', async () => {
     const user = userEvent.setup();
     renderBoth();
-    act(() => state().goToStop(EF));
-    // The stop after it has no checkpoint yet.
+    // City services is the last stop with a panel; Portage & Main, after it, has none yet.
+    act(() => state().goToStop(EF + 1));
     await user.click(screen.getByRole('button', { name: 'Next stop ›' }));
     expect(panel()).toHaveAttribute('data-open', 'false');
     await user.click(screen.getByRole('button', { name: '‹ Prev' }));
@@ -131,7 +131,7 @@ describe('CheckpointPanel', () => {
   it('ignores Escape when it is closed', async () => {
     const user = userEvent.setup();
     render(<CheckpointPanel />);
-    act(() => state().goToStop(EF));
+    act(() => state().goToStop(EF + 1));
     act(() => state().next());
     await user.keyboard('{Escape}');
     expect(state().dismissedStop).toBeNull();

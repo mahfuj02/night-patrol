@@ -41,6 +41,7 @@ export const stops: Stop[] = [
     landmark: 'city-services',
     kind: 'project',
     contentRef: 'civictrack',
+    radioId: 'city-services',
   },
   {
     id: 'portage-main',

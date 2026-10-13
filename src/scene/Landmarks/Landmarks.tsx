@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react';
 import type { LandmarkId } from '@/content/schema';
+import { CityServices } from './CityServices';
 import { ExchangeWarehouses } from './ExchangeWarehouses';
 import { RrcCampus } from './RrcCampus';
 
@@ -17,6 +18,7 @@ export const landmarkComponents: Partial<
 > = {
   'rrc-campus': RrcCampus,
   'exchange-warehouses': ExchangeWarehouses,
+  'city-services': CityServices,
 };
 
 /** Draws every landmark that has been built. */

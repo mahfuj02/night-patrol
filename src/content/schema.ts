@@ -172,6 +172,16 @@ export const SignageSchema = z.object({
     grainExchangeSupply: z.string().min(1).max(30),
   }),
   marqueeSubtitle: z.string().min(1).max(40),
+  // The City services building: rooftop words, and the request board over its door.
+  cityRooftop: z.string().min(1).max(30),
+  requestBoard: z.object({
+    heading: z.string().min(1).max(30),
+    statuses: z.tuple([
+      z.string().min(1).max(20),
+      z.string().min(1).max(20),
+      z.string().min(1).max(20),
+    ]),
+  }),
 });
 export type Signage = z.infer<typeof SignageSchema>;
 export type RoutePoint = z.infer<typeof RoutePointSchema>;

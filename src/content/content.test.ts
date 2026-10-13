@@ -209,6 +209,8 @@ describe('checkpoints', () => {
       'GRAIN EXCHANGE SUPPLY',
     ]);
     expect(signage.marqueeSubtitle).toBe('Tickets · Hosts · Payments');
+    expect(signage.cityRooftop).toBe('City Services');
+    expect(signage.requestBoard.statuses).toEqual(['Received', 'In progress', 'Resolved']);
   });
 
   it('reject unknown stops and refs, duplicates, and stops without content', () => {

@@ -38,7 +38,7 @@ describe('resolveCheckpoint', () => {
     expect(resolveCheckpoint(stop('ignition'), sources)).toBeNull();
     // The RRC campus is a station, so it has no side panel.
     expect(resolveCheckpoint(stop('rrc-campus'), sources)).toBeNull();
-    expect(resolveCheckpoint(stop('city-services'), sources)).toBeNull();
+    expect(resolveCheckpoint(stop('portage-main'), sources)).toBeNull();
     expect(resolveCheckpoint(undefined, sources)).toBeNull();
   });
 

@@ -248,3 +248,53 @@ export function createMarqueeTexture(
     ctx.fillText(subtitle, width / 2, height * 0.74, width * 0.84);
   });
 }
+
+/**
+ * The request board over the City services door: the project name in lit capitals and the three
+ * stages a request moves through, each with a status light. All wording comes from `src/content`.
+ * Bright pixels (letters and lights) are what glow.
+ */
+export function createRequestBoardTexture(
+  title: string,
+  heading: string,
+  statuses: readonly [string, string, string],
+  width = 1024,
+  height = 340,
+): CanvasTexture {
+  return canvasTexture(width, height, (ctx) => {
+    ctx.fillStyle = '#0d1a2b';
+    ctx.fillRect(0, 0, width, height);
+    ctx.strokeStyle = '#4FE3E3';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(10, 10, width - 20, height - 20);
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(79, 227, 227, 0.7)';
+    ctx.shadowBlur = 14;
+    ctx.fillStyle = '#C9F6F6';
+    ctx.font = `900 ${Math.round(height * 0.3)}px 'Arial Black', Impact, sans-serif`;
+    ctx.fillText(title, width / 2, height * 0.24, width * 0.86);
+    ctx.shadowBlur = 6;
+    ctx.fillStyle = '#9FE8E8';
+    ctx.font = `600 ${Math.round(height * 0.12)}px 'Trebuchet MS', sans-serif`;
+    ctx.fillText(heading, width / 2, height * 0.46, width * 0.8);
+    // The three stages, each with its light: amber, cyan, green.
+    const lights = ['#FFB25C', '#4FE3E3', '#8DE59A'];
+    const cell = (width - 80) / 3;
+    statuses.forEach((status, i) => {
+      const x = 40 + cell * i + cell / 2;
+      const y = height * 0.67;
+      const glow = ctx.createRadialGradient(x, y, 0, x, y, 26);
+      glow.addColorStop(0, '#FFFFFF');
+      glow.addColorStop(0.4, lights[i]!);
+      glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(x, y, 26, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#E8EEF5';
+      ctx.font = `600 ${Math.round(height * 0.11)}px 'Trebuchet MS', sans-serif`;
+      ctx.fillText(status, x, height * 0.86, cell - 24);
+    });
+  });
+}

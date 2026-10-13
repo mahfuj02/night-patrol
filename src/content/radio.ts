@@ -21,6 +21,12 @@ export const radioLines: RadioLine[] = [
     text: 'Show tonight at the old warehouse. Tickets running through EventFlow, on your left.',
   },
   {
+    id: 'city-services',
+    stopId: 'city-services',
+    // TODO(content): owner to tweak the wording.
+    text: 'City services building on your left. Every request logged, tracked and closed out. CivicTrack.',
+  },
+  {
     id: 'portage-main',
     stopId: 'portage-main',
     text: 'Dispatch, the wind at Portage and Main is doing its usual thing. Hold your hat.',
