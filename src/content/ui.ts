@@ -39,11 +39,12 @@ export const simpleCopy: UiCopy = {
     community: 'Community',
     contact: 'Contact',
   },
-  skillGroups: {
-    gauge: 'Core stack',
-    indicator: 'Systems',
-    switch: 'Also work with',
-    preset: 'AI tooling',
+  skillCategories: {
+    web: 'Web',
+    backend: 'Backend',
+    embedded: 'Embedded',
+    ai: 'AI tools',
+    mobile: 'Mobile',
   },
   links: {
     live: 'Live site',

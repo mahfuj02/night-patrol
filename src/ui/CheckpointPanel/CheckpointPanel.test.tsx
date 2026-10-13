@@ -38,7 +38,7 @@ describe('CheckpointPanel', () => {
     expect(open).toHaveAttribute('data-open', 'true');
     expect(open).not.toHaveAttribute('inert');
     expect(screen.getByText('Red River College Polytechnic')).toBeInTheDocument();
-    expect(screen.getByText('Sep 2023 \u2013 Aug 2025')).toBeInTheDocument();
+    expect(screen.getByText('Aug 2023 \u2013 Aug 2025')).toBeInTheDocument();
     expect(screen.getByText(/Sprint-Innovation 2025: Winner/)).toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent(
       'Checkpoint opened: RRC Polytechnic, Exchange District Campus. Press Escape to close it.',

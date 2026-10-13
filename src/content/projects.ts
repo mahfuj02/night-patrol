@@ -1,6 +1,7 @@
 import type { Project } from './schema';
 
-// TODO(content): verify every project description, stack and link before launch.
+// Stacks and links follow mahfuj.dev. Case study links point at its project pages.
+// TODO(content): verify the tagline, problem and built text of each project.
 export const projects: Project[] = [
   {
     id: 'eventflow',
@@ -13,13 +14,14 @@ export const projects: Project[] = [
       'Vue 3',
       'TypeScript',
       'Netlify Functions',
+      'Stripe Checkout',
+      'Firebase Auth',
       'MongoDB',
-      'Firebase',
-      'Stripe (test mode)',
     ],
     links: {
       live: 'https://eventflow-mahfuj.netlify.app/',
       github: 'https://github.com/mahfuj02/eventflow',
+      caseStudy: 'https://mahfuj.dev/projects/eventflow',
     },
     images: [],
     stopId: 'exchange-warehouses',
@@ -34,7 +36,7 @@ export const projects: Project[] = [
     stack: ['C#', '.NET', 'Angular', 'SQL Server'],
     links: {
       live: 'https://lemon-island-08030cd0f.1.azurestaticapps.net/requests',
-      // TODO(content): repo is private; add the github link when it is public
+      github: 'https://github.com/mahfuj02/civictrack',
     },
     images: [],
     stopId: 'city-services',
@@ -46,21 +48,25 @@ export const projects: Project[] = [
     problem: 'Job seekers need realistic interview practice with useful feedback.',
     built:
       'A full stack interview prep platform with AI feedback and speech-to-text. I also designed the UI, UX and branding.',
-    stack: ['Next.js', 'Google Gemini', 'Groq Whisper', 'Prisma', 'Neon', 'NextAuth v5'],
-    links: { live: 'https://role-ready-snowy.vercel.app' },
+    stack: ['Next.js', 'TypeScript', 'Supabase Auth'],
+    links: {
+      live: 'https://role-ready-snowy.vercel.app',
+      caseStudy: 'https://mahfuj.dev/projects/role-ready',
+    },
     images: [],
     stopId: 'portage-main',
   },
   {
     id: 'safe-drive-ai',
     name: 'Safe Drive AI',
-    tagline: 'Dashcam-integrated driving safety app.',
+    tagline: 'Mobile app that includes speed monitoring.',
+    // TODO(content): verify; this was written when the project was a dashcam app.
     problem:
       'Drivers benefit from safety insight built on the footage their dashcam already records.',
     built:
-      'A driving safety app that explored dashcam and in-car integrations (BlackVue, Viofo, AAOS).',
-    stack: ['AAOS', 'BlackVue', 'Viofo'],
-    links: {},
+      'A React Native and Expo mobile app, written in TypeScript, that includes speed monitoring.',
+    stack: ['React Native', 'Expo', 'TypeScript'],
+    links: { caseStudy: 'https://mahfuj.dev/projects/safe-drive-ai' },
     images: [],
     stopId: 'dashcam',
   },
@@ -96,6 +102,7 @@ export const projects: Project[] = [
     links: {
       live: 'https://game-hub-rho-inky.vercel.app/',
       github: 'https://github.com/mahfuj02/game-hub',
+      caseStudy: 'https://mahfuj.dev/projects/game-hub',
     },
     images: [],
   },
@@ -108,7 +115,22 @@ export const projects: Project[] = [
     built:
       'A C++17 command-line system that simulates centralized control of multiple AV displays: power, volume, input, temperature monitoring and audit logging.',
     stack: ['C++17', 'CMake'],
-    links: { github: 'https://github.com/mahfuj02/av-device-controller' },
+    links: {
+      github: 'https://github.com/mahfuj02/av-device-controller',
+      caseStudy: 'https://mahfuj.dev/projects/av-device-controller',
+    },
+    images: [],
+  },
+  {
+    // A library book only: no route stop.
+    id: 'connexions-spectrum',
+    name: 'Connexions Spectrum',
+    tagline: 'A mobile app built with React Native.',
+    // TODO(content): owner to describe the problem and what was built; the case study has the detail.
+    problem: 'See the case study for the problem and the approach.',
+    built: 'A React Native mobile app using TanStack Query and the OpenAI API.',
+    stack: ['React Native', 'TanStack Query', 'OpenAI API'],
+    links: { caseStudy: 'https://mahfuj.dev/projects/connexions-spectrum' },
     images: [],
   },
 ];

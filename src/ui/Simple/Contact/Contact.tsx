@@ -36,7 +36,7 @@ export function Contact({ profile }: { profile: Profile }) {
           </li>
         ))}
         <li>
-          <a href={profile.resumePath} className={linkClass}>
+          <a href={profile.resumeUrl} className={linkClass}>
             {simpleCopy.links.resume}
           </a>
         </li>

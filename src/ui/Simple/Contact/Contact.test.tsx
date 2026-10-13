@@ -16,7 +16,7 @@ describe('Contact', () => {
     expect(screen.getByRole('link', { name: profile.links.portfolio })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Download resume (PDF)' })).toHaveAttribute(
       'href',
-      '/resume.pdf',
+      'https://mahfuj.dev/resume/MahfujAhmed_Resume.pdf',
     );
   });
 

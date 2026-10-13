@@ -47,8 +47,8 @@ export const ProfileSchema = z.object({
     linkedin: url,
     portfolio: url,
   }),
-  /** Site-relative path to the resume PDF. */
-  resumePath: z.string().startsWith('/'),
+  /** Where the resume PDF lives (on mahfuj.dev). */
+  resumeUrl: url,
 });
 export type Profile = z.infer<typeof ProfileSchema>;
 
@@ -85,11 +85,11 @@ export const StopSchema = z.object({
 });
 export type Stop = z.infer<typeof StopSchema>;
 
-export const skillGroups = ['gauge', 'switch', 'indicator', 'preset'] as const;
+export const skillCategories = ['web', 'backend', 'embedded', 'ai', 'mobile'] as const;
 export const SkillSchema = z.object({
   id: kebabId,
   name: z.string().min(1),
-  group: z.enum(skillGroups),
+  category: z.enum(skillCategories),
   level: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]),
   note: z.string().min(1).optional(),
 });
@@ -257,11 +257,12 @@ export const UiCopySchema = z.object({
     community: z.string(),
     contact: z.string(),
   }),
-  skillGroups: z.object({
-    gauge: z.string(),
-    indicator: z.string(),
-    switch: z.string(),
-    preset: z.string(),
+  skillCategories: z.object({
+    web: z.string(),
+    backend: z.string(),
+    embedded: z.string(),
+    ai: z.string(),
+    mobile: z.string(),
   }),
   links: z.object({
     live: z.string(),

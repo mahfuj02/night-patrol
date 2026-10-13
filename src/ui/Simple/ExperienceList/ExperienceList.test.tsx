@@ -8,7 +8,7 @@ describe('ExperienceList', () => {
     render(<ExperienceList entries={experience} />);
     const liilab = screen.getByRole('article', { name: 'Junior Software Engineer' });
     expect(within(liilab).getByText(/LIILAB · Sylhet, Bangladesh/)).toBeInTheDocument();
-    expect(within(liilab).getByText('Feb 2021 – Oct 2022')).toBeInTheDocument();
+    expect(within(liilab).getByText('Feb 2021 – May 2023')).toBeInTheDocument();
     expect(within(liilab).getAllByRole('listitem')).toHaveLength(4);
   });
 
