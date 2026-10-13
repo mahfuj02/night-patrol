@@ -23,6 +23,7 @@ import {
   BuildingStretchSchema,
   CommunityNoteSchema,
   ExperienceSchema,
+  LibrarySchema,
   ProfileSchema,
   ProjectSchema,
   RadioLineSchema,
@@ -37,6 +38,7 @@ import {
 import { signage as signageData } from './signage';
 import { skills as skillsData } from './skills';
 import { stations as stationsData } from './stations';
+import { library as libraryData } from './library';
 import { stops as stopsData } from './stops';
 import { transitZones as transitZonesData } from './transit';
 import { simpleCopy as simpleCopyData } from './ui';
@@ -45,6 +47,7 @@ export const atmosphereZones = z.array(AtmosphereZoneSchema).parse(atmosphereZon
 export const backLanes = BackLanesSchema.parse(backLanesData);
 export const buildingStretches = z.array(BuildingStretchSchema).parse(buildingStretchesData);
 export const communityNotes = z.array(CommunityNoteSchema).parse(communityNotesData);
+export const library = LibrarySchema.parse(libraryData);
 export const experience = z.array(ExperienceSchema).parse(experienceData);
 export const profile = ProfileSchema.parse(profileData);
 /** Every project, including the ones not published yet (for tests; the site never uses it). */
@@ -68,6 +71,7 @@ assertContentIntegrity({
   stops,
   projects,
   experience,
+  library,
   communityNotes,
   radioLines,
 });

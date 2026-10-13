@@ -54,8 +54,16 @@ export const stops: Stop[] = [
     radioId: 'portage-main',
   },
   {
-    id: 'dashcam',
+    id: 'millennium-library',
     order: 6,
+    t: 0.549,
+    title: 'Millennium Library',
+    landmark: 'millennium-library',
+    kind: 'section',
+  },
+  {
+    id: 'dashcam',
+    order: 7,
     t: 0.744,
     title: 'Dashcam moment',
     landmark: 'dashcam',
@@ -64,7 +72,7 @@ export const stops: Stop[] = [
   },
   {
     id: 'the-forks',
-    order: 7,
+    order: 8,
     t: 1,
     title: 'The Forks: End of shift',
     landmark: 'the-forks',

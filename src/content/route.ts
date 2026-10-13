@@ -33,6 +33,8 @@ export const route: Route = {
     { x: 497.1, z: 87.3, width: 10 },
     { x: 513.4, z: 98.9, width: 10 },
     { x: 529.1, z: 111.3, width: 10 },
+    // The Library station stop, 600 m along the route, on the first straight after Portage & Main.
+    { x: 535.2, z: 116.1, width: 10, stopId: 'millennium-library' },
     { x: 544.8, z: 123.7, width: 10 },
     { x: 560.5, z: 136.1, width: 10 },
     { x: 576.7, z: 147.7, width: 10 },

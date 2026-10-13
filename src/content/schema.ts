@@ -13,6 +13,7 @@ export const landmarkIds = [
   'exchange-warehouses',
   'city-services',
   'portage-main',
+  'millennium-library',
   'dashcam',
   'the-forks',
 ] as const;
@@ -26,6 +27,8 @@ export const stopKinds = [
   'achievement',
   'community',
   'contact',
+  /** A section station with no project or entry of its own (the library, the skills building). */
+  'section',
 ] as const;
 export const StopKindSchema = z.enum(stopKinds);
 export type StopKind = z.infer<typeof StopKindSchema>;
@@ -47,6 +50,11 @@ export const ProfileSchema = z.object({
   resumeUrl: url,
 });
 export type Profile = z.infer<typeof ProfileSchema>;
+
+/** The shelves of the library. A project sits on one. */
+export const projectCategories = ['web', 'mobile', 'systems', 'ai'] as const;
+export const ProjectCategorySchema = z.enum(projectCategories);
+export type ProjectCategory = z.infer<typeof ProjectCategorySchema>;
 
 export const ProjectSchema = z.object({
   id: kebabId,
@@ -77,6 +85,8 @@ export const ProjectSchema = z.object({
    * the library and /simple) until the flag is removed. Left out means published.
    */
   published: z.boolean().optional(),
+  /** The shelf the project's book stands on in the Millennium Library. */
+  category: ProjectCategorySchema,
   /** Projects without a stop appear only in /simple. */
   stopId: kebabId.optional(),
   /** The lit sign on the project's building at its stop: its name and a slogan. */
@@ -187,6 +197,8 @@ export const SignageSchema = z.object({
   }),
   // The City services building: rooftop words, and the request board over its door.
   cityRooftop: z.string().min(1).max(30),
+  // The lettering on the Millennium Library: plain words in our own type, no logo.
+  libraryLettering: z.string().min(1).max(30),
   requestBoard: z.object({
     statuses: z.tuple([
       z.string().min(1).max(20),
@@ -284,10 +296,28 @@ export const StationSchema = z.object({
       height: z.number().positive(),
     }),
   }),
-  contentRef: kebabId,
+  /** What the wall shows (an experience entry or project); the library has none (it lists books). */
+  contentRef: kebabId.optional(),
   teaserRef: kebabId.optional(),
 });
 export type Station = z.infer<typeof StationSchema>;
+
+/** The Millennium Library: its shelves in order, the call number prefix of each, and the featured book. */
+export const LibrarySchema = z.object({
+  /** The project on the display stand at the entrance. */
+  featured: kebabId,
+  categories: z
+    .array(
+      z.object({
+        id: ProjectCategorySchema,
+        label: z.string().min(1),
+        /** The call number prefix, for example WEB in WEB-01. */
+        prefix: z.string().regex(/^[A-Z]{2,4}$/),
+      }),
+    )
+    .length(projectCategories.length),
+});
+export type Library = z.infer<typeof LibrarySchema>;
 
 export const transitZoneIds = ['exchange', 'downtown', 'residential', 'avenue', 'forks'] as const;
 export const TransitZoneSchema = z.object({
@@ -367,6 +397,31 @@ export const UiCopySchema = z.object({
     resume: z.string(),
     contact: z.string(),
     projectDetails: z.string(),
+  }),
+  library: z.object({
+    /** The catalog terminal: its name, the search box and the filter group. */
+    catalog: z.string(),
+    searchLabel: z.string(),
+    searchPlaceholder: z.string(),
+    filters: z.string(),
+    all: z.string(),
+    /** Read out as the search changes. */
+    countOne: z.string(),
+    /** `{n}` is the number of books. */
+    countMany: z.string(),
+    none: z.string(),
+    /** The shelf of books, and one book's button label: `{call}` and `{name}`. */
+    shelf: z.string(),
+    bookButton: z.string(),
+    featured: z.string(),
+    /** The open book: its name for assistive tech, the back button and the page links. */
+    book: z.string(),
+    back: z.string(),
+    checkOut: z.string(),
+    source: z.string(),
+    caseStudy: z.string(),
+    /** The typographic cover shown when a project has no picture: `{call}` is its call number. */
+    cover: z.string(),
   }),
   station: z.object({
     /** The Open button. `{section}` is the section name. */

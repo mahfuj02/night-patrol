@@ -71,7 +71,7 @@ describe('buildSnowRidge', () => {
       }
       return max;
     };
-    for (const u of [0.12, 0.25, 0.35, 0.55, 0.7, 0.9]) {
+    for (const u of [0.12, 0.25, 0.35, 0.6, 0.7, 0.9]) {
       expect(peak(u)).toBeGreaterThan(0.3);
       expect(peak(u)).toBeLessThan(1.6);
     }
