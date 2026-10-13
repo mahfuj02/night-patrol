@@ -19,6 +19,9 @@ import { CAR_HALF_LENGTH } from './stationGeometry';
 import { stationFrames } from './stationFrames';
 import { stationView } from './stationView';
 
+/** How close (in route `t`) the car must be to a stop for a station chosen from the map to open. */
+const ARRIVED = 0.002;
+
 const lane = new Vector3();
 const tangent = new Vector3();
 const corner = new Vector3();
@@ -43,8 +46,14 @@ export function StationDriver({ reducedMotion }: { reducedMotion: boolean }) {
 
   useFrame((state, delta) => {
     const dt = Math.min(delta, 0.1);
-    const { station, finishManeuver } = useDriveStore.getState();
+    const { station, finishManeuver, pendingOpen, openStation } = useDriveStore.getState();
     const l = local.current;
+
+    // A station chosen from the map opens as soon as the car has arrived at its stop.
+    if (pendingOpen !== null && station.phase === 'idle') {
+      const target = stationFrames[pendingOpen];
+      if (target && Math.abs(progress.t - target.stopT) < ARRIVED) openStation();
+    }
     const frame = station.index !== null ? stationFrames[station.index] : undefined;
 
     if (station.phase !== l.phase) {

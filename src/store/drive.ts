@@ -51,6 +51,8 @@ interface DriveState {
   atLight: number | null;
   /** The station the visitor can open right now (at its light, or at its stop), or null. */
   openable: number | null;
+  /** A station the visitor chose from the map: opened as soon as the car has arrived at it. */
+  pendingOpen: number | null;
   /** The station arrival state: idle, turning in, parked or backing out. */
   station: StationState;
   /** False when the wall is too small on screen to read, so the content opens in the sheet too. */
@@ -59,6 +61,8 @@ interface DriveState {
   next: () => void;
   prev: () => void;
   goToStop: (index: number) => void;
+  /** Drives to a station and opens it once there. */
+  goToStation: (index: number) => void;
   dismissPanel: () => void;
   openStation: () => void;
   closeStation: () => void;
@@ -88,14 +92,16 @@ function derive(target: number, dismissed: number | null = null) {
 
 export const useDriveStore = create<DriveState>((set, get) => {
   /** Applies a movement unless the car is in a station: then it backs out first (or is ignored). */
-  const move = (dir: 1 | -1 | 0, go: () => void, jump?: number) => {
+  const move = (dir: 1 | -1 | 0, go: () => void, jump?: number, open?: number) => {
     const { station } = get();
     if (station.phase === 'idle') return go();
     if (station.phase === 'parked' && (dir !== 0 || jump !== undefined)) {
       const pending =
-        jump !== undefined
-          ? { kind: 'go' as const, index: jump }
-          : { kind: 'dir' as const, dir: dir as 1 | -1 };
+        open !== undefined
+          ? { kind: 'station' as const, index: open }
+          : jump !== undefined
+            ? { kind: 'go' as const, index: jump }
+            : { kind: 'dir' as const, dir: dir as 1 | -1 };
       set({ station: reduceStation(station, { type: 'close', pending }) });
     }
     // While turning in or backing out, movement is ignored.
@@ -107,24 +113,49 @@ export const useDriveStore = create<DriveState>((set, get) => {
   return {
     ...derive(0),
     station: INITIAL_STATION,
+    pendingOpen: null,
     wallLegible: true,
     nudge: (delta) =>
       move(delta > 0 ? 1 : delta < 0 ? -1 : 0, () =>
-        set(derive(get().target + delta, get().dismissedStop)),
+        set({ ...derive(get().target + delta, get().dismissedStop), pendingOpen: null }),
       ),
     next: () =>
-      move(1, () => set(derive(stepToStop(get().target, 1, STOP_TS), get().dismissedStop))),
+      move(1, () =>
+        set({
+          ...derive(stepToStop(get().target, 1, STOP_TS), get().dismissedStop),
+          pendingOpen: null,
+        }),
+      ),
     prev: () =>
-      move(-1, () => set(derive(stepToStop(get().target, -1, STOP_TS), get().dismissedStop))),
+      move(-1, () =>
+        set({
+          ...derive(stepToStop(get().target, -1, STOP_TS), get().dismissedStop),
+          pendingOpen: null,
+        }),
+      ),
     goToStop: (index) =>
       move(
         0,
         () => {
           const stopT = STOP_TS[index];
-          if (stopT !== undefined) set(derive(stopT, get().dismissedStop));
+          if (stopT !== undefined) {
+            set({ ...derive(stopT, get().dismissedStop), pendingOpen: null });
+          }
         },
         index,
       ),
+    goToStation: (index) => {
+      const station = stations[index];
+      const stopIndex = stops.findIndex((s) => s.id === station?.stopId);
+      const stopT = STOP_TS[stopIndex];
+      if (!station || stopT === undefined) return;
+      move(
+        0,
+        () => set({ ...derive(stopT, get().dismissedStop), pendingOpen: index }),
+        stopIndex,
+        index,
+      );
+    },
     dismissPanel: () => {
       const { atStop, stopIndex } = get();
       if (atStop) set({ dismissedStop: stopIndex });
@@ -132,6 +163,7 @@ export const useDriveStore = create<DriveState>((set, get) => {
     openStation: () => {
       const { openable, station } = get();
       if (openable !== null && station.phase === 'idle') {
+        set({ pendingOpen: null });
         dispatch({ type: 'open', index: openable });
       }
     },
@@ -145,6 +177,7 @@ export const useDriveStore = create<DriveState>((set, get) => {
         set({ station: { ...after, pending: { kind: 'none' } }, wallLegible: true });
         if (pending.kind === 'dir') (pending.dir === 1 ? get().next : get().prev)();
         else if (pending.kind === 'go') get().goToStop(pending.index);
+        else if (pending.kind === 'station') get().goToStation(pending.index);
       }
     },
     setWallLegible: (legible) => {
