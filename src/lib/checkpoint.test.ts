@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { checkpoints } from '@/content/checkpoints';
 import { experience } from '@/content/experience';
 import { projects } from '@/content/projects';
 import { stations } from '@/content/stations';
 import { stops } from '@/content/stops';
 import { resolveCheckpoint, resolveProjectDetails, resolveStation } from './checkpoint';
 
-const sources = { checkpoints, experience, projects };
+const sources = { experience, projects };
 const stop = (id: string) => stops.find((s) => s.id === id);
 
 describe('resolveCheckpoint', () => {
@@ -34,20 +33,14 @@ describe('resolveCheckpoint', () => {
     expect(result.teaser).toBeUndefined();
   });
 
-  it('returns null for stops without a checkpoint or without content', () => {
+  it('returns null for stops without content', () => {
     expect(resolveCheckpoint(stop('ignition'), sources)).toBeNull();
-    // The RRC campus is a station, so it has no side panel.
-    expect(resolveCheckpoint(stop('rrc-campus'), sources)).toBeNull();
-    expect(resolveCheckpoint(stop('portage-main'), sources)).toBeNull();
     expect(resolveCheckpoint(undefined, sources)).toBeNull();
   });
 
   it('shows a project when the stop points at one', () => {
     const project = projects[0]!;
-    const result = resolveCheckpoint(
-      { id: 'demo', contentRef: project.id },
-      { checkpoints: [{ stopId: 'demo' }], experience, projects },
-    )!;
+    const result = resolveCheckpoint({ id: 'demo', contentRef: project.id }, sources)!;
     expect(result.main.kind).toBe('project');
     if (result.main.kind === 'project') {
       expect(result.main.title).toBe(project.name);
@@ -57,19 +50,11 @@ describe('resolveCheckpoint', () => {
   });
 
   it('returns null when the content it points at is missing', () => {
-    expect(
-      resolveCheckpoint(
-        { id: 'demo', contentRef: 'nothing' },
-        { checkpoints: [{ stopId: 'demo' }], experience, projects },
-      ),
-    ).toBeNull();
+    expect(resolveCheckpoint({ id: 'demo', contentRef: 'nothing' }, sources)).toBeNull();
   });
 
   it('leaves out a teaser that does not exist', () => {
-    const result = resolveCheckpoint(stop('rrc-campus'), {
-      ...sources,
-      checkpoints: [{ stopId: 'rrc-campus', teaserRef: 'missing' }],
-    })!;
+    const result = resolveCheckpoint(stop('rrc-campus'), sources, 'missing')!;
     expect(result.teaser).toBeUndefined();
   });
 });
@@ -77,7 +62,7 @@ describe('resolveCheckpoint', () => {
 describe('resolveProjectDetails', () => {
   it('shows any project, including the ones with no route stop', () => {
     for (const project of projects) {
-      const result = resolveProjectDetails(project.id, { experience, projects })!;
+      const result = resolveProjectDetails(project.id, sources)!;
       expect(result.main.kind).toBe('project');
       expect(result.main.title).toBe(project.name);
       expect(result.teaser).toBeUndefined();
@@ -85,7 +70,7 @@ describe('resolveProjectDetails', () => {
   });
 
   it('returns null for something that is not a project', () => {
-    expect(resolveProjectDetails('liilab', { experience, projects })).toBeNull();
-    expect(resolveProjectDetails('nothing', { experience, projects })).toBeNull();
+    expect(resolveProjectDetails('liilab', sources)).toBeNull();
+    expect(resolveProjectDetails('nothing', sources)).toBeNull();
   });
 });

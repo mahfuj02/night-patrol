@@ -8,12 +8,12 @@ The route map is a DOM menu that lists the whole route as a vertical transit lin
 - **Stops** are small dots. A stop that hosts a station is drawn as a **ringed circle with a coloured tag** with the section name, and choosing it drives there and opens the station.
 - **You are here**: a cyan ring with a car that follows the eased drive progress (written straight to the element each frame, so React does not re-render).
 - **Section buttons** above the line, one per built station.
-- **Projects**: every project in `projects.ts`. A project opens a details panel (the same markup as the checkpoint panel); **Drive to it** appears only if the project has a route stop.
+- **Projects**: every project in `projects.ts`. A project opens a details panel (the same markup as a station wall); **Drive to it** appears only if the project has a route stop.
 - **Resume (PDF)** (`profile.resumeUrl`) and **Contact details** (`/simple#contact-heading`).
 
 ## Behaviour
 
-- Wide screens (1024px and up): a left-hand panel, open by default and collapsible; the project details open beside it so the right side stays free for the checkpoint panel. Phones: a bottom sheet, closed by default, closing after a choice. The open state is not stored.
+- Wide screens (1024px and up): a left-hand panel, open by default and collapsible; the project details open beside it so the right side stays free. Phones: a bottom sheet, closed by default, closing after a choice. The open state is not stored.
 - Choosing an entry drives there (a cut under reduced motion). A `role="status"` line says "Driving to {name}…", then "Arrived: {name}" once the eased progress reaches the stop (and the station is parked). It is cleared if the visitor drives elsewhere first.
 - Nothing takes focus by itself. Project details take focus when opened; Escape closes them and returns focus to the project button. The details close when the car moves to another stop.
 - All copy is in `simpleCopy.menu` (`src/content/ui.ts`).

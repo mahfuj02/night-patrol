@@ -20,7 +20,7 @@ import {
 } from './warehouseModel';
 
 const frame = landmarkFrame(routeModel, warehousesPlacement);
-/** The marquee's first line is the project the stop is about, from content. */
+/** The marquee shows the sign of the project the stop is about, from content. */
 const eventflow = projects.find((p) => p.stopId === warehousesPlacement.stopId);
 
 /**
@@ -39,8 +39,8 @@ export function ExchangeWarehouses({ reducedMotion }: { reducedMotion: boolean }
       grain: signage.ghostSigns.grainExchangeSupply,
     });
     const marqueeMap = createMarqueeTexture(
-      (eventflow?.name ?? '').toUpperCase(),
-      signage.marqueeSubtitle,
+      (eventflow?.sign?.name ?? '').toUpperCase(),
+      eventflow?.sign?.slogan ?? '',
     );
     return {
       bodies: warehouseBodyGeometry(),

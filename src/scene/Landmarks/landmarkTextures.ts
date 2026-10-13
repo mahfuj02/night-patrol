@@ -1,5 +1,6 @@
 import { CanvasTexture, SRGBColorSpace } from 'three';
 import { world } from '@/lib/palette';
+import { sloganLines } from './signText';
 
 function canvasTexture(
   width: number,
@@ -207,6 +208,7 @@ function splitGrain(text: string): string[] {
  */
 export function createMarqueeTexture(
   title: string,
+  /** The slogan, set over one or two lines. */
   subtitle: string,
   width = 1024,
   height = 304,
@@ -241,11 +243,15 @@ export function createMarqueeTexture(
     ctx.shadowBlur = 18;
     ctx.fillStyle = '#FFE6A8';
     ctx.font = `900 ${Math.round(height * 0.38)}px 'Arial Black', Impact, sans-serif`;
-    ctx.fillText(title, width / 2, height * 0.42, width * 0.86);
+    ctx.fillText(title, width / 2, height * 0.36, width * 0.86);
     ctx.shadowBlur = 8;
     ctx.fillStyle = '#FFD08A';
-    ctx.font = `600 ${Math.round(height * 0.15)}px 'Trebuchet MS', sans-serif`;
-    ctx.fillText(subtitle, width / 2, height * 0.74, width * 0.84);
+    ctx.font = `600 ${Math.round(height * 0.12)}px 'Trebuchet MS', sans-serif`;
+    const lines = sloganLines(subtitle);
+    lines.forEach((line, i) => {
+      const y = height * (lines.length === 1 ? 0.72 : 0.66 + i * 0.14);
+      ctx.fillText(line, width / 2, y, width * 0.84);
+    });
   });
 }
 
@@ -256,7 +262,7 @@ export function createMarqueeTexture(
  */
 export function createRequestBoardTexture(
   title: string,
-  heading: string,
+  slogan: string,
   statuses: readonly [string, string, string],
   width = 1024,
   height = 340,
@@ -273,17 +279,19 @@ export function createRequestBoardTexture(
     ctx.shadowBlur = 14;
     ctx.fillStyle = '#C9F6F6';
     ctx.font = `900 ${Math.round(height * 0.3)}px 'Arial Black', Impact, sans-serif`;
-    ctx.fillText(title, width / 2, height * 0.24, width * 0.86);
+    ctx.fillText(title, width / 2, height * 0.2, width * 0.86);
     ctx.shadowBlur = 6;
     ctx.fillStyle = '#9FE8E8';
-    ctx.font = `600 ${Math.round(height * 0.12)}px 'Trebuchet MS', sans-serif`;
-    ctx.fillText(heading, width / 2, height * 0.46, width * 0.8);
+    ctx.font = `600 ${Math.round(height * 0.115)}px 'Trebuchet MS', sans-serif`;
+    sloganLines(slogan).forEach((line, i) => {
+      ctx.fillText(line, width / 2, height * (0.42 + i * 0.13), width * 0.86);
+    });
     // The three stages, each with its light: amber, cyan, green.
     const lights = ['#FFB25C', '#4FE3E3', '#8DE59A'];
     const cell = (width - 80) / 3;
     statuses.forEach((status, i) => {
       const x = 40 + cell * i + cell / 2;
-      const y = height * 0.67;
+      const y = height * 0.72;
       const glow = ctx.createRadialGradient(x, y, 0, x, y, 26);
       glow.addColorStop(0, '#FFFFFF');
       glow.addColorStop(0.4, lights[i]!);
@@ -294,7 +302,7 @@ export function createRequestBoardTexture(
       ctx.fill();
       ctx.fillStyle = '#E8EEF5';
       ctx.font = `600 ${Math.round(height * 0.11)}px 'Trebuchet MS', sans-serif`;
-      ctx.fillText(status, x, height * 0.86, cell - 24);
+      ctx.fillText(status, x, height * 0.9, cell - 24);
     });
   });
 }

@@ -33,6 +33,20 @@ describe('Subtitles', () => {
     );
   });
 
+  it('also carries the words on the sign at a project stop, for screen readers', () => {
+    render(<Subtitles />);
+    act(() => state().goToStop(indexOf('exchange-warehouses')));
+    expect(region()).toHaveTextContent(
+      "Sign: EventFlow. Book your ticket. Tonight's show starts here.",
+    );
+  });
+
+  it('announces a sign even at a stop with no radio line', () => {
+    render(<Subtitles />);
+    act(() => state().goToStop(indexOf('dashcam')));
+    expect(region()).toHaveTextContent('Sign: Safe Drive AI. Eyes on the road. AI on your side.');
+  });
+
   it('clears the caption while the car is between stops', () => {
     render(<Subtitles />);
     const i = indexOf('rrc-campus');

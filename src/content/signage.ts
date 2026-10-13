@@ -13,11 +13,9 @@ export const signage: Signage = {
     warehouse: 'WAREHOUSE',
     grainExchangeSupply: 'GRAIN EXCHANGE SUPPLY',
   },
-  // Second line of the EventFlow marquee. The first line is the project name from projects.ts.
-  marqueeSubtitle: 'Tickets · Hosts · Payments',
   // The City services building: plain words in our own type, no city logo or crest.
   cityRooftop: 'City Services',
-  // The board over its door: the project name comes from projects.ts; these are the three stages
+  // The board over its door: the sign wording comes from projects.ts; these are the three stages
   // a request moves through.
-  requestBoard: { heading: 'Service requests', statuses: ['Received', 'In progress', 'Resolved'] },
+  requestBoard: { statuses: ['Received', 'In progress', 'Resolved'] },
 };

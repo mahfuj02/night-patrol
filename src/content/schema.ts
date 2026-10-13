@@ -67,6 +67,8 @@ export const ProjectSchema = z.object({
   images: z.array(z.object({ src: z.string().min(1), alt: z.string().min(1) })),
   /** Projects without a stop appear only in /simple. */
   stopId: kebabId.optional(),
+  /** The lit sign on the project's building at its stop: its name and a slogan. */
+  sign: z.object({ name: z.string().min(1).max(30), slogan: z.string().min(1).max(80) }).optional(),
 });
 export type Project = z.infer<typeof ProjectSchema>;
 
@@ -171,11 +173,9 @@ export const SignageSchema = z.object({
     warehouse: z.string().min(1).max(30),
     grainExchangeSupply: z.string().min(1).max(30),
   }),
-  marqueeSubtitle: z.string().min(1).max(40),
   // The City services building: rooftop words, and the request board over its door.
   cityRooftop: z.string().min(1).max(30),
   requestBoard: z.object({
-    heading: z.string().min(1).max(30),
     statuses: z.tuple([
       z.string().min(1).max(20),
       z.string().min(1).max(20),
@@ -236,13 +236,6 @@ export const BackLanesSchema = z.object({
   binChance: unit,
 });
 export type BackLanes = z.infer<typeof BackLanesSchema>;
-
-export const CheckpointSchema = z.object({
-  stopId: kebabId,
-  /** Id of an experience entry or project shown as a short teaser under the main content. */
-  teaserRef: kebabId.optional(),
-});
-export type Checkpoint = z.infer<typeof CheckpointSchema>;
 
 export const sections = ['education', 'projects', 'experience', 'skills', 'contact'] as const;
 export const SectionSchema = z.enum(sections);
@@ -336,15 +329,12 @@ export const UiCopySchema = z.object({
     githubProfile: z.string(),
   }),
   labels: z.object({ stack: z.string(), problem: z.string(), built: z.string() }),
-  checkpoint: z.object({
-    /** Accessible name of the panel. `{title}` is the stop title. */
-    label: z.string(),
-    close: z.string(),
-    /** Read out when the panel opens. `{title}` is the stop title. */
-    opened: z.string(),
-    teaser: z.string(),
+  checkpoint: z.object({ teaser: z.string() }),
+  hud: z.object({
+    radioLabel: z.string(),
+    /** Read out at a project stop for screen readers. `{name}` and `{slogan}` are the sign's. */
+    sign: z.string(),
   }),
-  hud: z.object({ radioLabel: z.string() }),
   menu: z.object({
     /** The button that opens the route map, and the map's accessible name. */
     toggle: z.string(),

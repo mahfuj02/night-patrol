@@ -1,20 +1,25 @@
 'use client';
 
+import { projects } from '@/content/projects';
 import { radioLines } from '@/content/radio';
 import { stops } from '@/content/stops';
 import { simpleCopy } from '@/content/ui';
+import { formatTemplate } from '@/lib/template';
 import { useDriveStore } from '@/store/drive';
 
 /**
  * The dispatch radio as captions: the stop's radio line, shown as text while the car is at the
- * stop. Every radio line is captioned (CLAUDE.md rule 6); there is no audio. The region is polite,
- * so a screen reader reads a new line when it appears without interrupting.
+ * stop. Every radio line is captioned (CLAUDE.md rule 6); there is no audio. At a project stop the
+ * region also carries the words on the lit sign, for screen readers (the sign is drawn in 3D, so it
+ * has no text of its own). The region is polite, so a screen reader reads a new line when it appears
+ * without interrupting.
  */
 export function Subtitles() {
   const stopIndex = useDriveStore((s) => s.stopIndex);
   const atStop = useDriveStore((s) => s.atStop);
   const stop = stops[stopIndex];
   const line = atStop && stop?.radioId ? radioLines.find((l) => l.id === stop.radioId) : undefined;
+  const sign = atStop && stop ? projects.find((p) => p.stopId === stop.id)?.sign : undefined;
 
   return (
     <div
@@ -28,6 +33,7 @@ export function Subtitles() {
           <span className="text-hud font-mono">{simpleCopy.hud.radioLabel}:</span> {line.text}
         </p>
       )}
+      {sign && <p className="sr-only">{formatTemplate(simpleCopy.hud.sign, sign)}</p>}
     </div>
   );
 }

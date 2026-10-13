@@ -6,6 +6,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ### Changed
 
+- Drive-by project stops are signs, not popups. The checkpoint panel is gone: each project building carries a lit sign with the project name and a slogan (a new `sign` field on projects, wording marked `TODO(content)`; AV Device Controller has none yet), the radio caption stays and now also announces the sign text for screen readers, and the full project details are in the route map's project list (and, later, the library). Removed `checkpoints.ts`, the panel, `dismissPanel`, and `marqueeSubtitle`; the EventFlow marquee and the CivicTrack request board show the sign wording
 - Content synced with mahfuj.dev (owner overrides kept: the email): LIILAB as Junior Software Engineer, Feb 2021 to May 2023; the RRC diploma from August 2023 to August 2025 (graduation TODO removed); a new Industrial Project entry (RRC Polytechnic, mobile app development, May to September 2025); the new Connexions Spectrum project (a library book, no route stop); Safe Drive AI and RoleReady stacks; the CivicTrack repository link; case study links to mahfuj.dev for the projects that have one; and the resume link on mahfuj.dev (`profile.resumeUrl` replaces the local `/resume.pdf`)
 - Skills are grouped by category (web, backend, embedded, ai, mobile) instead of dashboard widget groups, with Tailwind, Netlify Functions, React Native and Expo added, `C / C++` split into `C` and `C++`, and `Claude` renamed `Claude Code`
 

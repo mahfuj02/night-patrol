@@ -25,6 +25,8 @@ export const projects: Project[] = [
     },
     images: [],
     stopId: 'exchange-warehouses',
+    // TODO(content): owner to tweak the sign wording.
+    sign: { name: 'EventFlow', slogan: "Book your ticket. Tonight's show starts here." },
   },
   {
     id: 'civictrack',
@@ -40,6 +42,8 @@ export const projects: Project[] = [
     },
     images: [],
     stopId: 'city-services',
+    // TODO(content): owner to tweak the sign wording.
+    sign: { name: 'CivicTrack', slogan: 'Help make Winnipeg better. Report it, track it, fixed.' },
   },
   {
     id: 'roleready',
@@ -55,6 +59,8 @@ export const projects: Project[] = [
     },
     images: [],
     stopId: 'portage-main',
+    // TODO(content): owner to tweak the sign wording.
+    sign: { name: 'RoleReady', slogan: 'Your career starts here. Practice interviews with AI.' },
   },
   {
     id: 'safe-drive-ai',
@@ -69,6 +75,8 @@ export const projects: Project[] = [
     links: { caseStudy: 'https://mahfuj.dev/projects/safe-drive-ai' },
     images: [],
     stopId: 'dashcam',
+    // TODO(content): owner to tweak the sign wording.
+    sign: { name: 'Safe Drive AI', slogan: 'Eyes on the road. AI on your side.' },
   },
   {
     id: 'akari',
@@ -80,6 +88,8 @@ export const projects: Project[] = [
     links: {},
     images: [],
     stopId: 'arcade',
+    // TODO(content): owner to tweak the sign wording.
+    sign: { name: 'Akari', slogan: 'Light up the board.' },
   },
   {
     id: 'site-audit-extension',
@@ -91,6 +101,8 @@ export const projects: Project[] = [
     links: {},
     images: [],
     stopId: 'inspection-building',
+    // TODO(content): owner to tweak the sign wording.
+    sign: { name: 'Site Audit Extension', slogan: 'Every page, inspected.' },
   },
   {
     id: 'game-hub',

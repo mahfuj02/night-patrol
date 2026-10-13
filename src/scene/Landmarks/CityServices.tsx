@@ -24,7 +24,7 @@ import {
 import { cityServicesPlacement, landmarkFrame } from './placement';
 
 const frame = landmarkFrame(routeModel, cityServicesPlacement);
-/** The request board names the project the stop is about, from content. */
+/** The request board shows the sign of the project the stop is about, from content. */
 const civictrack = projects.find((p) => p.stopId === cityServicesPlacement.stopId);
 
 /**
@@ -37,8 +37,8 @@ const civictrack = projects.find((p) => p.stopId === cityServicesPlacement.stopI
 export function CityServices({ reducedMotion }: { reducedMotion: boolean }) {
   const parts = useMemo(() => {
     const boardMap = createRequestBoardTexture(
-      (civictrack?.name ?? '').toUpperCase(),
-      signage.requestBoard.heading,
+      (civictrack?.sign?.name ?? '').toUpperCase(),
+      civictrack?.sign?.slogan ?? '',
       signage.requestBoard.statuses,
     );
     const signMap = createRooftopSignTexture(signage.cityRooftop);

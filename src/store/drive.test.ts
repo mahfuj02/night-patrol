@@ -59,32 +59,3 @@ describe('drive store', () => {
     expect(state().stopIndex).toBe(0);
   });
 });
-
-describe('dismissing the checkpoint panel', () => {
-  beforeEach(() => {
-    state().goToStop(0);
-  });
-
-  it('remembers the stop whose panel was closed, only while the visitor stays there', () => {
-    state().goToStop(2);
-    expect(state().dismissedStop).toBeNull();
-    state().dismissPanel();
-    expect(state().dismissedStop).toBe(2);
-    // Staying at the stop (even re-selecting it) keeps the panel closed.
-    state().goToStop(2);
-    expect(state().dismissedStop).toBe(2);
-    // Driving away clears it, so the panel can open again on the way back.
-    state().next();
-    expect(state().dismissedStop).toBeNull();
-    state().prev();
-    expect(state().stopIndex).toBe(2);
-    expect(state().dismissedStop).toBeNull();
-  });
-
-  it('does nothing while en route', () => {
-    state().nudge((STOP_TS[1]! + STOP_TS[2]!) / 2);
-    expect(state().atStop).toBe(false);
-    state().dismissPanel();
-    expect(state().dismissedStop).toBeNull();
-  });
-});
