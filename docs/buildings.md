@@ -42,6 +42,10 @@ Four instanced draw calls on every tier (walls, gables, snow slabs, porch lights
 
 The first 70 m of every cross street is lined in the style of the stretch it crosses (see `docs/streets.md`).
 
+## Back lanes
+
+See `docs/backlanes.md`.
+
 ## Not yet
 
-Back lanes (poles, bins, fences) and the landmarks (RRC campus, Portage & Main, CMHR) come in later slices. Street names and signs arrive with the signs.
+The landmarks (RRC campus, Portage & Main, CMHR) come in later slices. Street names and signs arrive with the signs.

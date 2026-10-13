@@ -6,6 +6,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ### Added
 
+- Back lanes behind the houses: wooden power poles with cross arms and sagging wires, fences along the back and one side of the lots, and pairs of city bins (`src/content/backLanes.ts`)
 - Cross streets at the intersections (road and plowed ridges, buildings along the first 70 m), traffic lights at Princess St and Portage & Main (fixed green on the route, red on the cross street, emissive lamps with bloom and a faint coloured tint on the snow), and stop signs on the three residential cross streets (`street` and `control` in `route.ts`, lettering in `src/content/signage.ts`)
 - Buildings: procedural instanced warehouses, towers and houses with detached garages along the route, from `src/content/buildings.ts`: continuous attached street walls in the Exchange District and downtown (broken only at intersections), spaced houses with garages and warm porch lights, one emissive window shader (warm/cool/unlit per window, no texture per building), brick normal map on high and medium, and snow on roofs
 - A little more moonlight on the avenue stretch (higher gain, lower angle)
