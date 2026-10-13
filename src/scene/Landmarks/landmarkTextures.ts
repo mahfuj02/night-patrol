@@ -117,3 +117,134 @@ export function createRooftopSignTexture(text: string, width = 1024, height = 16
     }
   });
 }
+
+/** Where each ghost sign sits in the atlas, as uv rectangles [u0, v0, u1, v1] (v up). */
+export const ghostAtlasRects = {
+  dryGoods: [0, 0.6, 1, 1],
+  grain: [0, 0.2, 1, 0.6],
+  warehouse: [0, 0, 1, 0.2],
+} as const satisfies Record<string, [number, number, number, number]>;
+
+/** A small deterministic random, so the fading is the same on every load. */
+function seeded(seed: number) {
+  let s = seed >>> 0;
+  return () => {
+    s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+}
+
+/**
+ * Faded painted wall signs ("ghost signs") for the old warehouses, as one atlas: each sign is
+ * pale paint with a ruled border, its words in heavy capitals, then worn away with speckles and
+ * streaks so only part of it is left. The words come from `src/content` and are generic trades.
+ */
+export function createGhostSignTexture(
+  words: { dryGoods: string; wholesale: string; warehouse: string; grain: string },
+  width = 1024,
+  height = 1024,
+): CanvasTexture {
+  return canvasTexture(width, height, (ctx) => {
+    const random = seeded(77);
+    const paint = '#E9DFC8';
+    const sign = (
+      rect: readonly [number, number, number, number],
+      lines: string[],
+      fontScale: number,
+    ) => {
+      const x = rect[0] * width;
+      const w = (rect[2] - rect[0]) * width;
+      const y = (1 - rect[3]) * height;
+      const h = (rect[3] - rect[1]) * height;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(x, y, w, h);
+      ctx.clip();
+      ctx.fillStyle = paint;
+      ctx.strokeStyle = paint;
+      ctx.lineWidth = h * 0.035;
+      ctx.strokeRect(x + h * 0.06, y + h * 0.06, w - h * 0.12, h - h * 0.12);
+      const size = (h * fontScale) / lines.length;
+      ctx.font = `900 ${Math.round(size)}px Impact, 'Arial Black', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      lines.forEach((line, i) => {
+        ctx.fillText(line, x + w / 2, y + h * ((i + 0.5) / lines.length), w * 0.86);
+      });
+      // Worn paint: blocks and streaks cut out of the sign.
+      ctx.globalCompositeOperation = 'destination-out';
+      for (let i = 0; i < 160; i++) {
+        ctx.globalAlpha = 0.25 + random() * 0.6;
+        ctx.fillRect(x + random() * w, y + random() * h, 4 + random() * 26, 2 + random() * 8);
+      }
+      for (let i = 0; i < 14; i++) {
+        ctx.globalAlpha = 0.5 + random() * 0.4;
+        const sx = x + random() * w;
+        ctx.fillRect(sx, y, 3 + random() * 10, h);
+      }
+      ctx.restore();
+    };
+    sign(ghostAtlasRects.dryGoods, [words.dryGoods, words.wholesale], 0.78);
+    sign(
+      ghostAtlasRects.grain,
+      words.grain.split(' ').length > 2 ? splitGrain(words.grain) : [words.grain],
+      0.8,
+    );
+    sign(ghostAtlasRects.warehouse, [words.warehouse], 0.7);
+  });
+}
+
+/** Breaks a long sign over two lines at the middle word: "GRAIN EXCHANGE" over "SUPPLY". */
+function splitGrain(text: string): string[] {
+  const parts = text.split(' ');
+  const last = parts.pop();
+  return [parts.join(' '), last ?? ''];
+}
+
+/**
+ * The marquee board: a dark panel with a ring of warm bulbs, the project name in big lit capitals
+ * and a smaller line under it. Bright pixels (bulbs and letters) are what glow.
+ */
+export function createMarqueeTexture(
+  title: string,
+  subtitle: string,
+  width = 1024,
+  height = 304,
+): CanvasTexture {
+  return canvasTexture(width, height, (ctx) => {
+    ctx.fillStyle = '#17110c';
+    ctx.fillRect(0, 0, width, height);
+    // The bulbs, all round the edge.
+    const bulb = (x: number, y: number) => {
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, 11);
+      gradient.addColorStop(0, '#FFF7D6');
+      gradient.addColorStop(0.55, '#FFC873');
+      gradient.addColorStop(1, 'rgba(255, 170, 70, 0)');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, 11, 0, Math.PI * 2);
+      ctx.fill();
+    };
+    const step = 44;
+    for (let x = 28; x < width - 14; x += step) {
+      bulb(x, 22);
+      bulb(x, height - 22);
+    }
+    for (let y = 22 + step; y < height - 22; y += step) {
+      bulb(28, y);
+      bulb(width - 28, y);
+    }
+    // The words.
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = 'rgba(255, 170, 70, 0.8)';
+    ctx.shadowBlur = 18;
+    ctx.fillStyle = '#FFE6A8';
+    ctx.font = `900 ${Math.round(height * 0.38)}px 'Arial Black', Impact, sans-serif`;
+    ctx.fillText(title, width / 2, height * 0.42, width * 0.86);
+    ctx.shadowBlur = 8;
+    ctx.fillStyle = '#FFD08A';
+    ctx.font = `600 ${Math.round(height * 0.15)}px 'Trebuchet MS', sans-serif`;
+    ctx.fillText(subtitle, width / 2, height * 0.74, width * 0.84);
+  });
+}

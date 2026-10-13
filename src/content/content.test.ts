@@ -178,11 +178,36 @@ describe('route integrity', () => {
 
 describe('checkpoints', () => {
   it('open the panel at the RRC campus, with the Sprint-Innovation win as the teaser', () => {
-    expect(checkpoints).toEqual([{ stopId: 'rrc-campus', teaserRef: 'sprint-innovation-2025' }]);
+    expect(checkpoints.find((c) => c.stopId === 'rrc-campus')).toEqual({
+      stopId: 'rrc-campus',
+      teaserRef: 'sprint-innovation-2025',
+    });
     expect(radioLines.find((r) => r.id === 'rrc-campus')?.text).toContain(
       'RRC campus on your left',
     );
     expect(signage.rrcRooftop).toBe('RRC Polytechnic');
+  });
+
+  it('opens the EventFlow panel at the Exchange District warehouses, with its links', () => {
+    expect(checkpoints.find((c) => c.stopId === 'exchange-warehouses')).toEqual({
+      stopId: 'exchange-warehouses',
+    });
+    expect(radioLines.find((r) => r.id === 'exchange-warehouses')?.text).toBe(
+      'Show tonight at the old warehouse. Tickets running through EventFlow, on your left.',
+    );
+    const eventflow = projects.find((p) => p.id === 'eventflow')!;
+    expect(eventflow.links.github).toBe('https://github.com/mahfuj02/eventflow');
+    expect(eventflow.links.live).toBeDefined();
+  });
+
+  it('keeps the ghost signs and the marquee line generic and in content', () => {
+    expect(Object.values(signage.ghostSigns)).toEqual([
+      'DRY GOODS',
+      'WHOLESALE',
+      'WAREHOUSE',
+      'GRAIN EXCHANGE SUPPLY',
+    ]);
+    expect(signage.marqueeSubtitle).toBe('Tickets · Hosts · Payments');
   });
 
   it('reject unknown stops and refs, duplicates, and stops without content', () => {

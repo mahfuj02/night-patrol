@@ -22,9 +22,20 @@ describe('resolveCheckpoint', () => {
     expect(result.teaser?.title).toBe('Sprint-Innovation 2025: Winner');
   });
 
+  it('shows EventFlow at the Exchange District warehouses, with its links and no teaser', () => {
+    const result = resolveCheckpoint(stop('exchange-warehouses'), sources)!;
+    expect(result.main.kind).toBe('project');
+    if (result.main.kind === 'project') {
+      expect(result.main.title).toBe('EventFlow');
+      expect(result.main.links.github).toBe('https://github.com/mahfuj02/eventflow');
+      expect(result.main.stack).toContain('Vue 3');
+    }
+    expect(result.teaser).toBeUndefined();
+  });
+
   it('returns null for stops without a checkpoint or without content', () => {
     expect(resolveCheckpoint(stop('ignition'), sources)).toBeNull();
-    expect(resolveCheckpoint(stop('exchange-warehouses'), sources)).toBeNull();
+    expect(resolveCheckpoint(stop('city-services'), sources)).toBeNull();
     expect(resolveCheckpoint(undefined, sources)).toBeNull();
   });
 

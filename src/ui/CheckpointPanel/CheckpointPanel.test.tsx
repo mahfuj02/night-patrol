@@ -95,10 +95,26 @@ describe('CheckpointPanel', () => {
     const user = userEvent.setup();
     renderBoth();
     act(() => state().goToStop(RRC));
-    await user.click(screen.getByRole('button', { name: 'Next stop ›' }));
-    expect(panel()).toHaveAttribute('data-open', 'false');
+    // The stop before the campus has no checkpoint.
     await user.click(screen.getByRole('button', { name: '‹ Prev' }));
+    expect(panel()).toHaveAttribute('data-open', 'false');
+    await user.click(screen.getByRole('button', { name: 'Next stop ›' }));
     expect(panel()).toHaveAttribute('data-open', 'true');
+  });
+
+  it('swaps to the next checkpoint (EventFlow) when the visitor drives on to it', async () => {
+    const user = userEvent.setup();
+    renderBoth();
+    act(() => state().goToStop(RRC));
+    await user.click(screen.getByRole('button', { name: 'Next stop ›' }));
+    const open = screen.getByRole('complementary', { name: 'EventFlow' });
+    expect(open).toHaveAttribute('data-open', 'true');
+    expect(screen.getByRole('link', { name: /GitHub repository/ })).toHaveAttribute(
+      'href',
+      'https://github.com/mahfuj02/eventflow',
+    );
+    expect(screen.getByText('Vue 3')).toBeInTheDocument();
+    expect(screen.queryByText(/Sprint-Innovation/)).toBeNull();
   });
 
   it('stays closed while the car is between stops', () => {
@@ -113,7 +129,7 @@ describe('CheckpointPanel', () => {
     const user = userEvent.setup();
     render(<CheckpointPanel />);
     act(() => state().goToStop(RRC));
-    act(() => state().next());
+    act(() => state().prev());
     await user.keyboard('{Escape}');
     expect(state().dismissedStop).toBeNull();
   });
