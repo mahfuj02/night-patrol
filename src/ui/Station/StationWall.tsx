@@ -10,6 +10,7 @@ import { WALL_DESIGN_WIDTH } from '@/lib/stationCamera';
 import { wallDom } from '@/lib/wallDom';
 import { useDriveStore } from '@/store/drive';
 import { CheckpointContent } from '../CheckpointPanel/CheckpointContent';
+import { LibraryWall } from '../Library/LibraryWall';
 
 const sources = { experience, projects };
 
@@ -52,9 +53,12 @@ export function StationWall() {
   }, [designHeight]);
 
   const parked = phase === 'parked';
-  const sheet = parked && !legible;
+  // The library has no single entry: its wall is a stack of titles, a picture only (the accessible
+  // shelf is the library panel), so it never opens the sheet or the accessible wall.
+  const isLibrary = shown?.section === 'projects' && !shown.contentRef;
+  const sheet = parked && !legible && !isLibrary;
   // The wall is accessible while parked and readable; otherwise it is just a picture.
-  const wallAccessible = parked && legible;
+  const wallAccessible = parked && legible && !isLibrary;
 
   return (
     <>
@@ -76,7 +80,11 @@ export function StationWall() {
         }}
         className="text-snow bg-night/60 z-10 overflow-hidden rounded-lg border border-white/20 p-8 shadow-2xl backdrop-blur-[2px] [&_dd]:text-xl [&_h2]:text-4xl [&_li]:text-xl [&_p]:text-xl"
       >
-        {content && wallAccessible ? (
+        {isLibrary ? (
+          <div aria-hidden="true">
+            <LibraryWall />
+          </div>
+        ) : content && wallAccessible ? (
           <section aria-labelledby={wallHeading}>
             <CheckpointContent content={content} headingId={wallHeading} />
           </section>
