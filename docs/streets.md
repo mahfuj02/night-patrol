@@ -41,4 +41,4 @@ At a `stop` crossing a stop sign stands on the right of each end of the cross st
 
 ## Cost
 
-Measured by counting GL draw calls per frame (SwiftShader): about 62 on high and medium and about 41 on low, up from 50 and 29 before this slice.
+Measured by counting GL draw calls per frame (SwiftShader): about 60 on high and medium and about 39 on low, up from 50 and 29 before this slice.
