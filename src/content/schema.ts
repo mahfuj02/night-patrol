@@ -156,6 +156,10 @@ const range2 = z
   .tuple([z.number().positive(), z.number().positive()])
   .refine(([min, max]) => min <= max, 'Expected [min, max]');
 
+const gapRange = z
+  .tuple([z.number().min(0), z.number().min(0)])
+  .refine(([min, max]) => min <= max, 'Expected [min, max]');
+
 export const BuildingStretchSchema = z.object({
   id: kebabId,
   style: z.enum(['warehouse', 'tower', 'house']),
@@ -168,6 +172,8 @@ export const BuildingStretchSchema = z.object({
   /** Metres from the road edge to the building front. */
   setback: z.number().min(0),
   lotWidth: range2,
+  /** Gap between neighbouring lots along the road, in metres. A largest gap of 1.5 m or less makes a continuous, attached street wall. */
+  gap: gapRange,
   depth: range2,
   height: range2,
   /** Scales the share of windows lit from the zone's `windows` values. */
