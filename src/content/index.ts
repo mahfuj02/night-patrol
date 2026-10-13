@@ -32,6 +32,7 @@ import {
   SignageSchema,
   SkillSchema,
   StationSchema,
+  TransitZoneSchema,
   StopSchema,
   UiCopySchema,
 } from './schema';
@@ -39,6 +40,7 @@ import { signage as signageData } from './signage';
 import { skills as skillsData } from './skills';
 import { stations as stationsData } from './stations';
 import { stops as stopsData } from './stops';
+import { transitZones as transitZonesData } from './transit';
 import { simpleCopy as simpleCopyData } from './ui';
 
 export const atmosphereZones = z.array(AtmosphereZoneSchema).parse(atmosphereZonesData);
@@ -54,6 +56,7 @@ export const route = RouteSchema.parse(routeData);
 export const signage = SignageSchema.parse(signageData);
 export const skills = z.array(SkillSchema).parse(skillsData);
 export const stations = z.array(StationSchema).parse(stationsData);
+export const transitZones = z.array(TransitZoneSchema).parse(transitZonesData);
 export const stops = z.array(StopSchema).parse(stopsData);
 export const simpleCopy = UiCopySchema.parse(simpleCopyData);
 
@@ -62,6 +65,7 @@ assertContentIntegrity({
   buildings: buildingStretches,
   checkpoints,
   stations,
+  transitZones,
   route,
   stops,
   projects,

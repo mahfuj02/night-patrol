@@ -5,6 +5,7 @@ import {
   checkpoints,
   communityNotes,
   stations,
+  transitZones,
   experience,
   profile,
   projects,
@@ -26,6 +27,7 @@ const bundle = {
   buildings: buildingStretches,
   checkpoints,
   stations,
+  transitZones,
   route,
   stops,
   projects,
@@ -335,5 +337,35 @@ describe('stations', () => {
 
   it('keeps the route length in content equal to the real curve length', () => {
     expect(route.lengthMetres).toBeGreaterThan(1000);
+  });
+});
+
+describe('transit zones', () => {
+  it('colour the route by zone, starting at the first stop and in route order', () => {
+    expect(transitZones.map((z) => z.id)).toEqual([
+      'exchange',
+      'downtown',
+      'residential',
+      'avenue',
+      'forks',
+    ]);
+    expect(transitZones[0]!.fromStopId).toBe(stops[0]!.id);
+    const orders = transitZones.map((z) => stops.find((s) => s.id === z.fromStopId)!.order);
+    expect([...orders]).toEqual([...orders].sort((a, b) => a - b));
+  });
+
+  it('reject unknown stops, a late first zone, duplicates and zones out of order', () => {
+    const base = transitZones;
+    const broken = [
+      { ...base[1]!, id: 'downtown' as const },
+      { ...base[0]!, fromStopId: 'nowhere' },
+      { ...base[1]! },
+      { ...base[2]!, fromStopId: 'ignition' },
+    ];
+    const problems = findContentProblems({ ...bundle, transitZones: broken }).join(' | ');
+    expect(problems).toContain('unknown stop nowhere');
+    expect(problems).toContain('The first transit zone must start at the first stop');
+    expect(problems).toContain('Duplicate transit zone id');
+    expect(problems).toContain('must start after the zone before it');
   });
 });

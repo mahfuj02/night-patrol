@@ -13,6 +13,21 @@ export const palette = {
 export type PaletteToken = keyof typeof palette;
 
 /**
+ * Line colours for the transit-map menu, one per zone of the route (UI tokens: they sit on night-2,
+ * not in the 3D world). Proposed from the zones' own look and to be tuned by eye; a test keeps each
+ * at 3:1 against night-2 for the line and dots, and 4.5:1 for the text of a tag.
+ */
+export const transit = {
+  exchange: '#FFB25C',
+  downtown: '#E8603C',
+  residential: '#7E9486',
+  avenue: '#5B86D6',
+  forks: '#FFD27A',
+} as const;
+
+export type TransitZoneId = keyof typeof transit;
+
+/**
  * World palette for the 3D scene, sampled from reference photos (see docs/art-reference.md,
  * which lists the basis for each token). Scene code takes colours from here, never inline hex.
  * "Derived" tokens in the guide are starting points to tune by eye.

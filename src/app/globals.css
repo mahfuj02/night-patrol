@@ -9,6 +9,11 @@
   --color-brick: #8a4b3a;
   --color-sunrise-from: #ff8a5b;
   --color-sunrise-to: #ffd27a;
+  --color-line-exchange: #ffb25c;
+  --color-line-downtown: #e8603c;
+  --color-line-residential: #7e9486;
+  --color-line-avenue: #5b86d6;
+  --color-line-forks: #ffd27a;
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
 }

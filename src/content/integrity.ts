@@ -10,6 +10,7 @@ import type {
   Route,
   Station,
   Stop,
+  TransitZone,
 } from './schema';
 
 export interface ContentBundle {
@@ -17,6 +18,7 @@ export interface ContentBundle {
   buildings: BuildingStretch[];
   checkpoints: Checkpoint[];
   stations: Station[];
+  transitZones: TransitZone[];
   route: Route;
   stops: Stop[];
   projects: Project[];
@@ -112,6 +114,22 @@ export function findContentProblems(c: ContentBundle): string[] {
     if (c.checkpoints.some((k) => k.stopId === station.stopId)) {
       problems.push(`Station ${station.id}: stop ${station.stopId} also has a checkpoint panel`);
     }
+  }
+  checkDuplicates(
+    'transit zone',
+    c.transitZones.map((z) => z.id),
+  );
+  const zoneOrders = c.transitZones.map((z) => stopsById.get(z.fromStopId)?.order ?? -1);
+  c.transitZones.forEach((zone, i) => {
+    if (!stopsById.has(zone.fromStopId)) {
+      problems.push(`Transit zone ${zone.id}: unknown stop ${zone.fromStopId}`);
+    }
+    if (i > 0 && zoneOrders[i]! <= zoneOrders[i - 1]!) {
+      problems.push(`Transit zone ${zone.id} must start after the zone before it`);
+    }
+  });
+  if (c.transitZones.length > 0 && zoneOrders[0] !== 0) {
+    problems.push('The first transit zone must start at the first stop');
   }
   for (const project of c.projects) {
     if (!project.stopId) continue;
