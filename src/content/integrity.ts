@@ -8,6 +8,7 @@ import type {
   Project,
   RadioLine,
   Route,
+  Station,
   Stop,
 } from './schema';
 
@@ -15,6 +16,7 @@ export interface ContentBundle {
   atmosphere: AtmosphereZone[];
   buildings: BuildingStretch[];
   checkpoints: Checkpoint[];
+  stations: Station[];
   route: Route;
   stops: Stop[];
   projects: Project[];
@@ -89,6 +91,26 @@ export function findContentProblems(c: ContentBundle): string[] {
     }
     if (checkpoint.teaserRef && !refIds.has(checkpoint.teaserRef)) {
       problems.push(`Checkpoint ${checkpoint.stopId}: unknown teaserRef ${checkpoint.teaserRef}`);
+    }
+  }
+  checkDuplicates(
+    'station',
+    c.stations.map((s) => s.id),
+  );
+  checkDuplicates(
+    'station section',
+    c.stations.map((s) => s.section),
+  );
+  for (const station of c.stations) {
+    if (!stopsById.has(station.stopId)) {
+      problems.push(`Station ${station.id}: unknown stop ${station.stopId}`);
+    }
+    for (const ref of [station.contentRef, station.teaserRef]) {
+      if (ref && !refIds.has(ref)) problems.push(`Station ${station.id}: unknown content ${ref}`);
+    }
+    // A stop that is a station opens its content on the wall, not in the side panel.
+    if (c.checkpoints.some((k) => k.stopId === station.stopId)) {
+      problems.push(`Station ${station.id}: stop ${station.stopId} also has a checkpoint panel`);
     }
   }
   for (const project of c.projects) {

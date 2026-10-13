@@ -7,7 +7,9 @@ import { DriveControls } from '../DriveControls';
 import { CheckpointPanel } from './CheckpointPanel';
 
 const state = () => useDriveStore.getState();
-const RRC = stops.findIndex((s) => s.id === 'rrc-campus');
+// EventFlow, the Exchange District warehouses, is a drive-by stop with a side panel. The stop
+// before it (the RRC campus) is a station, and the one after it (City services) has no panel yet.
+const EF = stops.findIndex((s) => s.id === 'exchange-warehouses');
 const panel = () => screen.getByRole('complementary', { hidden: true });
 
 function renderBoth() {
@@ -29,43 +31,46 @@ describe('CheckpointPanel', () => {
     expect(screen.queryByRole('complementary', { hidden: true })).toBeNull();
   });
 
-  it('opens at the RRC campus with the diploma and the Sprint-Innovation teaser', () => {
+  it('opens at the Exchange District warehouses with the EventFlow project', () => {
     render(<CheckpointPanel />);
-    act(() => state().goToStop(RRC));
-    const open = screen.getByRole('complementary', {
-      name: 'Diploma in Full Stack Web Development',
-    });
+    act(() => state().goToStop(EF));
+    const open = screen.getByRole('complementary', { name: 'EventFlow' });
     expect(open).toHaveAttribute('data-open', 'true');
     expect(open).not.toHaveAttribute('inert');
-    expect(screen.getByText('Red River College Polytechnic')).toBeInTheDocument();
-    expect(screen.getByText('Aug 2023 \u2013 Aug 2025')).toBeInTheDocument();
-    expect(screen.getByText(/Sprint-Innovation 2025: Winner/)).toBeInTheDocument();
+    expect(screen.getByText('Scoped ticketing and CRM platform for events.')).toBeInTheDocument();
+    expect(screen.getByText('Vue 3')).toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent(
-      'Checkpoint opened: RRC Polytechnic, Exchange District Campus. Press Escape to close it.',
+      'Checkpoint opened: Exchange District warehouses. Press Escape to close it.',
     );
+  });
+
+  it('does not open at the RRC campus, which is a station and shows its content on the wall', () => {
+    render(<CheckpointPanel />);
+    act(() => state().goToStop(stops.findIndex((s) => s.id === 'rrc-campus')));
+    expect(screen.queryByRole('complementary', { hidden: true })).toBeNull();
   });
 
   it('does not take focus when it opens, so driving by keyboard keeps working', () => {
     renderBoth();
-    act(() => state().goToStop(RRC));
+    act(() => state().goToStop(EF));
     expect(document.body).toHaveFocus();
   });
 
   it('closes with Escape, and stays closed while the visitor stays at the stop', async () => {
     const user = userEvent.setup();
     render(<CheckpointPanel />);
-    act(() => state().goToStop(RRC));
+    act(() => state().goToStop(EF));
     await user.keyboard('{Escape}');
     expect(panel()).toHaveAttribute('data-open', 'false');
     expect(panel()).toHaveAttribute('inert');
-    expect(state().dismissedStop).toBe(RRC);
+    expect(state().dismissedStop).toBe(EF);
     expect(screen.getAllByRole('status').every((el) => el.textContent === '')).toBe(true);
   });
 
   it('closes with the close button and gives focus back to Next stop', async () => {
     const user = userEvent.setup();
     renderBoth();
-    act(() => state().goToStop(RRC));
+    act(() => state().goToStop(EF));
     const close = screen.getByRole('button', { name: 'Close checkpoint' });
     close.focus();
     await user.keyboard('{Enter}');
@@ -76,7 +81,7 @@ describe('CheckpointPanel', () => {
   it('hands focus back to Next stop when Escape closes it from inside', async () => {
     const user = userEvent.setup();
     renderBoth();
-    act(() => state().goToStop(RRC));
+    act(() => state().goToStop(EF));
     screen.getByRole('button', { name: 'Close checkpoint' }).focus();
     await user.keyboard('{Escape}');
     expect(screen.getByRole('button', { name: 'Next stop ›' })).toHaveFocus();
@@ -85,7 +90,7 @@ describe('CheckpointPanel', () => {
   it('is reached with Tab straight after the drive controls', async () => {
     const user = userEvent.setup();
     renderBoth();
-    act(() => state().goToStop(RRC));
+    act(() => state().goToStop(EF));
     screen.getByRole('button', { name: 'Next stop ›' }).focus();
     await user.tab();
     expect(screen.getByRole('button', { name: 'Close checkpoint' })).toHaveFocus();
@@ -94,33 +99,31 @@ describe('CheckpointPanel', () => {
   it('slides out when the visitor drives on, and opens again on the way back', async () => {
     const user = userEvent.setup();
     renderBoth();
-    act(() => state().goToStop(RRC));
-    // The stop before the campus has no checkpoint.
-    await user.click(screen.getByRole('button', { name: '‹ Prev' }));
-    expect(panel()).toHaveAttribute('data-open', 'false');
+    act(() => state().goToStop(EF));
+    // The stop after it has no checkpoint yet.
     await user.click(screen.getByRole('button', { name: 'Next stop ›' }));
+    expect(panel()).toHaveAttribute('data-open', 'false');
+    await user.click(screen.getByRole('button', { name: '‹ Prev' }));
     expect(panel()).toHaveAttribute('data-open', 'true');
   });
 
-  it('swaps to the next checkpoint (EventFlow) when the visitor drives on to it', async () => {
-    const user = userEvent.setup();
-    renderBoth();
-    act(() => state().goToStop(RRC));
-    await user.click(screen.getByRole('button', { name: 'Next stop ›' }));
-    const open = screen.getByRole('complementary', { name: 'EventFlow' });
-    expect(open).toHaveAttribute('data-open', 'true');
+  it('shows the project links, including the case study on mahfuj.dev', () => {
+    render(<CheckpointPanel />);
+    act(() => state().goToStop(EF));
     expect(screen.getByRole('link', { name: /GitHub repository/ })).toHaveAttribute(
       'href',
       'https://github.com/mahfuj02/eventflow',
     );
-    expect(screen.getByText('Vue 3')).toBeInTheDocument();
-    expect(screen.queryByText(/Sprint-Innovation/)).toBeNull();
+    expect(screen.getByRole('link', { name: /Case study/ })).toHaveAttribute(
+      'href',
+      'https://mahfuj.dev/projects/eventflow',
+    );
   });
 
   it('stays closed while the car is between stops', () => {
     render(<CheckpointPanel />);
-    act(() => state().goToStop(RRC));
-    act(() => state().nudge((STOP_TS[RRC]! + STOP_TS[RRC + 1]!) / 2 - STOP_TS[RRC]!));
+    act(() => state().goToStop(EF));
+    act(() => state().nudge((STOP_TS[EF]! + STOP_TS[EF + 1]!) / 2 - STOP_TS[EF]!));
     expect(state().atStop).toBe(false);
     expect(panel()).toHaveAttribute('data-open', 'false');
   });
@@ -128,8 +131,8 @@ describe('CheckpointPanel', () => {
   it('ignores Escape when it is closed', async () => {
     const user = userEvent.setup();
     render(<CheckpointPanel />);
-    act(() => state().goToStop(RRC));
-    act(() => state().prev());
+    act(() => state().goToStop(EF));
+    act(() => state().next());
     await user.keyboard('{Escape}');
     expect(state().dismissedStop).toBeNull();
   });

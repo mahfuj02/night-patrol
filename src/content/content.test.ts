@@ -4,6 +4,7 @@ import {
   buildingStretches,
   checkpoints,
   communityNotes,
+  stations,
   experience,
   profile,
   projects,
@@ -24,6 +25,7 @@ const bundle = {
   atmosphere: atmosphereZones,
   buildings: buildingStretches,
   checkpoints,
+  stations,
   route,
   stops,
   projects,
@@ -160,7 +162,7 @@ describe('route integrity', () => {
     const points = route.points.map((p) => ({ ...p }));
     points[1]!.stopId = 'nowhere';
     points[3]!.stopId = 'ignition';
-    const problems = findContentProblems({ ...bundle, route: { points } }).join('\n');
+    const problems = findContentProblems({ ...bundle, route: { ...route, points } }).join('\n');
     expect(problems).toContain('Duplicate route stop pin id');
     expect(problems).toContain('pins unknown stop nowhere');
     expect(problems).toContain('Stop dispatch has no route point');
@@ -170,18 +172,15 @@ describe('route integrity', () => {
     const b = swapped.findIndex((p) => p.stopId === 'rrc-campus');
     swapped[a]!.stopId = 'rrc-campus';
     swapped[b]!.stopId = 'dispatch';
-    expect(findContentProblems({ ...bundle, route: { points: swapped } }).join('\n')).toContain(
-      'in stop order',
-    );
+    expect(
+      findContentProblems({ ...bundle, route: { ...route, points: swapped } }).join('\n'),
+    ).toContain('in stop order');
   });
 });
 
 describe('checkpoints', () => {
-  it('open the panel at the RRC campus, with the Sprint-Innovation win as the teaser', () => {
-    expect(checkpoints.find((c) => c.stopId === 'rrc-campus')).toEqual({
-      stopId: 'rrc-campus',
-      teaserRef: 'sprint-innovation-2025',
-    });
+  it('keep the RRC campus out of the panel list, because it is a station', () => {
+    expect(checkpoints.find((c) => c.stopId === 'rrc-campus')).toBeUndefined();
     expect(radioLines.find((r) => r.id === 'rrc-campus')?.text).toContain(
       'RRC campus on your left',
     );
@@ -307,5 +306,34 @@ describe('atmosphere zones', () => {
   it('reports zone problems through the integrity check', () => {
     const broken = { ...bundle, atmosphere: [{ ...atmosphereZones[0]!, from: 'nowhere' }] };
     expect(findContentProblems(broken).join('\n')).toContain('unknown stop nowhere');
+  });
+});
+
+describe('stations', () => {
+  it('has the Education station on the RRC campus, turning left into a bay', () => {
+    const education = stations.find((s) => s.section === 'education')!;
+    expect(education.stopId).toBe('rrc-campus');
+    expect(education.bay.turn).toBe('left');
+    expect(education.contentRef).toBe('rrc-diploma');
+    expect(education.teaserRef).toBe('sprint-innovation-2025');
+    expect(education.light.offset).toBeLessThan(0);
+  });
+
+  it('rejects unknown stops and content, duplicates, and a stop that also has a panel', () => {
+    const base = stations[0]!;
+    const broken = [
+      { ...base, stopId: 'nowhere' },
+      { ...base, id: 'again', contentRef: 'missing' },
+      { ...base, id: 'both', section: 'contact' as const, stopId: 'exchange-warehouses' },
+    ];
+    const problems = findContentProblems({ ...bundle, stations: broken }).join(' | ');
+    expect(problems).toContain('unknown stop nowhere');
+    expect(problems).toContain('unknown content missing');
+    expect(problems).toContain('also has a checkpoint panel');
+    expect(problems).toContain('Duplicate station section');
+  });
+
+  it('keeps the route length in content equal to the real curve length', () => {
+    expect(route.lengthMetres).toBeGreaterThan(1000);
   });
 });

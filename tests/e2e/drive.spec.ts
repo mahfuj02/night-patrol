@@ -15,6 +15,39 @@ async function openHome(page: Page, tier: 'high' | 'medium' | 'low' = 'low') {
   await expect(page.locator('canvas')).toBeVisible();
 }
 
+/** Counts the WebGL draw calls the page makes, from before it loads. */
+async function countDrawCalls(page: Page) {
+  await page.addInitScript(() => {
+    const counter = { calls: 0 };
+    (window as unknown as { __draws: typeof counter }).__draws = counter;
+    const proto = WebGL2RenderingContext.prototype;
+    for (const name of [
+      'drawElements',
+      'drawArrays',
+      'drawElementsInstanced',
+      'drawArraysInstanced',
+    ] as const) {
+      const original = proto[name] as (...args: unknown[]) => void;
+      (proto as unknown as Record<string, unknown>)[name] = function (...args: unknown[]) {
+        counter.calls++;
+        return original.apply(this, args);
+      };
+    }
+  });
+}
+
+/** Draw calls in one frame, averaged over a few frames. */
+function drawCallsPerFrame(page: Page) {
+  return page.evaluate(async () => {
+    const counter = (window as unknown as { __draws: { calls: number } }).__draws;
+    const frame = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    await frame();
+    const before = counter.calls;
+    for (let i = 0; i < 3; i++) await frame();
+    return (counter.calls - before) / 3;
+  });
+}
+
 test.describe('drive (WebGL)', () => {
   test('renders the 3D canvas without runtime errors', async ({ page }) => {
     const errors: string[] = [];
@@ -112,13 +145,17 @@ test.describe('drive (WebGL)', () => {
 test.describe('quality override', () => {
   for (const tier of ['high', 'medium', 'low']) {
     test(`?quality=${tier} renders without runtime errors`, async ({ page }) => {
+      await countDrawCalls(page);
       const errors: string[] = [];
       page.on('pageerror', (error) => errors.push(error.message));
       await page.goto(`/?quality=${tier}`);
       await expect(page.locator('canvas')).toBeVisible();
       await expect(status(page)).toContainText(`Stop 1 of ${total}`);
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1500);
       expect(errors).toEqual([]);
+      // Something is drawn on every tier. (A render loop taken over by a positive useFrame priority
+      // draws nothing on the low tier, which has no post-processing to render for it.)
+      expect(await drawCallsPerFrame(page)).toBeGreaterThan(10);
     });
   }
 });

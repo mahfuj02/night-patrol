@@ -28,6 +28,18 @@ export const simpleCopy: UiCopy = {
     teaser: 'Also',
   },
   hud: { radioLabel: 'Dispatch radio' },
+  station: {
+    open: 'Open {section}',
+    opened: '{section} station opened. Press Escape to leave.',
+    leave: 'Leave station',
+    sections: {
+      education: 'Education',
+      projects: 'Projects',
+      experience: 'Experience',
+      skills: 'Skills',
+      contact: 'Contact',
+    },
+  },
   pageTitle: 'Mahfuj: Full Stack Web Developer in Winnipeg',
   pageDescription:
     'Portfolio of Md Mahfuj Ahmed (Mahfuj), a full stack web developer in Winnipeg, MB: projects, skills, experience and contact.',

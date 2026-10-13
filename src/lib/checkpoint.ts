@@ -1,4 +1,4 @@
-import type { Checkpoint, Experience, Project, Stop } from '@/content/schema';
+import type { Checkpoint, Experience, Project, Station, Stop } from '@/content/schema';
 import { formatDateRange } from './dates';
 
 /** What the checkpoint panel shows for an experience or education entry. */
@@ -94,4 +94,23 @@ export function resolveCheckpoint(
         }
       : {}),
   };
+}
+
+/**
+ * What a station shows on its wall: the same content as a checkpoint panel, from the station's
+ * `contentRef` and `teaserRef`, so there is one resolver and no second copy of the words.
+ */
+export function resolveStation(
+  station: Pick<Station, 'stopId' | 'contentRef' | 'teaserRef'>,
+  sources: Omit<CheckpointSources, 'checkpoints'>,
+): ResolvedCheckpoint | null {
+  return resolveCheckpoint(
+    { id: station.stopId, contentRef: station.contentRef },
+    {
+      ...sources,
+      checkpoints: [
+        { stopId: station.stopId, ...(station.teaserRef ? { teaserRef: station.teaserRef } : {}) },
+      ],
+    },
+  );
 }

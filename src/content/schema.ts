@@ -155,6 +155,8 @@ export const IntersectionSchema = z.object({
 });
 export const RouteSchema = z.object({
   points: z.array(RoutePointSchema).min(2),
+  /** Length of the route curve in metres. A test keeps it equal to the real curve length. */
+  lengthMetres: z.number().positive(),
   /** Gaps in the plowed snowbank ridge and the tree rows, where side streets cross. */
   intersections: z.array(IntersectionSchema).optional(),
 });
@@ -232,6 +234,46 @@ export const CheckpointSchema = z.object({
 });
 export type Checkpoint = z.infer<typeof CheckpointSchema>;
 
+export const sections = ['education', 'projects', 'experience', 'skills', 'contact'] as const;
+export const SectionSchema = z.enum(sections);
+export type Section = z.infer<typeof SectionSchema>;
+
+export const StationSchema = z.object({
+  id: kebabId,
+  section: SectionSchema,
+  /** The stop the distances below are measured from. */
+  stopId: kebabId,
+  /** Where the car stops at the red light, in metres along the road from the stop. */
+  light: z.object({ offset: z.number() }),
+  bay: z.object({
+    turn: z.enum(['left', 'right']),
+    /** Gap between the car's nose and the wall, in metres. */
+    depth: z.number().positive(),
+    width: z.number().positive(),
+    /** Road edge cleared of snow ridge and trees before and after the bay, in metres. */
+    clearBefore: z.number().positive(),
+    clearAfter: z.number().positive(),
+  }),
+  camera: z.object({
+    back: z.number().positive(),
+    up: z.number(),
+    fov: z.number().positive(),
+  }),
+  wall: z.object({
+    landmark: LandmarkIdSchema,
+    rect: z.object({
+      x: z.number(),
+      y: z.number(),
+      z: z.number(),
+      width: z.number().positive(),
+      height: z.number().positive(),
+    }),
+  }),
+  contentRef: kebabId,
+  teaserRef: kebabId.optional(),
+});
+export type Station = z.infer<typeof StationSchema>;
+
 export const UiCopySchema = z.object({
   site: z.object({ title: z.string(), description: z.string() }),
   home: z.object({ heading: z.string(), intro: z.string(), simpleLink: z.string() }),
@@ -284,6 +326,20 @@ export const UiCopySchema = z.object({
     teaser: z.string(),
   }),
   hud: z.object({ radioLabel: z.string() }),
+  station: z.object({
+    /** The Open button. `{section}` is the section name. */
+    open: z.string(),
+    /** Read out when a station opens. */
+    opened: z.string(),
+    leave: z.string(),
+    sections: z.object({
+      education: z.string(),
+      projects: z.string(),
+      experience: z.string(),
+      skills: z.string(),
+      contact: z.string(),
+    }),
+  }),
 });
 export type UiCopy = z.infer<typeof UiCopySchema>;
 

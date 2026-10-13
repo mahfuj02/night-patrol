@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useLayoutEffect } from 'react';
 import { applyMagnet, dampT } from '@/lib/route';
-import { STOP_TS, useDriveStore } from '@/store/drive';
+import { MAGNET_TS, useDriveStore } from '@/store/drive';
 import { progress } from './progress';
 
 /** How quickly on-screen progress catches up with the requested progress (per second). */
@@ -10,7 +10,7 @@ const FOLLOW_RATE = 5;
 const MAX_DELTA = 0.1;
 
 function desiredProgress() {
-  return applyMagnet(useDriveStore.getState().target, STOP_TS);
+  return applyMagnet(useDriveStore.getState().target, MAGNET_TS);
 }
 
 /**

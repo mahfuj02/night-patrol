@@ -1,5 +1,7 @@
 # Navigation redesign
 
+> **Status:** the station arrival pattern and the Education station are built (Phase 5b); see [docs/stations.md](stations.md) for how. The transit-map menu (5c) and the other stations follow.
+
 How visitors move through Night Patrol and read its content: five **section stations** the car parks at, a **transit-map menu** that replaces the Phase 8 mini-map, and the changes to the plan, the code already built and the phase order. This is a plan, not built.
 
 ## Summary

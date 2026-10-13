@@ -10,6 +10,7 @@ import type { Route } from './schema';
  * TODO(content): owner to review the shape against real Winnipeg geography.
  */
 export const route: Route = {
+  lengthMetres: 1122.84,
   points: [
     // Exchange District: narrow streets, tight bends
     { x: 0, z: 0, width: 6, stopId: 'ignition' },

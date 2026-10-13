@@ -1,6 +1,7 @@
 import { Vector3 } from 'three';
 import { driveOffset } from '@/lib/lanes';
 import type { Crossing } from '../Road/crossStreets';
+import type { RouteModel } from '../Road/route';
 
 export interface Mast {
   /** Foot of the pole. */
@@ -19,6 +20,8 @@ export interface SignalHead {
   yaw: number;
   /** Which lamp is lit: green on the route, red on the cross street. */
   lit: 'green' | 'red';
+  /** Set on a station's light: the station it belongs to. Its lamp changes with the car. */
+  station?: number;
 }
 
 export interface StopSign {
@@ -61,7 +64,7 @@ const rightOf = (v: Vector3) => new Vector3(-v.z, 0, v.x);
  * hangs over each lane centre. `reach` is the distance from the pole to the road centre line;
  * `lane` is how far each lane centre is from that line.
  */
-function mast(
+export function mast(
   base: Vector3,
   across: Vector3,
   reach: number,
@@ -165,6 +168,42 @@ export function buildFurniture(crossings: readonly Crossing[]): Furniture {
         });
       }
     }
+  }
+  return out;
+}
+
+/** The mast of a station light stands this far past the line where the car stops. */
+const STATION_MAST_AHEAD = 5;
+
+/**
+ * The signals at the stations: one mast over the right-hand side of the route, a little past where
+ * the car stops at the red light, with a head over each lane facing the traffic that approaches. They
+ * start green; the scene turns a station's heads red as the car arrives (`station` says which).
+ */
+export function buildStationLights(
+  model: RouteModel,
+  stations: readonly { index: number; lightT: number }[],
+): { masts: Mast[]; heads: SignalHead[] } {
+  const out: { masts: Mast[]; heads: SignalHead[] } = { masts: [], heads: [] };
+  for (const { index, lightT } of stations) {
+    const u = lightT + STATION_MAST_AHEAD / model.length;
+    const centre = model.curve.getPointAt(u);
+    const t = model.curve.getTangentAt(u);
+    t.y = 0;
+    t.normalize();
+    const right = new Vector3(-t.z, 0, t.x);
+    const half = model.widthAt(u) / 2;
+    const reach = half + POLE_OFFSET;
+    const part = mast(
+      centre.clone().addScaledVector(right, reach),
+      right.clone().negate(),
+      reach,
+      driveOffset(half * 2),
+      t.clone().negate(),
+      'green',
+    );
+    out.masts.push(part.mast);
+    out.heads.push(...part.heads.map((head) => ({ ...head, station: index })));
   }
   return out;
 }

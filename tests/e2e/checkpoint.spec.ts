@@ -3,48 +3,60 @@ import { expect, test, type Page } from '@playwright/test';
 import { stops } from '../../src/content';
 
 const total = stops.length;
-const rrc = stops.findIndex((s) => s.id === 'rrc-campus');
-const panel = (page: Page) =>
-  page.getByRole('complementary', { name: 'Diploma in Full Stack Web Development' });
+// EventFlow, the Exchange District warehouses, is a drive-by stop with a side panel. The RRC campus
+// before it is a station (see station.spec.ts), and the stop after it has no panel yet.
+const warehouses = stops.findIndex((s) => s.id === 'exchange-warehouses');
+const panel = (page: Page) => page.getByRole('complementary', { name: 'EventFlow' });
+const status = (page: Page) =>
+  page.getByRole('navigation', { name: 'Patrol controls' }).getByRole('status');
 
 // The low tier: these tests are about the panel, not the looks, and it is the cheapest to render.
-async function driveToRrc(page: Page) {
+async function driveToWarehouses(page: Page) {
   await page.goto('/?quality=low');
   await expect(page.locator('canvas')).toBeVisible();
-  for (let i = 0; i < rrc; i++) await page.keyboard.press('PageDown');
-  await expect(
-    page.getByRole('navigation', { name: 'Patrol controls' }).getByRole('status'),
-  ).toContainText(`Stop ${rrc + 1} of ${total}`);
+  for (let i = 0; i < warehouses; i++) await page.keyboard.press('PageDown');
+  await expect(status(page)).toContainText(`Stop ${warehouses + 1} of ${total}`);
 }
 
 test.describe('checkpoint panel', () => {
-  test('opens at the RRC campus with the diploma, the teaser and the radio caption', async ({
+  test('opens at the Exchange District warehouses with EventFlow and the radio caption', async ({
     page,
   }) => {
+    test.setTimeout(120_000);
     await page.goto('/?quality=low');
     await expect(page.locator('canvas')).toBeVisible();
     await expect(panel(page)).toBeHidden();
-    await driveToRrc(page);
+    await driveToWarehouses(page);
     await expect(panel(page)).toBeVisible();
-    await expect(panel(page)).toContainText('Red River College Polytechnic');
-    await expect(panel(page)).toContainText('Aug 2023');
-    await expect(panel(page)).toContainText('Sprint-Innovation 2025: Winner');
+    await expect(panel(page)).toContainText('Scoped ticketing and CRM platform for events.');
+    await expect(panel(page)).toContainText('Stripe Checkout');
+    await expect(panel(page).getByRole('link', { name: /GitHub repository/ })).toHaveAttribute(
+      'href',
+      'https://github.com/mahfuj02/eventflow',
+    );
+    await expect(panel(page).getByRole('link', { name: /Case study/ })).toHaveAttribute(
+      'href',
+      'https://mahfuj.dev/projects/eventflow',
+    );
+    await expect(panel(page).getByRole('link', { name: /Live site/ })).toHaveAttribute(
+      'href',
+      /^https:\/\//,
+    );
     await expect(page.getByRole('region', { name: 'Dispatch radio' })).toContainText(
-      'RRC campus on your left',
+      'Tickets running through EventFlow, on your left.',
     );
   });
 
   test('Escape closes it and stays closed; driving on and back opens it again', async ({
     page,
   }) => {
-    await driveToRrc(page);
+    test.setTimeout(120_000);
+    await driveToWarehouses(page);
     await expect(panel(page)).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(panel(page)).toBeHidden();
     await page.keyboard.press('PageDown');
-    await expect(
-      page.getByRole('navigation', { name: 'Patrol controls' }).getByRole('status'),
-    ).toContainText(`Stop ${rrc + 2} of ${total}`);
+    await expect(status(page)).toContainText(`Stop ${warehouses + 2} of ${total}`);
     await expect(panel(page)).toBeHidden();
     await page.keyboard.press('PageUp');
     await expect(panel(page)).toBeVisible();
@@ -53,7 +65,7 @@ test.describe('checkpoint panel', () => {
   test('the close button works with the keyboard and hands focus back to Next stop', async ({
     page,
   }) => {
-    await driveToRrc(page);
+    await driveToWarehouses(page);
     await expect(panel(page)).toBeVisible();
     await page.getByRole('button', { name: 'Close checkpoint' }).focus();
     await page.keyboard.press('Enter');
@@ -62,8 +74,8 @@ test.describe('checkpoint panel', () => {
   });
 
   test('has no serious accessibility violations while open', async ({ page }) => {
-    test.setTimeout(120_000);
-    await driveToRrc(page);
+    test.setTimeout(150_000);
+    await driveToWarehouses(page);
     await expect(panel(page)).toBeVisible();
     const results = await new AxeBuilder({ page }).analyze();
     expect(
@@ -71,46 +83,11 @@ test.describe('checkpoint panel', () => {
     ).toEqual([]);
   });
 
-  test('opens the EventFlow panel at the Exchange District warehouses, with its links', async ({
-    page,
-  }) => {
-    const warehouses = stops.findIndex((s) => s.id === 'exchange-warehouses');
-    test.setTimeout(120_000);
-    await page.goto('/?quality=low');
-    await expect(page.locator('canvas')).toBeVisible();
-    for (let i = 0; i < warehouses; i++) await page.keyboard.press('PageDown');
-    const eventflow = page.getByRole('complementary', { name: 'EventFlow' });
-    await expect(eventflow).toBeVisible();
-    await expect(eventflow).toContainText('Scoped ticketing and CRM platform for events.');
-    await expect(eventflow).toContainText('Stripe Checkout');
-    await expect(eventflow.getByRole('link', { name: /GitHub repository/ })).toHaveAttribute(
-      'href',
-      'https://github.com/mahfuj02/eventflow',
-    );
-    await expect(eventflow.getByRole('link', { name: /Case study/ })).toHaveAttribute(
-      'href',
-      'https://mahfuj.dev/projects/eventflow',
-    );
-    await expect(eventflow.getByRole('link', { name: /Live site/ })).toHaveAttribute(
-      'href',
-      /^https:/, //,
-    );
-    await expect(page.getByRole('region', { name: 'Dispatch radio' })).toContainText(
-      'Tickets running through EventFlow, on your left.',
-    );
-    const results = await new AxeBuilder({ page }).analyze();
-    expect(
-      results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical'),
-    ).toEqual([]);
-    // Driving on from the RRC campus closed that panel; the diploma panel is not showing here.
-    await expect(panel(page)).toBeHidden();
-  });
-
   test.describe('on a phone', () => {
     test.use({ viewport: { width: 390, height: 800 } });
 
     test('is a bottom sheet inside the screen, above the drive buttons', async ({ page }) => {
-      await driveToRrc(page);
+      await driveToWarehouses(page);
       await expect(panel(page)).toBeVisible();
       const sheet = await panel(page).boundingBox();
       const next = await page.getByRole('button', { name: 'Next stop ›' }).boundingBox();
@@ -127,7 +104,7 @@ test.describe('checkpoint panel', () => {
     test('appears at the stop without sliding', async ({ page }) => {
       await page.goto('/?quality=low');
       await expect(page.locator('canvas')).toBeVisible();
-      for (let i = 0; i < rrc; i++) {
+      for (let i = 0; i < warehouses; i++) {
         await page.keyboard.press('ArrowDown');
         await page.waitForTimeout(600);
       }

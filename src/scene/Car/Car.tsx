@@ -5,9 +5,13 @@ import { palette, world } from '@/lib/palette';
 import { carState } from '../carState';
 import { progress } from '../progress';
 import { routeModel } from '../Road/route';
+import { stationView } from '../Stations/stationView';
 
 const HEADLIGHT_COLOR = '#FFE9C4';
 const HEADLIGHT_INTENSITY = 90;
+/** How much brighter the headlights get when the car is parked at a wall, and how far up they aim. */
+const PARKED_BOOST = 2.2;
+const PARKED_AIM_UP = 3.2;
 
 const position = new Vector3();
 const tangent = new Vector3();
@@ -26,12 +30,31 @@ export function Car() {
   useFrame(() => {
     const car = group.current;
     if (!car) return;
-    routeModel.lanePointAt(progress.t, position);
-    routeModel.curve.getTangentAt(progress.t, tangent);
+    if (stationView.active) {
+      // Turning into, parked in, or backing out of a station bay.
+      position.set(stationView.x, 0, stationView.z);
+      tangent.set(Math.sin(stationView.heading), 0, Math.cos(stationView.heading));
+      car.rotation.y = stationView.heading;
+    } else {
+      routeModel.lanePointAt(progress.t, position);
+      routeModel.curve.getTangentAt(progress.t, tangent);
+      car.rotation.y = Math.atan2(tangent.x, tangent.z);
+    }
     car.position.copy(position);
-    car.rotation.y = Math.atan2(tangent.x, tangent.z);
     carState.position.copy(position);
     carState.forward.copy(tangent);
+
+    // Parked at a wall the headlights brighten and tip up, so they light the wall.
+    const glow = stationView.glow;
+    for (const light of [leftLight.current, rightLight.current]) {
+      if (light) light.intensity = HEADLIGHT_INTENSITY * (1 + PARKED_BOOST * glow);
+    }
+    for (const target of [leftTarget.current, rightTarget.current]) {
+      if (target) {
+        target.position.y = -0.2 + PARKED_AIM_UP * glow;
+        target.position.z = 16 - 8 * glow;
+      }
+    }
   });
 
   // Each headlight aims at a point on the road ahead; the targets ride along with the car.

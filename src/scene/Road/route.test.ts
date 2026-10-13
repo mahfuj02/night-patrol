@@ -101,8 +101,13 @@ describe('route model', () => {
     }
   });
 
+  it('has a route length in content that matches the real curve', () => {
+    expect(Math.abs(route.lengthMetres - routeModel.length)).toBeLessThan(0.5);
+  });
+
   it('uses the default width when a point has none', () => {
     const model = createRouteModel({
+      lengthMetres: 10,
       points: [
         { x: 0, z: 0 },
         { x: 10, z: 0 },

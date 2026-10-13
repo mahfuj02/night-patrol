@@ -1,8 +1,10 @@
 import { CatmullRomCurve3, Vector3, type Curve } from 'three';
 import { route as routeContent } from '@/content/route';
 import type { Route } from '@/content/schema';
+import { stations } from '@/content/stations';
 import { driveOffset } from '@/lib/lanes';
 import { interpolateWidth } from '@/lib/route';
+import { stationGeometry } from '../Stations/stationGeometry';
 
 const DEFAULT_WIDTH = 8;
 const laneTangent = new Vector3();
@@ -19,6 +21,8 @@ export interface PathModel {
   widthAt: (u: number) => number;
   stopFractions: Map<string, number>;
   intersections: { id: string; from: number; to: number }[];
+  /** Intersections and station bays: stretches where the ridge and the tree rows are left open. */
+  clearings?: { id: string; from: number; to: number }[];
   inIntersection: (u: number, margin?: number) => boolean;
   zoneU?: number;
 }
@@ -36,13 +40,18 @@ export interface RouteModel {
   widthAt: (u: number) => number;
   /** Stretches of road (as arc-length fractions) where side streets cross. */
   intersections: { id: string; from: number; to: number }[];
+  /** Intersections and the station bays: where the plowed ridge and the tree rows stop. */
+  clearings: { id: string; from: number; to: number }[];
   /** Where the car drives: the centre of the right-hand lane at `u`, written into `out`. */
   lanePointAt: (u: number, out?: Vector3) => Vector3;
   /** True if `u` falls inside an intersection, widened by `margin` metres either side. */
   inIntersection: (u: number, margin?: number) => boolean;
 }
 
-export function createRouteModel(route: Route): RouteModel {
+export function createRouteModel(
+  route: Route,
+  bays: { id: string; from: number; to: number }[] = [],
+): RouteModel {
   const points = route.points.map((p) => new Vector3(p.x, 0, p.z));
   const curve = new CatmullRomCurve3(points, false, 'centripetal');
   const segments = points.length - 1;
@@ -67,6 +76,8 @@ export function createRouteModel(route: Route): RouteModel {
     return [{ id: crossing.id, from: centre - half, to: centre + half }];
   });
 
+  const clearings = [...intersections, ...bays];
+
   return {
     curve,
     length,
@@ -75,6 +86,7 @@ export function createRouteModel(route: Route): RouteModel {
     stopFractions,
     widthAt: (u) => interpolateWidth(fractions, widths, u),
     intersections,
+    clearings,
     lanePointAt: (u, out = new Vector3()) => {
       curve.getPointAt(u, out);
       curve.getTangentAt(u, laneTangent);
@@ -83,10 +95,16 @@ export function createRouteModel(route: Route): RouteModel {
       return out.set(out.x - laneTangent.z * offset, out.y, out.z + laneTangent.x * offset);
     },
     inIntersection: (u, margin = 0) =>
-      intersections.some(
-        ({ from, to }) => u >= from - margin / length && u <= to + margin / length,
-      ),
+      clearings.some(({ from, to }) => u >= from - margin / length && u <= to + margin / length),
   };
 }
 
-export const routeModel: RouteModel = createRouteModel(routeContent);
+// The station bays are found on the route without them (a bay depends on where the road is), then
+// built into the final route as clearings.
+const withoutBays = createRouteModel(routeContent);
+const bayClearings = stations.map((station) => ({
+  id: `${station.id}-bay`,
+  ...stationGeometry(withoutBays, station).clearing,
+}));
+
+export const routeModel: RouteModel = createRouteModel(routeContent, bayClearings);
