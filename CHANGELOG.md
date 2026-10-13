@@ -6,6 +6,8 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ### Added
 
+- Buildings: procedural instanced warehouses, towers and houses with detached garages along the route, from `src/content/buildings.ts`: continuous attached street walls in the Exchange District and downtown (broken only at intersections), spaced houses with garages and warm porch lights, one emissive window shader (warm/cool/unlit per window, no texture per building), brick normal map on high and medium, and snow on roofs
+- A little more moonlight on the avenue stretch (higher gain, lower angle)
 - Lane offset: the car and chase camera follow the right-hand lane, and the road shader draws wheel ruts at the same lane centres (`src/lib/lanes.ts`)
 - Stop-anchored intersections (metre offset from a stop): Princess St, Portage & Main and three residential crossings
 

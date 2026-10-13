@@ -150,6 +150,42 @@ export type Intersection = z.infer<typeof IntersectionSchema>;
 export type RoutePoint = z.infer<typeof RoutePointSchema>;
 export type Route = z.infer<typeof RouteSchema>;
 
+const unit = z.number().min(0).max(1);
+
+const range2 = z
+  .tuple([z.number().positive(), z.number().positive()])
+  .refine(([min, max]) => min <= max, 'Expected [min, max]');
+
+const gapRange = z
+  .tuple([z.number().min(0), z.number().min(0)])
+  .refine(([min, max]) => min <= max, 'Expected [min, max]');
+
+export const BuildingStretchSchema = z.object({
+  id: kebabId,
+  style: z.enum(['warehouse', 'tower', 'house']),
+  /** The stretch runs from this stop (plus `fromOffset` metres along the road) ... */
+  from: kebabId,
+  fromOffset: z.number().optional(),
+  /** ... to this one (plus `toOffset`). */
+  to: kebabId,
+  toOffset: z.number().optional(),
+  /** Metres from the road edge to the building front. */
+  setback: z.number().min(0),
+  lotWidth: range2,
+  /** Gap between neighbouring lots along the road, in metres. A largest gap of 1.5 m or less makes a continuous, attached street wall. */
+  gap: gapRange,
+  depth: range2,
+  height: range2,
+  /** Scales the share of windows lit from the zone's `windows` values. */
+  lit: unit,
+  /** Chance that a lot is built. */
+  density: unit,
+  /** Chance that a house has a detached garage behind it. */
+  garage: unit.optional(),
+});
+export type BuildingStretch = z.infer<typeof BuildingStretchSchema>;
+export type BuildingStyle = BuildingStretch['style'];
+
 export const UiCopySchema = z.object({
   site: z.object({ title: z.string(), description: z.string() }),
   home: z.object({ heading: z.string(), intro: z.string(), simpleLink: z.string() }),
@@ -200,8 +236,6 @@ const worldTokens = Object.keys(world) as [WorldToken, ...WorldToken[]];
 export const WorldTokenSchema = z.enum(worldTokens);
 export const lampTypes = ['sodium', 'led', 'warm'] as const;
 export type LampType = (typeof lampTypes)[number];
-
-const unit = z.number().min(0).max(1);
 
 export const AtmosphereZoneSchema = z.object({
   id: kebabId,

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   atmosphereZones,
+  buildingStretches,
   communityNotes,
   experience,
   profile,
@@ -19,6 +20,7 @@ import { assertContentIntegrity, findContentProblems } from './integrity';
 
 const bundle = {
   atmosphere: atmosphereZones,
+  buildings: buildingStretches,
   route,
   stops,
   projects,
@@ -168,6 +170,23 @@ describe('route integrity', () => {
     expect(findContentProblems({ ...bundle, route: { points: swapped } }).join('\n')).toContain(
       'in stop order',
     );
+  });
+});
+
+describe('building stretches', () => {
+  it('reference known stops and have unique ids', () => {
+    const broken = [{ ...buildingStretches[0]!, to: 'nowhere' }, buildingStretches[0]!];
+    const problems = findContentProblems({ ...bundle, buildings: broken }).join(' | ');
+    expect(problems).toContain('unknown stop nowhere');
+    expect(problems).toContain('Duplicate building stretch id');
+  });
+
+  it('use a min and max in order for every range', () => {
+    for (const stretch of buildingStretches) {
+      for (const [min, max] of [stretch.lotWidth, stretch.depth, stretch.height]) {
+        expect(min).toBeLessThanOrEqual(max);
+      }
+    }
   });
 });
 

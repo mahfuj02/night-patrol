@@ -1,6 +1,7 @@
 import { findZoneProblems } from '../lib/atmosphere';
 import type {
   AtmosphereZone,
+  BuildingStretch,
   CommunityNote,
   Experience,
   Project,
@@ -11,6 +12,7 @@ import type {
 
 export interface ContentBundle {
   atmosphere: AtmosphereZone[];
+  buildings: BuildingStretch[];
   route: Route;
   stops: Stop[];
   projects: Project[];
@@ -103,6 +105,17 @@ export function findContentProblems(c: ContentBundle): string[] {
   for (const crossing of c.route.intersections ?? []) {
     if (!stopsById.has(crossing.stopId)) {
       problems.push(`Intersection ${crossing.id}: unknown stop ${crossing.stopId}`);
+    }
+  }
+  checkDuplicates(
+    'building stretch',
+    c.buildings.map((b) => b.id),
+  );
+  for (const stretch of c.buildings) {
+    for (const stopId of [stretch.from, stretch.to]) {
+      if (!stopsById.has(stopId)) {
+        problems.push(`Building stretch ${stretch.id}: unknown stop ${stopId}`);
+      }
     }
   }
   problems.push(...findZoneProblems(c.atmosphere, c.stops));
