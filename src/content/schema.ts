@@ -60,7 +60,18 @@ export const ProjectSchema = z.object({
     github: url.optional(),
     caseStudy: url.optional(),
   }),
-  images: z.array(z.object({ src: z.string().min(1), alt: z.string().min(1) })),
+  /**
+   * Pictures for the project's book in the library: WebP files from `scripts/prepare-project-images.mjs`
+   * in public/images/projects/. `caption` is a short line under the picture, for example "Concept
+   * design" when it is a mock-up and not a capture of the real thing.
+   */
+  images: z.array(
+    z.object({
+      src: z.string().regex(/^\/images\/projects\/[a-z0-9-]+\.webp$/),
+      alt: z.string().min(1),
+      caption: z.string().min(1).optional(),
+    }),
+  ),
   /**
    * False for a project that is not published yet: it is hidden everywhere (the route, the map,
    * the library and /simple) until the flag is removed. Left out means published.

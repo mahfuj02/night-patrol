@@ -23,7 +23,13 @@ export const allProjects: Project[] = [
       github: 'https://github.com/mahfuj02/eventflow',
       caseStudy: 'https://mahfuj.dev/projects/eventflow',
     },
-    images: [],
+    // TODO(content): owner to check the alt text.
+    images: [
+      {
+        src: '/images/projects/eventflow.webp',
+        alt: 'The EventFlow home page: a search bar for events, venues and cities, and upcoming events below.',
+      },
+    ],
     stopId: 'exchange-warehouses',
     // TODO(content): owner to tweak the sign wording.
     sign: { name: 'EventFlow', slogan: "Book your ticket. Tonight's show starts here." },
@@ -57,7 +63,13 @@ export const allProjects: Project[] = [
       live: 'https://role-ready-snowy.vercel.app',
       caseStudy: 'https://mahfuj.dev/projects/role-ready',
     },
-    images: [],
+    // TODO(content): owner to check the alt text.
+    images: [
+      {
+        src: '/images/projects/roleready.webp',
+        alt: 'The RoleReady home page: the headline "Land the job you actually want", with a Get started button.',
+      },
+    ],
     stopId: 'portage-main',
     // TODO(content): owner to tweak the sign wording.
     sign: { name: 'RoleReady', slogan: 'Your career starts here. Practice interviews with AI.' },
@@ -73,7 +85,14 @@ export const allProjects: Project[] = [
       'A React Native and Expo mobile app, written in TypeScript, that includes speed monitoring.',
     stack: ['React Native', 'Expo', 'TypeScript'],
     links: { caseStudy: 'https://mahfuj.dev/projects/safe-drive-ai' },
-    images: [],
+    // TODO(content): owner to check the alt text. A concept design, not a capture of the app.
+    images: [
+      {
+        src: '/images/projects/safe-drive-ai.webp',
+        alt: 'Concept design of the SafeDrive AI app: permission status, a warning threshold and a large Start Drive button.',
+        caption: 'Concept design',
+      },
+    ],
     stopId: 'dashcam',
     // TODO(content): owner to tweak the sign wording.
     sign: { name: 'Safe Drive AI', slogan: 'Eyes on the road. AI on your side.' },
@@ -141,7 +160,14 @@ export const allProjects: Project[] = [
     built: 'A React Native mobile app using TanStack Query and the OpenAI API.',
     stack: ['React Native', 'TanStack Query', 'OpenAI API'],
     links: { caseStudy: 'https://mahfuj.dev/projects/connexions-spectrum' },
-    images: [],
+    // TODO(content): owner to check the alt text. A concept design, not a capture of the app.
+    images: [
+      {
+        src: '/images/projects/connexions-spectrum.webp',
+        alt: 'Concept design of the Connexions app: a Matches screen, an inbox and a coaching prompt on phone screens.',
+        caption: 'Concept design',
+      },
+    ],
   },
 ];
 
