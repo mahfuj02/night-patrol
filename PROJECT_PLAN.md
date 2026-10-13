@@ -104,7 +104,7 @@ Full style guide: **`docs/art-reference.md`** (written from reference photos in 
 - **Post-processing:** bloom (lights only), vignette, subtle film grain, light fog.
 - **Typography (HUD/panels):** one monospace for radio/log (e.g. JetBrains Mono), one clean sans for panels (e.g. Inter). Self-hosted via `next/font`.
 - **The car:** the owner's own white 2019 Honda Civic sedan, modified (amber roof light bar, tinted windows, black rims, subtle cyan underglow), with no manufacturer logos or badges. Details in Phase 10.
-- **No logos or trademarks.** The RRC rooftop text reads "RRC Polytechnic" with no college logo; other signage is generic.
+- **No logos or trademarks.** The owner's own school, employers and projects may appear as plain lettering (the RRC rooftop reads "RRC Polytechnic", the experience office sign reads "LIILAB · Sylhet, Bangladesh"), with no logo, crest or brand mark; other signage is generic.
 
 ---
 
