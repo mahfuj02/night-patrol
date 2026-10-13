@@ -2,6 +2,7 @@ import type { ComponentType } from 'react';
 import type { LandmarkId } from '@/content/schema';
 import { CityServices } from './CityServices';
 import { ExchangeWarehouses } from './ExchangeWarehouses';
+import { MillenniumLibrary } from './MillenniumLibrary';
 import { RoleReadyTower } from './RoleReadyTower';
 import { RrcCampus } from './RrcCampus';
 import { Scenery } from './Scenery';
@@ -22,6 +23,7 @@ export const landmarkComponents: Partial<
   'exchange-warehouses': ExchangeWarehouses,
   'city-services': CityServices,
   'portage-main': RoleReadyTower,
+  'millennium-library': MillenniumLibrary,
 };
 
 /** Draws every landmark that has been built, and the scenery (lit buildings with no stop). */
