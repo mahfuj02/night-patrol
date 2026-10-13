@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { Vector3 } from 'three';
 import { dampT } from '@/lib/route';
 import { progress } from './progress';
+import { FOCUS_PULL, landmarkFocus, resetFocus } from './Landmarks/landmarkFocus';
 import { routeModel } from './Road/route';
 
 const CHASE_BACK = 12;
@@ -32,6 +33,14 @@ export function CameraRig({ reducedMotion }: { reducedMotion: boolean }) {
     desired.y += CHASE_UP;
     lookAt.copy(point).addScaledVector(tangent, LOOK_AHEAD);
     lookAt.y += LOOK_UP;
+    // While a landmark is lit the view leans toward it, so it is not left at the edge of the frame.
+    if (landmarkFocus.glow > 0) {
+      const pull = FOCUS_PULL * landmarkFocus.glow;
+      lookAt.x += (landmarkFocus.x - lookAt.x) * pull;
+      lookAt.y += (landmarkFocus.y - lookAt.y) * pull;
+      lookAt.z += (landmarkFocus.z - lookAt.z) * pull;
+    }
+    resetFocus();
 
     const { camera } = state;
     if (reducedMotion || !placed.current) {

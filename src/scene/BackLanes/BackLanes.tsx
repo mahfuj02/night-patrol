@@ -16,14 +16,12 @@ import { backLanes } from '@/content/backLanes';
 import { buildingStretches } from '@/content/buildings';
 import { world } from '@/lib/palette';
 import type { QualityTier } from '@/lib/quality';
-import { buildBuildings } from '../Buildings/buildingLayout';
+import { sceneBuildings } from '../Buildings/sceneBuildings';
 import { patchTreeMaterial } from '../Materials/treeMaterials';
-import { crossings } from '../Road/crossings';
 import { routeModel } from '../Road/route';
 import { buildBackLanes, selectBackLanesForTier } from './backLaneLayout';
 
-const buildings = buildBuildings(routeModel, buildingStretches, crossings);
-const allProps = buildBackLanes(routeModel, buildings, buildingStretches, backLanes);
+const allProps = buildBackLanes(routeModel, sceneBuildings, buildingStretches, backLanes);
 
 const ARM_LENGTH = 2.4;
 const ARM_DROP = 0.6;

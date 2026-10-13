@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildingStretches, stops } from '@/content';
 import { rectsOverlap } from '@/lib/footprint';
-import { rectOutline } from '@/lib/footprint';
+import { rectOutline, type Rect } from '@/lib/footprint';
 import { crossings } from '../Road/crossings';
 import { routeModel } from '../Road/route';
 import { buildBuildings, selectBuildingsForTier, stretchRange } from './buildingLayout';
@@ -230,5 +230,22 @@ describe('selectBuildingsForTier', () => {
     expect(low.filter((b) => b.style === 'house').length).toBeLessThan(
       buildings.filter((b) => b.style === 'house').length,
     );
+  });
+});
+
+describe('reserved ground', () => {
+  it('leaves ground held for a landmark free of buildings', () => {
+    const reserved: Rect = {
+      x: buildings[0]!.footprint.x,
+      z: buildings[0]!.footprint.z,
+      yaw: buildings[0]!.footprint.yaw,
+      width: 30,
+      depth: 30,
+    };
+    const without = buildBuildings(routeModel, buildingStretches, crossings, [reserved]);
+    expect(without.length).toBeLessThan(
+      buildBuildings(routeModel, buildingStretches, crossings).length,
+    );
+    for (const b of without) expect(rectsOverlap(b.footprint, reserved)).toBe(false);
   });
 });

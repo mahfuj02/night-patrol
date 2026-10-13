@@ -1,0 +1,81 @@
+import { Vector3 } from 'three';
+import { stops } from '@/content/stops';
+import type { Rect } from '@/lib/footprint';
+import type { RouteModel } from '../Road/route';
+
+/** Where a landmark stands: beside the route, measured from its stop. */
+export interface LandmarkPlacement {
+  stopId: string;
+  /** Metres along the road from the stop to the centre of the landmark; negative is before it. */
+  offset: number;
+  /** -1 on the left of travel, 1 on the right. */
+  side: -1 | 1;
+  /** Depth away from the road, in metres. */
+  depth: number;
+  /** Gap between the road edge and the landmark front. */
+  setback: number;
+  /** Local-x extent kept free of ordinary buildings: from `min` (ahead) to `max` (behind). */
+  reserved: { min: number; max: number };
+}
+
+/**
+ * The RRC Polytechnic campus: on the left of the route, just before the Princess St intersection
+ * (which is 16 m past the stop). The campus block is centred 4 m before the stop, so its ahead end
+ * stops at the intersection gap. The limestone and brick neighbours and the lower step stand behind
+ * it along the same wall, so the reserved stretch covers all of them.
+ */
+export const rrcPlacement: LandmarkPlacement = {
+  stopId: 'rrc-campus',
+  offset: -4,
+  side: -1,
+  depth: 14,
+  setback: 7.5,
+  reserved: { min: -10, max: 44 },
+};
+
+export interface LandmarkFrame {
+  /** Centre of the footprint at ground level. */
+  position: Vector3;
+  /** Rotation about Y. Local +z points away from the road and local -z faces it. */
+  yaw: number;
+  /** Local +x is the direction along the wall away from the stop's onward direction. */
+  stopT: number;
+}
+
+/**
+ * The position and orientation of a landmark. Local +z points away from the road, so the front
+ * (facing the road) is -z. On the left of the route local +x runs back along the road, so the
+ * viewer standing on the road and looking at the front has local +x on their left.
+ */
+export function landmarkFrame(model: RouteModel, placement: LandmarkPlacement): LandmarkFrame {
+  const stopFraction = model.stopFractions.get(placement.stopId);
+  const stop = stops.find((s) => s.id === placement.stopId);
+  if (stopFraction === undefined || !stop) {
+    throw new Error(`Landmark stop ${placement.stopId} is not on the route`);
+  }
+  const u = stopFraction + placement.offset / model.length;
+  const centre = model.curve.getPointAt(u);
+  const tangent = model.curve.getTangentAt(u);
+  const right = new Vector3(-tangent.z, 0, tangent.x);
+  const out = placement.side * (model.widthAt(u) / 2 + placement.setback + placement.depth / 2);
+  const position = centre.addScaledVector(right, out);
+  position.y = 0;
+  // Local x along the tangent and local z to the right, turned half a turn on the left side so
+  // that local +z points away from the road.
+  const yaw = Math.atan2(-tangent.z, tangent.x) + (placement.side === -1 ? Math.PI : 0);
+  return { position, yaw, stopT: stop.t };
+}
+
+/** A rectangle on the ground covering the reserved local-x stretch of a landmark. */
+export function reservedRect(frame: LandmarkFrame, placement: LandmarkPlacement): Rect {
+  const { min, max } = placement.reserved;
+  const mid = (min + max) / 2;
+  // Local +x in world space: (cos yaw, -sin yaw).
+  return {
+    x: frame.position.x + Math.cos(frame.yaw) * mid,
+    z: frame.position.z - Math.sin(frame.yaw) * mid,
+    yaw: frame.yaw,
+    width: max - min,
+    depth: placement.depth,
+  };
+}
