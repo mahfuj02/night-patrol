@@ -3,11 +3,12 @@ import { Color, Euler, Matrix4, Quaternion, Vector3, type InstancedMesh } from '
 import { buildingStretches } from '@/content/buildings';
 import type { QualityTier } from '@/lib/quality';
 import { createBuildingMaterial, createRoofMaterial } from '../Materials/buildingMaterials';
-import { useBrickTexture } from '../Materials/useBrickTexture';
+import { useBrickTextures } from '../Materials/useBrickTextures';
 import { routeModel } from '../Road/route';
 import { createBodyGeometry, createBoxGeometry, createGableGeometry } from './buildingGeometry';
 import { buildBuildings, selectBuildingsForTier } from './buildingLayout';
 import { CAP_HEIGHT, buildParts } from './buildingParts';
+import { PorchLights } from './PorchLights';
 
 const allBuildings = buildBuildings(routeModel, buildingStretches);
 
@@ -47,7 +48,7 @@ function place(mesh: InstancedMesh | null, placements: readonly Placement[]) {
  * on flat roofs). Layout and style come from `src/content/buildings.ts`; the low tier builds half.
  */
 export function Buildings({ tier }: { tier: QualityTier }) {
-  const brick = useBrickTexture(tier);
+  const brick = useBrickTextures(tier);
   const parts = useMemo(() => buildParts(selectBuildingsForTier(allBuildings, tier)), [tier]);
   const bodyGeometry = useMemo(() => createBodyGeometry(parts.bodies), [parts.bodies]);
   const gableGeometry = useMemo(() => createGableGeometry(), []);
@@ -107,6 +108,7 @@ export function Buildings({ tier }: { tier: QualityTier }) {
           frustumCulled={false}
         />
       )}
+      <PorchLights porches={parts.porches} />
     </group>
   );
 }

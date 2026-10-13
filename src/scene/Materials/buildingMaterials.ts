@@ -1,13 +1,14 @@
 import {
   Color,
   MeshStandardMaterial,
-  type Texture,
+  ShaderChunk,
   type WebGLProgramParametersWithUniforms,
 } from 'three';
 import { world } from '@/lib/palette';
 import { lampUniforms } from '../lampUniforms';
 import { surfaceUniforms } from './surfaceUniforms';
 import { LAMP_LIGHT, patchTreeMaterial } from './treeMaterials';
+import type { BrickTextures } from './useBrickTextures';
 
 type Shader = WebGLProgramParametersWithUniforms;
 
@@ -109,10 +110,15 @@ const WINDOWS_DIFFUSE = /* glsl */ `
  * from one shared texture, and the lit windows from the grid shader above. Lit by the nearest
  * lamps and the headlights like the trees. Snow on upward faces is left to the roof slabs.
  */
-export function createBuildingMaterial(brick: Texture): MeshStandardMaterial {
-  const material = new MeshStandardMaterial({ roughness: 0.92, metalness: 0 });
+export function createBuildingMaterial(brick: BrickTextures): MeshStandardMaterial {
+  const material = new MeshStandardMaterial({
+    roughness: 0.92,
+    metalness: 0,
+    normalMap: brick.normal ?? null,
+  });
+  material.normalScale.set(0.9, 0.9);
   material.onBeforeCompile = (shader: Shader) => {
-    shader.uniforms.uBrick = { value: brick };
+    shader.uniforms.uBrick = { value: brick.color };
     shader.uniforms.uBrickLuma = { value: BRICK_LUMA };
     shader.uniforms.uBrickTile = { value: BRICK_TILE };
     shader.uniforms.uWarm = { value: new Color(world.windowWarm).multiplyScalar(WARM_GAIN) };
@@ -125,6 +131,19 @@ export function createBuildingMaterial(brick: Texture): MeshStandardMaterial {
       '#include <common>',
       `#include <common>\n${WINDOWS_VERTEX_DECLARE}`,
     );
+    // The normal map is sampled by metres along each face, like the colour map. The varying is
+    // linear along a face, so per-vertex coordinates interpolate exactly.
+    shader.vertexShader = replace(
+      shader.vertexShader,
+      '#include <uv_vertex>',
+      `#include <uv_vertex>
+       #ifdef USE_NORMALMAP
+         vec3 wallLocal = (position + vec3(0.5, 0.0, 0.5)) * aSize;
+         vec3 wallFace = abs(normal);
+         vec2 wallUv = wallFace.x > 0.5 ? wallLocal.zy : (wallFace.y > 0.5 ? wallLocal.xz : wallLocal.xy);
+         vNormalMapUv = wallUv / ${BRICK_TILE.toFixed(2)};
+       #endif`,
+    );
     shader.vertexShader = replace(
       shader.vertexShader,
       '#include <begin_vertex>',
@@ -134,6 +153,15 @@ export function createBuildingMaterial(brick: Texture): MeshStandardMaterial {
       shader.fragmentShader,
       '#include <common>',
       `#include <common>\n${WINDOWS_FRAGMENT_DECLARE}`,
+    );
+    // Relief only where the surface is brick-like: scaled per instance by its texture weight.
+    shader.fragmentShader = replace(
+      shader.fragmentShader,
+      '#include <normal_fragment_maps>',
+      ShaderChunk.normal_fragment_maps.replace(
+        'mapN.xy *= normalScale;',
+        'mapN.xy *= normalScale * vLit.w;',
+      ),
     );
     shader.fragmentShader = replace(
       shader.fragmentShader,
