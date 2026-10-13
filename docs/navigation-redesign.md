@@ -21,7 +21,7 @@ Vocabulary: a **stop** is a point on the route with a landmark and a checkpoint 
 
 The route is simpler than the first plan: fewer drive-bys, the same five stations.
 
-**Removed stops:** the Arcade (Akari), the Building under inspection (site audit extension), the Warming shelter and the CMHR. The Canadian Museum for Human Rights and Esplanade Riel stay as **scenery on the avenue** (lit landmarks, no stop, no panel; plain lettering at most, no logos, see rule 10). The warm-windowed residential building where the shelter was stays as **scenery, with no text**. The warming shelter's resource links (Siloam Mission, Main Street Project, Harvest Manitoba) stay on `/simple` only. Scenery is built in its own PR.
+**Removed stops:** the Arcade (Akari), the Building under inspection (site audit extension), the Warming shelter and the CMHR. The Canadian Museum for Human Rights and Esplanade Riel stay as **scenery on the avenue** (lit landmarks, no stop, no panel; plain lettering at most, no logos, see rule 10). The warm-windowed residential building where the shelter was stays as **scenery, with no text**. The warming shelter's resource links (Siloam Mission, Main Street Project, Harvest Manitoba) stay on `/simple` only. The scenery is built: see [docs/scenery.md](scenery.md).
 
 **Akari and the site audit extension** are not published yet. They stay in `projects.ts` with `published: false`, so they are hidden everywhere: the route, the map's project list, the library and `/simple`. Remove the flag to publish them.
 
