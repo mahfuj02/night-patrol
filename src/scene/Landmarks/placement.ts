@@ -89,6 +89,20 @@ export const libraryPlacement: LandmarkPlacement = {
   reserved: { min: -22, max: 22 },
 };
 
+/**
+ * The Skills building: a tech building on the RIGHT of the route on the second straight after
+ * Portage & Main, about 700 m along (the Library is on the left 100 m before it, so the two station
+ * patterns differ). The Skills station parks in front of it.
+ */
+export const skillsPlacement: LandmarkPlacement = {
+  stopId: 'skills-station',
+  offset: 0,
+  side: 1,
+  depth: 16,
+  setback: 7.5,
+  reserved: { min: -20, max: 20 },
+};
+
 /** Every landmark that stands on the route, so ordinary buildings can leave its ground free. */
 export const landmarkPlacements: readonly LandmarkPlacement[] = [
   rrcPlacement,
@@ -96,6 +110,7 @@ export const landmarkPlacements: readonly LandmarkPlacement[] = [
   cityServicesPlacement,
   roleReadyPlacement,
   libraryPlacement,
+  skillsPlacement,
 ];
 
 /**
