@@ -10,7 +10,10 @@
 export type StationPhase = 'idle' | 'turning-in' | 'parked' | 'backing-out';
 
 export type Pending =
-  { kind: 'none' } | { kind: 'dir'; dir: 1 | -1 } | { kind: 'go'; index: number };
+  | { kind: 'none' }
+  | { kind: 'dir'; dir: 1 | -1 }
+  | { kind: 'go'; index: number }
+  | { kind: 'station'; index: number };
 
 export interface StationState {
   phase: StationPhase;

@@ -114,3 +114,18 @@ export function resolveStation(
     },
   );
 }
+
+/**
+ * The details of a project, for the route map's project list: the same content a project stop shows
+ * in its side panel, so every project is readable without driving to it or entering the library.
+ */
+export function resolveProjectDetails(
+  projectId: string,
+  sources: Omit<CheckpointSources, 'checkpoints'>,
+): ResolvedCheckpoint | null {
+  if (!sources.projects.some((p) => p.id === projectId)) return null;
+  return resolveCheckpoint(
+    { id: 'project', contentRef: projectId },
+    { ...sources, checkpoints: [{ stopId: 'project' }] },
+  );
+}

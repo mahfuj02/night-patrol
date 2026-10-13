@@ -10,6 +10,7 @@ import { useWebGLSupport } from '@/hooks/useWebGLSupport';
 import { CheckpointPanel } from '@/ui/CheckpointPanel';
 import { DriveControls } from '@/ui/DriveControls';
 import { Subtitles } from '@/ui/Hud';
+import { RouteMap } from '@/ui/RouteMap';
 import { StationControls, StationWall } from '@/ui/Station';
 
 // The 3D scene is only ever loaded in the browser, and only when WebGL is available.
@@ -58,6 +59,7 @@ export function HomeExperience() {
       </div>
       <DriveControls />
       <StationControls />
+      <RouteMap />
       <CheckpointPanel />
       <StationWall />
       <Subtitles />

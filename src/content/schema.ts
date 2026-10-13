@@ -274,6 +274,15 @@ export const StationSchema = z.object({
 });
 export type Station = z.infer<typeof StationSchema>;
 
+export const transitZoneIds = ['exchange', 'downtown', 'residential', 'avenue', 'forks'] as const;
+export const TransitZoneSchema = z.object({
+  id: z.enum(transitZoneIds),
+  label: z.string().min(1),
+  /** The zone starts at this stop and runs to the next zone's stop. */
+  fromStopId: kebabId,
+});
+export type TransitZone = z.infer<typeof TransitZoneSchema>;
+
 export const UiCopySchema = z.object({
   site: z.object({ title: z.string(), description: z.string() }),
   home: z.object({ heading: z.string(), intro: z.string(), simpleLink: z.string() }),
@@ -326,6 +335,27 @@ export const UiCopySchema = z.object({
     teaser: z.string(),
   }),
   hud: z.object({ radioLabel: z.string() }),
+  menu: z.object({
+    /** The button that opens the route map, and the map's accessible name. */
+    toggle: z.string(),
+    label: z.string(),
+    sections: z.string(),
+    route: z.string(),
+    projects: z.string(),
+    youAreHere: z.string(),
+    /** `{name}` is the stop, station or project. */
+    driving: z.string(),
+    arrived: z.string(),
+    /** Accessible names. `{title}`, `{n}`, `{total}` and `{section}` are filled in. */
+    stopName: z.string(),
+    stationName: z.string(),
+    current: z.string(),
+    close: z.string(),
+    driveToIt: z.string(),
+    resume: z.string(),
+    contact: z.string(),
+    projectDetails: z.string(),
+  }),
   station: z.object({
     /** The Open button. `{section}` is the section name. */
     open: z.string(),

@@ -4,7 +4,7 @@ import { experience } from '@/content/experience';
 import { projects } from '@/content/projects';
 import { stations } from '@/content/stations';
 import { stops } from '@/content/stops';
-import { resolveCheckpoint, resolveStation } from './checkpoint';
+import { resolveCheckpoint, resolveProjectDetails, resolveStation } from './checkpoint';
 
 const sources = { checkpoints, experience, projects };
 const stop = (id: string) => stops.find((s) => s.id === id);
@@ -71,5 +71,21 @@ describe('resolveCheckpoint', () => {
       checkpoints: [{ stopId: 'rrc-campus', teaserRef: 'missing' }],
     })!;
     expect(result.teaser).toBeUndefined();
+  });
+});
+
+describe('resolveProjectDetails', () => {
+  it('shows any project, including the ones with no route stop', () => {
+    for (const project of projects) {
+      const result = resolveProjectDetails(project.id, { experience, projects })!;
+      expect(result.main.kind).toBe('project');
+      expect(result.main.title).toBe(project.name);
+      expect(result.teaser).toBeUndefined();
+    }
+  });
+
+  it('returns null for something that is not a project', () => {
+    expect(resolveProjectDetails('liilab', { experience, projects })).toBeNull();
+    expect(resolveProjectDetails('nothing', { experience, projects })).toBeNull();
   });
 });
