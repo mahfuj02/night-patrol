@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   atmosphereZones,
   buildingStretches,
+  checkpoints,
   communityNotes,
   experience,
   profile,
@@ -22,6 +23,7 @@ import { assertContentIntegrity, findContentProblems } from './integrity';
 const bundle = {
   atmosphere: atmosphereZones,
   buildings: buildingStretches,
+  checkpoints,
   route,
   stops,
   projects,
@@ -171,6 +173,30 @@ describe('route integrity', () => {
     expect(findContentProblems({ ...bundle, route: { points: swapped } }).join('\n')).toContain(
       'in stop order',
     );
+  });
+});
+
+describe('checkpoints', () => {
+  it('open the panel at the RRC campus, with the Sprint-Innovation win as the teaser', () => {
+    expect(checkpoints).toEqual([{ stopId: 'rrc-campus', teaserRef: 'sprint-innovation-2025' }]);
+    expect(radioLines.find((r) => r.id === 'rrc-campus')?.text).toContain(
+      'RRC campus on your left',
+    );
+    expect(signage.rrcRooftop).toBe('RRC Polytechnic');
+  });
+
+  it('reject unknown stops and refs, duplicates, and stops without content', () => {
+    const broken = [
+      { stopId: 'nowhere' },
+      { stopId: 'rrc-campus', teaserRef: 'missing' },
+      { stopId: 'rrc-campus' },
+      { stopId: 'ignition' },
+    ];
+    const problems = findContentProblems({ ...bundle, checkpoints: broken }).join(' | ');
+    expect(problems).toContain('unknown stop nowhere');
+    expect(problems).toContain('unknown teaserRef missing');
+    expect(problems).toContain('Duplicate checkpoint id');
+    expect(problems).toContain('Checkpoint ignition: the stop has no contentRef');
   });
 });
 

@@ -21,6 +21,13 @@ export const simpleCopy: UiCopy = {
     loading: 'Starting the engine…',
     noWebGL: 'This browser cannot show the 3D drive, but the simple version has everything.',
   },
+  checkpoint: {
+    label: 'Checkpoint: {title}',
+    close: 'Close checkpoint',
+    opened: 'Checkpoint opened: {title}. Press Escape to close it.',
+    teaser: 'Also',
+  },
+  hud: { radioLabel: 'Dispatch radio' },
   pageTitle: 'Mahfuj: Full Stack Web Developer in Winnipeg',
   pageDescription:
     'Portfolio of Md Mahfuj Ahmed (Mahfuj), a full stack web developer in Winnipeg, MB: projects, skills, experience and contact.',

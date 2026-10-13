@@ -160,7 +160,10 @@ export const RouteSchema = z.object({
 });
 export type Intersection = z.infer<typeof IntersectionSchema>;
 
-export const SignageSchema = z.object({ stop: z.string().min(1).max(8) });
+export const SignageSchema = z.object({
+  stop: z.string().min(1).max(8),
+  rrcRooftop: z.string().min(1).max(30),
+});
 export type Signage = z.infer<typeof SignageSchema>;
 export type RoutePoint = z.infer<typeof RoutePointSchema>;
 export type Route = z.infer<typeof RouteSchema>;
@@ -215,6 +218,13 @@ export const BackLanesSchema = z.object({
 });
 export type BackLanes = z.infer<typeof BackLanesSchema>;
 
+export const CheckpointSchema = z.object({
+  stopId: kebabId,
+  /** Id of an experience entry or project shown as a short teaser under the main content. */
+  teaserRef: kebabId.optional(),
+});
+export type Checkpoint = z.infer<typeof CheckpointSchema>;
+
 export const UiCopySchema = z.object({
   site: z.object({ title: z.string(), description: z.string() }),
   home: z.object({ heading: z.string(), intro: z.string(), simpleLink: z.string() }),
@@ -257,6 +267,15 @@ export const UiCopySchema = z.object({
     githubProfile: z.string(),
   }),
   labels: z.object({ stack: z.string(), problem: z.string(), built: z.string() }),
+  checkpoint: z.object({
+    /** Accessible name of the panel. `{title}` is the stop title. */
+    label: z.string(),
+    close: z.string(),
+    /** Read out when the panel opens. `{title}` is the stop title. */
+    opened: z.string(),
+    teaser: z.string(),
+  }),
+  hud: z.object({ radioLabel: z.string() }),
 });
 export type UiCopy = z.infer<typeof UiCopySchema>;
 
