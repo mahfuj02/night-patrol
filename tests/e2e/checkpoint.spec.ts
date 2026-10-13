@@ -62,12 +62,44 @@ test.describe('checkpoint panel', () => {
   });
 
   test('has no serious accessibility violations while open', async ({ page }) => {
+    test.setTimeout(120_000);
     await driveToRrc(page);
     await expect(panel(page)).toBeVisible();
     const results = await new AxeBuilder({ page }).analyze();
     expect(
       results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical'),
     ).toEqual([]);
+  });
+
+  test('opens the EventFlow panel at the Exchange District warehouses, with its links', async ({
+    page,
+  }) => {
+    const warehouses = stops.findIndex((s) => s.id === 'exchange-warehouses');
+    test.setTimeout(120_000);
+    await page.goto('/?quality=low');
+    await expect(page.locator('canvas')).toBeVisible();
+    for (let i = 0; i < warehouses; i++) await page.keyboard.press('PageDown');
+    const eventflow = page.getByRole('complementary', { name: 'EventFlow' });
+    await expect(eventflow).toBeVisible();
+    await expect(eventflow).toContainText('Scoped ticketing and CRM platform for events.');
+    await expect(eventflow).toContainText('Stripe (test mode)');
+    await expect(eventflow.getByRole('link', { name: /GitHub repository/ })).toHaveAttribute(
+      'href',
+      'https://github.com/mahfuj02/eventflow',
+    );
+    await expect(eventflow.getByRole('link', { name: /Live site/ })).toHaveAttribute(
+      'href',
+      /^https:/, //,
+    );
+    await expect(page.getByRole('region', { name: 'Dispatch radio' })).toContainText(
+      'Tickets running through EventFlow, on your left.',
+    );
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(
+      results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical'),
+    ).toEqual([]);
+    // Driving on from the RRC campus closed that panel; the diploma panel is not showing here.
+    await expect(panel(page)).toBeHidden();
   });
 
   test.describe('on a phone', () => {

@@ -97,6 +97,9 @@ test.describe('drive (WebGL)', () => {
   test('has no serious accessibility violations (high tier, with post-processing)', async ({
     page,
   }) => {
+    // The high tier draws post-processing on a software renderer, which gets slower as the scene
+    // grows, and axe has to wait for it.
+    test.setTimeout(150_000);
     await openHome(page, 'high');
     const results = await new AxeBuilder({ page }).analyze();
     const serious = results.violations.filter(
