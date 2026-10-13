@@ -1,0 +1,43 @@
+import { act, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { radioLines, stops } from '@/content';
+import { STOP_TS, useDriveStore } from '@/store/drive';
+import { Subtitles } from './Subtitles';
+
+const state = () => useDriveStore.getState();
+const region = () => screen.getByRole('region', { name: 'Dispatch radio' });
+const indexOf = (id: string) => stops.findIndex((s) => s.id === id);
+
+describe('Subtitles', () => {
+  beforeEach(() => {
+    act(() => state().goToStop(0));
+  });
+
+  it('is a polite live region that is empty at a stop without a radio line', () => {
+    render(<Subtitles />);
+    expect(region()).toHaveAttribute('aria-live', 'polite');
+    expect(region()).toHaveTextContent('');
+  });
+
+  it('captions the dispatch line at the first stop with one', () => {
+    render(<Subtitles />);
+    act(() => state().goToStop(indexOf('dispatch')));
+    expect(region()).toHaveTextContent(radioLines.find((l) => l.id === 'dispatch')!.text);
+  });
+
+  it('captions the RRC campus line', () => {
+    render(<Subtitles />);
+    act(() => state().goToStop(indexOf('rrc-campus')));
+    expect(region()).toHaveTextContent(
+      'Unit 02, Exchange District. RRC campus on your left. This is where my Winnipeg tech journey started.',
+    );
+  });
+
+  it('clears the caption while the car is between stops', () => {
+    render(<Subtitles />);
+    const i = indexOf('rrc-campus');
+    act(() => state().goToStop(i));
+    act(() => state().nudge((STOP_TS[i + 1]! - STOP_TS[i]!) / 2));
+    expect(region()).toHaveTextContent('');
+  });
+});
