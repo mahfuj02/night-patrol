@@ -16,7 +16,7 @@ const TAPER = 5;
 /** Distance in metres from `u` to the nearest intersection (0 inside one). Infinity if none. */
 function distanceToIntersection(model: PathModel, u: number): number {
   let best = Infinity;
-  for (const { from, to } of model.intersections) {
+  for (const { from, to } of model.clearings ?? model.intersections) {
     const gap = u < from ? from - u : u > to ? u - to : 0;
     best = Math.min(best, gap * model.length);
   }

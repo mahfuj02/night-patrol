@@ -66,7 +66,7 @@ describe('buildBuildings', () => {
     for (const b of buildings) {
       const half = b.footprint.width / 2 / routeModel.length;
       for (const x of [b.u - half, b.u, b.u + half]) {
-        expect(routeModel.inIntersection(x)).toBe(false);
+        expect(routeModel.intersections.some((g) => x >= g.from && x <= g.to)).toBe(false);
       }
     }
   });

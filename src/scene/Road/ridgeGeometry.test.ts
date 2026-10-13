@@ -78,7 +78,7 @@ describe('buildSnowRidge', () => {
   });
 
   it('is broken only at the intersection', () => {
-    const noGap = createRouteModel({ points: route.points });
+    const noGap = createRouteModel({ ...route, intersections: undefined });
     const unbroken = buildSnowRidge(noGap, options);
     expect(triangles).toBeLessThan(unbroken.getIndex()!.count / 3);
 

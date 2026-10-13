@@ -25,6 +25,8 @@ import { SnowRidge } from './Road/SnowRidge';
 import { Streetlights } from './Road/Streetlights';
 import { Signals } from './Signals/Signals';
 import { StopSigns } from './Signals/StopSigns';
+import { StationDriver, WallProjector } from './Stations/StationDriver';
+import { StationWalls } from './Stations/StationWalls';
 
 // Dev-only overlay. The ternary is folded away in production builds, so the lazy
 // import is never bundled.
@@ -59,6 +61,8 @@ export function Experience() {
       <fog attach="fog" args={[palette.night, 40, 280]} />
 
       <ProgressDriver reducedMotion={reducedMotion} />
+      <StationDriver reducedMotion={reducedMotion} />
+      <StationWalls />
       <AtmosphereDriver />
       <Sky />
       <Ground tier={tier} />
@@ -77,6 +81,7 @@ export function Experience() {
       <Car />
       <Snow tier={tier} reducedMotion={reducedMotion} />
       <CameraRig reducedMotion={reducedMotion} />
+      <WallProjector />
       <Effects tier={tier} reducedMotion={reducedMotion} />
 
       {DevStats && (

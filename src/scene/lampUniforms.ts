@@ -2,6 +2,7 @@ import { MathUtils, Vector3, Vector4 } from 'three';
 import { lampWindow } from '@/lib/snow';
 import { carState } from './carState';
 import { lamps } from './Road/lamps';
+import { stationView } from './Stations/stationView';
 
 /** Slots in the lamp arrays: the nearest streetlights, then the two headlights. */
 export const MAX_LAMPS = 14;
@@ -17,6 +18,11 @@ const HEADLIGHT_COS_HALF = Math.cos(0.42);
 const HEADLIGHT_RANGE = 34;
 const HEADLIGHT_COLOR: [number, number, number] = [1, 0.92, 0.77];
 const HEADLIGHT_GAIN = 1.5;
+// Parked at a station wall, the headlights are stronger, reach further, spread wider and tip up.
+const PARKED_GAIN = 1.6;
+const PARKED_RANGE = 0.5;
+const PARKED_COS_HALF = Math.cos(0.75);
+const PARKED_AIM_Y = 0.32;
 
 const lampUs = lamps.map((lamp) => lamp.u);
 
@@ -56,16 +62,20 @@ export function updateLampUniforms(t: number): void {
 
   forward.copy(carState.forward);
   right.set(forward.z, 0, -forward.x);
-  aim.set(forward.x, -0.09, forward.z).normalize();
+  const glow = stationView.glow;
+  aim.set(forward.x, -0.09 + (PARKED_AIM_Y + 0.09) * glow, forward.z).normalize();
+  const cosHalf = HEADLIGHT_COS_HALF + (PARKED_COS_HALF - HEADLIGHT_COS_HALF) * glow;
   for (const side of [-1, 1]) {
     uLampPos.value[n]!.set(
       carState.position.x + forward.x * 2.1 + right.x * 0.65 * side,
       carState.position.y + 0.75,
       carState.position.z + forward.z * 2.1 + right.z * 0.65 * side,
-      HEADLIGHT_RANGE,
+      HEADLIGHT_RANGE * (1 + PARKED_RANGE * glow),
     );
-    uLampDir.value[n]!.set(aim.x, aim.y, aim.z, HEADLIGHT_COS_HALF);
-    uLampCol.value[n]!.set(...HEADLIGHT_COLOR).multiplyScalar(HEADLIGHT_GAIN);
+    uLampDir.value[n]!.set(aim.x, aim.y, aim.z, cosHalf);
+    uLampCol.value[n]!.set(...HEADLIGHT_COLOR).multiplyScalar(
+      HEADLIGHT_GAIN * (1 + PARKED_GAIN * glow),
+    );
     n++;
   }
   for (; n < MAX_LAMPS; n++) uLampCol.value[n]!.set(0, 0, 0);

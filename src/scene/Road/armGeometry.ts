@@ -9,9 +9,13 @@ const ARM_SEGMENTS = 24;
 /**
  * Flat road strips for cross-street arms, merged into one geometry (one draw call). Carries the
  * same attributes as the route ribbon, so the road shader draws the same packed snow and ruts:
- * `uv` and `aRoad` as (lateral offset, distance along the arm, ...) in metres.
+ * `uv` and `aRoad` as (lateral offset, distance along the arm, ...) in metres. Also used for the
+ * station bay pads, which are short strips from the road edge to a wall.
  */
-export function buildArmRibbons(arms: readonly Arm[], y: number): BufferGeometry {
+/** What a flat road strip needs: where it starts, which way it runs, and its size. */
+export type Strip = Pick<Arm, 'origin' | 'dir' | 'length' | 'width'>;
+
+export function buildArmRibbons(arms: readonly Strip[], y: number): BufferGeometry {
   const positions: number[] = [];
   const uvs: number[] = [];
   const road: number[] = [];
