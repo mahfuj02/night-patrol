@@ -4,6 +4,7 @@ import { CityServices } from './CityServices';
 import { ExchangeWarehouses } from './ExchangeWarehouses';
 import { RoleReadyTower } from './RoleReadyTower';
 import { RrcCampus } from './RrcCampus';
+import { Scenery } from './Scenery';
 
 /** Props every landmark component takes. */
 export interface LandmarkComponentProps {
@@ -23,13 +24,14 @@ export const landmarkComponents: Partial<
   'portage-main': RoleReadyTower,
 };
 
-/** Draws every landmark that has been built. */
+/** Draws every landmark that has been built, and the scenery (lit buildings with no stop). */
 export function Landmarks({ reducedMotion }: LandmarkComponentProps) {
   return (
     <>
       {Object.entries(landmarkComponents).map(([id, Component]) => (
         <Component key={id} reducedMotion={reducedMotion} />
       ))}
+      <Scenery reducedMotion={reducedMotion} />
     </>
   );
 }
