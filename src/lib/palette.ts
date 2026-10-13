@@ -46,6 +46,13 @@ export const world = {
   brickNight: '#5D3C39',
   brickFaded: '#77625E',
   limestone: '#B5AB9E',
+  towerConcrete: '#6E7279',
+  towerGlass: '#3A4656',
+  sidingCream: '#A39C8E',
+  sidingBlue: '#66737F',
+  sidingGrey: '#7C7F80',
+  sidingRed: '#7A4A44',
+  snowRoof: '#B9BDC4',
   // ground
   snow: palette.snow,
   snowPacked: '#969089',

@@ -19,7 +19,7 @@ function replace(shader: string, token: string, replacement: string): string {
 // The lamps are sprites, not real lights, so trees are lit by them here: each of the nearest
 // lamps and the headlights lights a surface inside its cone, falling off with distance and with
 // how much the surface faces the lamp. Added as emissive so it works with any material.
-const LAMP_LIGHT = /* glsl */ `
+export const LAMP_LIGHT = /* glsl */ `
   uniform vec4 uLampPos[${MAX_LAMPS}];
   uniform vec4 uLampDir[${MAX_LAMPS}];
   uniform vec3 uLampCol[${MAX_LAMPS}];
@@ -50,7 +50,7 @@ interface TreeShaderOptions {
 }
 
 /** Adds lamp light and a snow dusting on upward-facing surfaces to a standard material. */
-function patchTreeMaterial(
+export function patchTreeMaterial(
   material: MeshStandardMaterial,
   options: TreeShaderOptions,
   key: string,
