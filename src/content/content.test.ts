@@ -1,3 +1,5 @@
+import { existsSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   atmosphereZones,
@@ -262,6 +264,52 @@ describe('building stretches', () => {
       for (const [min, max] of [stretch.lotWidth, stretch.depth, stretch.height]) {
         expect(min).toBeLessThanOrEqual(max);
       }
+    }
+  });
+});
+
+describe('project images', () => {
+  // Tests run from the project root.
+  const root = join(process.cwd(), 'public');
+
+  it('are small WebP files that exist in public/', () => {
+    for (const project of projects) {
+      for (const image of project.images) {
+        const file = join(root, image.src);
+        expect(existsSync(file), image.src).toBe(true);
+        expect(statSync(file).size, image.src).toBeLessThanOrEqual(150 * 1024);
+      }
+    }
+  });
+
+  it('have alt text, and a caption on the concept designs', () => {
+    const withImages = projects.filter((p) => p.images.length > 0);
+    expect(withImages.map((p) => p.id)).toEqual([
+      'eventflow',
+      'roleready',
+      'safe-drive-ai',
+      'connexions-spectrum',
+    ]);
+    for (const project of withImages) {
+      for (const image of project.images) expect(image.alt.length).toBeGreaterThan(10);
+    }
+    for (const id of ['safe-drive-ai', 'connexions-spectrum']) {
+      expect(projects.find((p) => p.id === id)!.images[0]!.caption).toBe('Concept design');
+    }
+  });
+
+  it('leaves Game Hub and the AV Device Controller with a typographic cover for now', () => {
+    for (const id of ['game-hub', 'av-device-controller']) {
+      expect(projects.find((p) => p.id === id)!.images).toEqual([]);
+    }
+  });
+
+  it('rejects an image outside public/images/projects or that is not a WebP', () => {
+    const base = projects[0]!;
+    for (const src of ['/images/other/x.webp', '/images/projects/x.png', 'x.webp']) {
+      expect(
+        ProjectSchema.safeParse({ ...base, images: [{ src, alt: 'A picture' }] }).success,
+      ).toBe(false);
     }
   });
 });

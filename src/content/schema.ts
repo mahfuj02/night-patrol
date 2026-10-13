@@ -64,7 +64,18 @@ export const ProjectSchema = z.object({
     github: url.optional(),
     caseStudy: url.optional(),
   }),
-  images: z.array(z.object({ src: z.string().min(1), alt: z.string().min(1) })),
+  /**
+   * Pictures for the project's book in the library: WebP files from `scripts/prepare-project-images.mjs`
+   * in public/images/projects/. `caption` is a short line under the picture, for example "Concept
+   * design" when it is a mock-up and not a capture of the real thing.
+   */
+  images: z.array(
+    z.object({
+      src: z.string().regex(/^\/images\/projects\/[a-z0-9-]+\.webp$/),
+      alt: z.string().min(1),
+      caption: z.string().min(1).optional(),
+    }),
+  ),
   /** Projects without a stop appear only in /simple. */
   stopId: kebabId.optional(),
   /** The lit sign on the project's building at its stop: its name and a slogan. */
