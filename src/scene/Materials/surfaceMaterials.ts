@@ -4,6 +4,13 @@ import {
   type Texture,
   type WebGLProgramParametersWithUniforms,
 } from 'three';
+import {
+  MAX_DRIVE_OFFSET,
+  MIN_DRIVE_OFFSET,
+  OUTER_LANE_EDGE_MARGIN,
+  OUTER_LANE_SPACING,
+  RUT_HALF_GAP,
+} from '@/lib/lanes';
 import { world } from '@/lib/palette';
 import { surfaceUniforms } from './surfaceUniforms';
 import type { SurfaceTextures } from './useSurfaceTextures';
@@ -21,23 +28,29 @@ const SNOW_SAMPLE = /* glsl */ `
   }
 `;
 
+const f = (n: number) => n.toFixed(3);
+
 // Where the wheels run: two ruts per lane, meandering a little, in patches, with packed snow on
-// the ridge between them and at the edges. 1 = rut, 0 = snow.
-// `r` is (lateral offset m, distance along m, half the road width m).
+// the ridge between them and at the edges. 1 = rut, 0 = snow. Lane centres come from lib/lanes.ts,
+// so the car's lane (the right-hand one) has ruts exactly where its wheels are.
+// `r` is (lateral offset m, distance along m, half the road width m); lateral is positive to the
+// left of travel, so the right-hand lane sits at negative `r.x`.
 const RUT_MASK = /* glsl */ `
   float rutMask(vec3 r) {
     float width = r.z * 2.0;
-    // Thresholds sit away from the road widths in use (6, 7, 9, 10, 12, 14), or the lane count
-    // would flicker between two values per pixel on a stretch of exactly that width.
-    float lanes = max(2.0, floor(width / 3.6 + 0.25));
-    float laneW = width / lanes;
-    float x = r.x + r.z;
-    float inLane = mod(x, laneW) - 0.5 * laneW;
+    float drive = clamp(width * 0.25, ${f(MIN_DRIVE_OFFSET)}, ${f(MAX_DRIVE_OFFSET)});
+    float d = abs(r.x);
+    // Extra lanes outward from the two driving lanes, only where there is room for them.
+    float room = (r.z - ${f(OUTER_LANE_EDGE_MARGIN)} - drive) / ${f(OUTER_LANE_SPACING)};
+    float kMax = max(ceil(room) - 1.0, 0.0);
+    float k = clamp(floor((d - drive) / ${f(OUTER_LANE_SPACING)} + 0.5), 0.0, kMax);
+    float centre = drive + k * ${f(OUTER_LANE_SPACING)};
+    float inLane = d - centre;
     inLane += 0.14 * sin(r.y * 0.21 + r.x * 1.7) + 0.08 * sin(r.y * 0.063);
-    float d = abs(abs(inLane) - 0.85);
-    float rut = 1.0 - smoothstep(0.16, 0.5, d);
+    float dist = abs(abs(inLane) - ${f(RUT_HALF_GAP)});
+    float rut = 1.0 - smoothstep(0.16, 0.5, dist);
     float patchy = 0.78 + 0.22 * sin(r.y * 0.37 + 1.3) * sin(r.y * 0.11 + r.x);
-    float edge = smoothstep(r.z - 1.7, r.z - 0.6, abs(r.x));
+    float edge = smoothstep(r.z - 1.7, r.z - 0.6, d);
     return rut * patchy * (1.0 - edge);
   }
 `;

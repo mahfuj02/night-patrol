@@ -61,13 +61,14 @@ describe('buildTrees', () => {
   });
 
   it('leaves the intersection and lamp poles clear', () => {
-    const gap = routeModel.intersections[0]!;
     for (const tree of trees) {
       const at = tree.u * routeModel.length;
-      expect(
-        at < (gap.from - 6 / routeModel.length) * routeModel.length ||
-          at > (gap.to + 6 / routeModel.length) * routeModel.length,
-      ).toBe(true);
+      for (const gap of routeModel.intersections) {
+        expect(
+          at < (gap.from - 6 / routeModel.length) * routeModel.length ||
+            at > (gap.to + 6 / routeModel.length) * routeModel.length,
+        ).toBe(true);
+      }
       for (const lamp of lamps) {
         expect(
           Math.hypot(lamp.pole.x - tree.base.x, lamp.pole.z - tree.base.z),

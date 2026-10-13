@@ -14,7 +14,7 @@ const tangent = new Vector3();
 
 /**
  * Placeholder low-poly car built from primitives. Local +z is forward; the group follows the
- * route curve and faces along its tangent. Phase 10 replaces this with an original model.
+ * right-hand lane of the route and faces along its tangent. Phase 10 replaces this with an original model.
  */
 export function Car() {
   const group = useRef<Group>(null);
@@ -26,7 +26,7 @@ export function Car() {
   useFrame(() => {
     const car = group.current;
     if (!car) return;
-    routeModel.curve.getPointAt(progress.t, position);
+    routeModel.lanePointAt(progress.t, position);
     routeModel.curve.getTangentAt(progress.t, tangent);
     car.position.copy(position);
     car.rotation.y = Math.atan2(tangent.x, tangent.z);

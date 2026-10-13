@@ -26,7 +26,7 @@ export function CameraRig({ reducedMotion }: { reducedMotion: boolean }) {
   const placed = useRef(false);
 
   useFrame((state, delta) => {
-    routeModel.curve.getPointAt(progress.t, point);
+    routeModel.lanePointAt(progress.t, point);
     routeModel.curve.getTangentAt(progress.t, tangent);
     desired.copy(point).addScaledVector(tangent, -CHASE_BACK);
     desired.y += CHASE_UP;

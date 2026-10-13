@@ -133,8 +133,11 @@ export const RoutePointSchema = z.object({
   stopId: kebabId.optional(),
 });
 export const IntersectionSchema = z.object({
-  /** The stop the intersection is centred on. */
+  id: kebabId,
+  /** The stop the intersection is measured from. */
   stopId: kebabId,
+  /** Metres along the road from that stop to the intersection centre; negative is before it. */
+  offset: z.number().optional(),
   /** Half the length of the gap, in metres along the road. */
   halfLength: z.number().positive(),
 });
