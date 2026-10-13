@@ -12,6 +12,8 @@ The pictures for each project's book in the Millennium Library (and anywhere els
 | AV Device Controller | none                                  | A real terminal screenshot will replace the typographic cover later                             |
 | CivicTrack           | none yet                              |                                                                                                 |
 
+The two concept images came with a small AI-tool watermark in the corner; `prepare-project-images.mjs` paints it out (`patches`: it copies the plain background over the mark, softened).
+
 Alt text is marked `TODO(content)` for the owner to check. `outdoor-adventure.jpg` is not used (it is not a project yet).
 
 ## Making them

@@ -35,8 +35,18 @@ const images = [
   { id: 'roleready', from: 'raw/roleready.png' },
   // Game Hub has no image: its screenshot shows other companies' game art, so it gets a typographic cover.
   // The owner's mobile app images, used as concept designs until real captures exist.
-  { id: 'safe-drive-ai', from: 'source/safe-drive-screen.jpg' },
-  { id: 'connexions-spectrum', from: 'source/connexions.jpg' },
+  // `patches` paint out the small AI-tool watermark in the corner: each copies the plain background
+  // from (dx, dy) away, softened, over the rectangle (x, y, w, h) of the source image.
+  {
+    id: 'safe-drive-ai',
+    from: 'source/safe-drive-screen.jpg',
+    patches: [{ x: 412, y: 962, w: 50, h: 50, dx: 0, dy: -70 }],
+  },
+  {
+    id: 'connexions-spectrum',
+    from: 'source/connexions.jpg',
+    patches: [{ x: 956, y: 504, w: 52, h: 52, dx: 0, dy: -60 }],
+  },
 ];
 
 const wanted = process.argv.slice(2);
@@ -49,6 +59,20 @@ for (const id of wanted) {
 }
 
 await mkdir(outDir, { recursive: true });
+
+/** Paints out small marks by copying plain background over them (blurred, so no hard edge). */
+async function applyPatches(input, patches = []) {
+  if (patches.length === 0) return input;
+  const overlays = [];
+  for (const { x, y, w, h, dx, dy } of patches) {
+    const piece = await sharp(input)
+      .extract({ left: x + dx, top: y + dy, width: w, height: h })
+      .blur(4)
+      .toBuffer();
+    overlays.push({ input: piece, left: x, top: y });
+  }
+  return sharp(input).composite(overlays).png().toBuffer();
+}
 
 async function encode(input, { width, height }) {
   const portrait = height > width;
@@ -73,7 +97,7 @@ for (const image of todo) {
     console.log(`${image.id}: skipped (no ${image.from})`);
     continue;
   }
-  const input = await readFile(source);
+  const input = await applyPatches(await readFile(source), image.patches);
   const meta = await sharp(input).metadata();
   const result = await encode(input, {
     width: meta.width ?? MAX_WIDTH,
