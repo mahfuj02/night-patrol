@@ -149,6 +149,10 @@ UI colours (night, night-2, snow, street, hud, brick, sunrise) are unchanged and
 | `wood-pole`           | `#4B4238`              | Derived: `preview` pole `#51584B` with its green cast removed                                      |
 | `bark`                | `#3A332C`              | Derived: dark grey-brown elm bark from the trunk tones in `image5` and `image6` (never pure black) |
 | `bin-blue`            | `#2D4A6B`              | Derived: blue bins in `preview` (no clean sample)                                                  |
+| `bin-green`           | `#2E4A3A`              | Derived: city garbage bin (tune by eye)                                                            |
+| `bin-grey`            | `#3A3E44`              | Derived: city bin, dark grey (tune by eye)                                                         |
+| `fence-wood`          | `#5A4C3E`              | Derived: back-lane wooden fence                                                                    |
+| `fence-weathered`     | `#6B6259`              | Derived: weathered grey fence boards                                                               |
 | `forks-magenta`       | `#AD76AE`              | Sampled: `image8` sign glow. Deep `#791F7C`, pale core `#E8BDE2`                                   |
 | `sunrise-cloud`       | `#F0CBBF`              | Sampled: `image9` warm highlights, used for cloud tint only                                        |
 | `sunrise`             | `#FF8A5B` to `#FFD27A` | Kept                                                                                               |

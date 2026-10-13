@@ -67,6 +67,10 @@ export const world = {
   woodPole: '#4B4238',
   bark: '#3A332C',
   binBlue: '#2D4A6B',
+  binGreen: '#2E4A3A',
+  binGrey: '#3A3E44',
+  fenceWood: '#5A4C3E',
+  fenceWeathered: '#6B6259',
   // accents
   forksMagenta: '#AD76AE',
   forksMagentaDeep: '#791F7C',
