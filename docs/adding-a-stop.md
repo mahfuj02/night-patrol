@@ -73,3 +73,7 @@ export const landmarkComponents = { 'rrc-campus': RrcCampus };
 - Screenshots: the stop on approach and at the stop, with the panel open and closed, on desktop and phone width.
 - Check keyboard use and reduced motion by hand.
 - Update `CHANGELOG.md` and these docs if the pattern changed.
+
+## Stations
+
+A section station (Education, Projects, Experience, Skills, Contact) is a stop whose building the car parks at, instead of a side panel. See [docs/stations.md](stations.md): add the landmark first, then an entry in `src/content/stations.ts`, and leave the stop out of `checkpoints.ts`.
