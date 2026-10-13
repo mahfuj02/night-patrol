@@ -6,26 +6,26 @@ How visitors move through Night Patrol and read its content: five **section stat
 
 ## Summary
 
-| Before                                                       | After                                                                                   |
-| ------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
-| 12 route stops, each a drive-by checkpoint with a side panel | The 12 stops stay as drive-bys. Five **stations** are added: the car pulls in and parks |
-| Skills on the dashboard (gauges, switches, tooltips)         | Skills are a station building. The dashboard keeps only a hint                          |
-| Experience in a "patrol log" panel                           | Experience is a station: an office with the entries on monitors                         |
-| Projects only as stops along the route                       | A Projects station (a library) is the browse hub; each book has "Drive to it"           |
-| Mini-map with a stop list (Phase 8)                          | A **transit-map menu**, built earlier, with section buttons                             |
-| Contact at the Forks stop                                    | Contact is a station at The Forks                                                       |
+| Before                                                       | After                                                                                      |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| 12 route stops, each a drive-by checkpoint with a side panel | The 12 stops stay as drive-bys. Five **stations** are added: the car pulls in and parks    |
+| Skills on the dashboard (gauges, switches, tooltips)         | Skills are a station building. The dashboard keeps only a hint                             |
+| Experience in a "patrol log" panel                           | Experience is a station: an office with the entries on monitors                            |
+| Projects only as stops along the route                       | A Projects station (the Millennium Library) is the browse hub; each book has "Drive to it" |
+| Mini-map with a stop list (Phase 8)                          | A **transit-map menu**, built earlier, with section buttons                                |
+| Contact at the Forks stop                                    | Contact is a station at The Forks                                                          |
 
 Vocabulary: a **stop** is a point on the route with a landmark and a checkpoint panel (`stops.ts`). A **station** is a section of the portfolio with its own building and a parking bay (`stations.ts`, new). Some stations sit on an existing stop (Education is the RRC campus stop); others have their own spot.
 
 ## The five stations
 
-| Section    | Building                  | Where                                  | What the visitor gets                                       |
-| ---------- | ------------------------- | -------------------------------------- | ----------------------------------------------------------- |
-| Education  | RRC campus (built)        | Exchange District, stop 3, left        | Campus, years and courses on the lit wall                   |
-| Projects   | A library                 | Downtown straight, about t 0.245, left | A room of books, one per project. Details and "Drive to it" |
-| Skills     | A tech building           | Downtown straight, about t 0.33, right | Skill groups on the lit wall                                |
-| Experience | The LIILAB office         | Downtown, about t 0.483, right         | Experience entries on monitors seen through the glass       |
-| Contact    | The Forks market building | End of the route, about t 0.97         | Email, GitHub, LinkedIn, resume, link to mahfuj.dev         |
+| Section    | Building                  | Where                                  | What the visitor gets                                              |
+| ---------- | ------------------------- | -------------------------------------- | ------------------------------------------------------------------ |
+| Education  | RRC campus (built)        | Exchange District, stop 3, left        | Campus, years and courses on the lit wall                          |
+| Projects   | The Millennium Library    | Downtown straight, about t 0.245, left | A room of books by category, a catalog, a book view. "Drive to it" |
+| Skills     | A tech building           | Downtown straight, about t 0.33, right | Skill groups on the lit wall                                       |
+| Experience | The LIILAB office         | Downtown, about t 0.483, right         | Experience entries on monitors seen through the glass              |
+| Contact    | The Forks market building | End of the route, about t 0.97         | Email, GitHub, LinkedIn, resume, link to mahfuj.dev                |
 
 Positions are in [Station positions](#station-positions). The 12 route stops stay as they are.
 
@@ -107,7 +107,7 @@ Replaces the Phase 8 mini-map and **moves earlier** (see [Phases](#phases-and-or
   - Coloured per zone: **sodium orange** Exchange District, **red-orange** downtown, **grey-green** residential, **blue** avenue, **gold** The Forks.
   - **Small dots** are the stops; **larger ringed circles** are the section stations, each with a coloured tag (the section name).
   - A **cyan ring with a small car** marks "you are here". It moves along the line as the car drives.
-- **Project list:** below the route, every project in `projects.ts` (the six with a route stop, plus Game Hub and AV Device Controller, which have none). Choosing one opens its details (the same content as the checkpoint panel, in the side panel or the sheet), so **every project is readable without entering the library**. A project with a route stop also has a "Drive to it" button there.
+- **Project list:** below the route, every project in `projects.ts` (the six with a route stop, plus Game Hub and AV Device Controller, which have none). Choosing one opens its details (the same content a station wall shows, in a panel beside the menu or the sheet), so **every project is readable without entering the library**. A project with a route stop also has a "Drive to it" button there.
 - **Footer:** the resume (PDF) and a link to the Contact station, so the resume and contact details are reachable in two clicks on every device.
 
 ### Zone colours
@@ -133,16 +133,83 @@ Each must keep at least 3:1 contrast against `night-2` for the line and dots (WC
 - The line, dots and car are SVG with `aria-hidden`; the list is the accessible UI.
 - The data is already in `stops.ts`, `stations.ts` and `atmosphere.ts`; the zone-to-colour map and the `t` to position map are pure functions in `src/lib` with tests.
 
-## Projects station: the library
+## Projects station: the Millennium Library
 
-The Projects station is the **browse hub** for projects. The route stops stay as drive-bys; the library lists the same projects and sends the visitor to them.
+The Projects station is the **browse hub** for projects. The route stops stay drive-bys (each with a lit sign, see "The EventFlow stop and the other project stops"); the library lists the same projects, all of them, and sends the visitor to them.
 
-- **Arrival.** The usual red light and Open button, then the car parks in front of the library. The camera then **moves inside**, through the door, to a room where **projects are books on a shelf**. Under reduced motion it cuts inside.
-- **The room.** A real interior inside the library's footprint (the shell is hollow), warm light, one instanced shelf, and one book (instanced box) per project in `projects.ts`, **all of them**, including the two with no route stop (Game Hub and AV Device Controller). A desk lamp glows. It only draws when the camera is near.
-- **Selecting a book.** Each book is also a button in a real DOM list (the shelf's accessible UI; the 3D books are the visuals that follow the selection). Arrow keys move along the shelf, Enter opens a book. The book's details open as DOM, reusing the checkpoint panel content (`resolveCheckpoint`): tagline, problem, what was built, stack and links.
-- **"Drive to it".** A button on the details. It leaves the library (camera back out, car backs out of the bay, or a cut under reduced motion), drives to that project's stop and opens its checkpoint panel. Projects that have no route stop (`stopId` unset in `projects.ts`: Game Hub and AV Device Controller) show the details without the button; for them the library is the only place in the 3D world, and the menu project list and `/simple` also have them.
+### The building
+
+- **Name and look.** Millennium Library: a stylized silhouette of its downtown glass front (a tall glazed facade with a pale frame, lit from inside), with plain lettering "Millennium Library" in our own type, from `signage.ts`. **No City of Winnipeg logo**, crest, or brand colours or lettering copied from the real signage.
+- **Rule 10.** CLAUDE.md rule 10 gains one more exception: public civic landmarks on the route may be named in plain lettering, in our own type, with the words from `src/content`. No logos, crests or brand marks, and nothing copied from the real signage. The library is the first; the CMHR stop (5d) follows the same rule. (The CLAUDE.md edit goes in this PR.)
+- **Where.** The downtown straight, about t 0.245, on the left (see "Station positions"), with a bay like the other stations.
+
+### Arrival
+
+The usual red light and Open button, then the car parks in front of the library. On a wide screen the camera makes **one short eased push-in** (about 1.5 s) through the door to a **single fixed pose** inside. There is **no walking around** and no free camera. Under reduced motion it cuts there (and cuts back out). On a phone there is **no interior** (see "On a phone").
+
+### The room
+
+A real interior inside the library's hollow footprint, in warm light. Everything is instanced or merged:
+
+1. **Shelves by category.** Four shelf units, one per category, each with a small **shelf sign**: Web, Mobile, Systems, AI. The category comes from a new `category` field in `projects.ts` (`web | mobile | systems | ai`). The shelf signs are drawn from `src/content/library.ts` (the labels), not hardcoded.
+2. **Book spines** show a **call number and the name**, for example "WEB-01 EventFlow". The call number is generated, not written: the category prefix (WEB, MOB, SYS, AI) and a two-digit number from the project's order within its category in `projects.ts`. Spines are one canvas atlas, drawn from content.
+3. **Selecting a book** (see below): it slides onto a **reading table under a desk lamp** and opens.
+4. **A featured display stand at the entrance** shows the featured project, **EventFlow**. Which project is featured is data: `featured` in `src/content/library.ts` (a project id; checked by the integrity test). The stand's book is selectable like any other.
+5. **A catalog terminal**, real DOM: a search box plus the category filters (see below), a fast and accessible way to find a book.
+
+Proposed categories (the owner confirms; `TODO(content): verify` until then):
+
+| Category | Call prefix | Books, in order                                                           |
+| -------- | ----------- | ------------------------------------------------------------------------- |
+| Web      | WEB         | EventFlow (01), CivicTrack (02), Site Audit Extension (03), Game Hub (04) |
+| Mobile   | MOB         | Safe Drive AI (01), Connexions Spectrum (02)                              |
+| Systems  | SYS         | Akari Puzzle Game (01), AV Device Controller (02)                         |
+| AI       | AI          | RoleReady (01)                                                            |
+
+### Selecting a book and the book view
+
+- **Selecting.** Every book is also a button in a real DOM list (the shelf's accessible UI; the 3D books are the visuals that follow the selection). Arrow keys move along the shelf (Left and Right along a shelf, Up and Down between shelves), Enter opens a book. The catalog terminal and the featured stand open the same book.
+- **The motion.** The chosen 3D book slides onto the reading table (about 0.5 s) and the book view fades in. **No page-turn animation.** Reduced motion cuts: the book is on the table and the view is shown.
+- **The book view** is a real DOM two-page spread over the lower middle of the screen, with the lamp glow behind it. Left page: the **screenshot** (from `images` in `projects.ts`, with its alt text; lazy-loaded when the book opens). Right page: the **slogan** (from `sign.slogan`), the **problem**, **what I built**, and the **stack**. Buttons (links and buttons, real DOM, keyboard accessible, visible focus):
+  - **Check out**: the live site (`links.live`).
+  - **Source**: GitHub (`links.github`).
+  - **Case study**: the mahfuj.dev page (`links.caseStudy`).
+  - **Drive to it**: only if the project has a route stop (`stopId`).
+    A button whose link the project does not have is left out, not disabled. Wording is in `ui.ts`.
+- **"Drive to it"** leaves the library (the camera cuts or eases back out, the car backs out of the bay, or a cut under reduced motion), drives to that project's stop and arrives at its lit sign. Game Hub, AV Device Controller and Connexions Spectrum have no route stop, so they show no such button; for them the library is the only place in the 3D world, and the menu's project list and `/simple` also have them.
 - **Esc** from a book returns to the shelf; Esc from the shelf backs out of the station.
-- The library's front wall also shows the lit-wall version of the shelf list for the moment before the camera goes inside (the stack of titles), so the station is never an empty wall.
+- **Screenshots** do not exist yet (`images` is empty for every project). `TODO(content): screenshots` for the owner: WebP, no wider than 1280 px, about 120 KB or less each. Until a project has one, its left page shows its name and stack as a plain cover, so no book has an empty page.
+
+### The catalog terminal
+
+Real DOM, always shown in the interior view (top left, under the station title): a labelled search box (`type="search"`, filters the list as the visitor types, matches name, call number, stack and tagline) and the category filters (All, Web, Mobile, Systems, AI) as a button group with `aria-pressed`. The results are a list of books (call number and name); choosing one opens the book. The terminal is also the whole interface on a phone. Its status line (`role="status"`) says how many books match ("3 books").
+
+### On a phone
+
+**No interior.** The library opens as a swipeable shelf of books: a horizontally scrolling row of book spines (scroll snap, call number and name, big tap targets), grouped by category with the category headings, above the catalog search box and filters. Tapping a book opens the book view in the **bottom sheet** (screenshot above the text, then the buttons). The 3D scene stays parked in front of the library behind it; nothing inside is built or drawn on the low tier or on a phone.
+
+### Size estimate and performance notes
+
+Estimates, to be measured in the PR that builds it:
+
+| Part                | Estimate                                                                                                                                                                                                                                                  |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Building (outside)  | 4 meshes (glass front, frame, lettering, base), about 200 triangles                                                                                                                                                                                       |
+| Interior draw calls | About 6: the room shell, shelf frames (instanced), books (instanced, one per project, 9), table and lamp, the featured stand, shelf signs. **About 10 draw calls for the whole station**, so five stations add about 30, about 100 against the 150 budget |
+| Interior triangles  | 2k to 3k (boxes only); the whole station stays under 5k                                                                                                                                                                                                   |
+| Textures            | Two small canvases: the spine and shelf-sign atlas (1024 x 512) and the lettering (1024 x 168). No new image files in the 3D chunk. Screenshots are DOM images, lazy-loaded when a book opens, not 3D textures                                            |
+| 3D JS chunk         | About 10 to 14 KB gz (geometry builders, the camera pose, the book slide). Today's chunk plus all five stations is expected to stay well under 450 KB gz                                                                                                  |
+| DOM / React         | About 6 to 8 KB gz (the book view, the catalog, the phone shelf)                                                                                                                                                                                          |
+| When it draws       | The interior is mounted only while the station is open on a wide screen (not merely near), and unmounted when it closes; geometry is built once and disposed on unmount                                                                                   |
+| Tiers               | `high` and `medium`: full interior. `low`: the interior is drawn without the lamp's bloom and with unlit materials; phones get the shelf UI and no interior                                                                                               |
+| Fill rate           | The camera sits inside a small room, so surfaces fill the frame: no wall shader loop (the room uses plain emissive materials plus one lamp light), and snow is capped near the camera (the existing near-snow cap)                                        |
+| Accessibility       | The 3D books, shelves and stand have no semantics; the shelf list, the catalog and the book view are the accessible UI. The book view is never exposed twice (3D is `aria-hidden` by construction). Axe runs on the shelf, the catalog and an open book   |
+
+### Content this needs
+
+- `projects.ts`: a `category` field on every project (the table above is the proposal), and screenshots in `images` when the owner has them.
+- `src/content/library.ts` (new, validated): the category labels and order, the call number prefixes, and `featured: 'eventflow'`. Integrity checks: every project has a known category, call numbers are unique, the featured project exists.
+- `signage.ts`: the lettering "Millennium Library". `ui.ts`: the catalog, filters, book view buttons ("Check out", "Source", "Case study", "Drive to it"), the status line.
 
 ## Experience station: the LIILAB office
 
@@ -216,7 +283,7 @@ Measured on the current route (1,123 m long). Stops: Ignition 0, Dispatch 30 m, 
 
 ### The EventFlow stop and the other project stops
 
-No change: they stay drive-bys. Each gains one thing, a way back to the library, in the form of the menu.
+They stay drive-bys, but with **lit signs instead of popups**: each project building carries a sign with the project name and a slogan (`sign` in `projects.ts`), the radio caption also announces the sign text for screen readers, and the full details are in the library and the menu's project list. Each stop's way back to the library is the menu.
 
 ### Phase 6 shrinks
 
@@ -242,21 +309,21 @@ Captions use the same caption area as the radio lines, and sound captions come f
 
 The new order, with sizes. A tag at the end of a group is the release.
 
-| Phase | Name                                                   | Size        | What changes                                                                                                   |
-| ----- | ------------------------------------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------- |
-| 5a    | First two stops (RRC, EventFlow)                       | done        | Landmark pattern, checkpoint panel, captions                                                                   |
-| 5b    | **Station arrival pattern** + Education                | L           | State machine, `stations.ts`, parking path, lit wall, red light, bays, convert RRC                             |
-| 5c    | **Transit-map menu** (moved from Phase 8)              | M           | Left panel and sheet, section buttons, zone colours, jump with cut, live status, resume link, the project list |
-| 5d    | Remaining drive-by stops, one PR each                  | S to M each | City services (CivicTrack), Portage & Main (RoleReady), Dashcam, Arcade, Inspection, Warming shelter, CMHR     |
-| 5e    | **Projects station** (library)                         | M to L      | Building, interior room, books, details, "Drive to it". Needs the project stops from 5d                        |
-| 5f    | **Skills station** + `skills.ts` categories            | M           | Building, wall, content change, `/simple` follows. **v0.5.0** when 5b to 5f are done                           |
-| 5g    | **Experience station** (LIILAB office)                 | M           | Building, monitors as DOM in 3D (LIILAB and the Sprint-Innovation win)                                         |
-| 6     | Interior and props (shrunk)                            | M           | Interior view, wipers, props, Skills hint on the dashboard. **v0.6.0**                                         |
-| 7     | Ignition, The Forks, **Contact station**, end of shift | L           | Loading screen, roundabout, Contact station, sunrise, reset. **v0.7.0**                                        |
-| 8     | Navigation polish (shrunk)                             | M           | U-turn (shares the path maths with the parking path), mobile polish, shortcut overlay, 2-click e2e. **v0.8.0** |
-| 9     | Sound                                                  | M           | Toggle, engine and tires, radio chirp, static bursts, captions. **v0.9.0**                                     |
-| 10    | Art pass                                               | L           | Hand-modelled landmarks, the car, the library and office detail. **v0.10.0**                                   |
-| 11    | Performance, accessibility, launch                     | M           | Hardening, Lighthouse, custom domain. **v1.0.0**                                                               |
+| Phase | Name                                                   | Size        | What changes                                                                                                                    |
+| ----- | ------------------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 5a    | First two stops (RRC, EventFlow)                       | done        | Landmark pattern, checkpoint panel, captions                                                                                    |
+| 5b    | **Station arrival pattern** + Education                | L           | State machine, `stations.ts`, parking path, lit wall, red light, bays, convert RRC                                              |
+| 5c    | **Transit-map menu** (moved from Phase 8)              | M           | Left panel and sheet, section buttons, zone colours, jump with cut, live status, resume link, the project list                  |
+| 5d    | Remaining drive-by stops, one PR each                  | S to M each | City services (CivicTrack), Portage & Main (RoleReady), Dashcam, Arcade, Inspection, Warming shelter, CMHR                      |
+| 5e    | **Projects station** (Millennium Library)              | L           | Building, interior, books by category, catalog terminal, book view, phone shelf, "Drive to it". Needs the project signs from 5d |
+| 5f    | **Skills station** + `skills.ts` categories            | M           | Building, wall, content change, `/simple` follows. **v0.5.0** when 5b to 5f are done                                            |
+| 5g    | **Experience station** (LIILAB office)                 | M           | Building, monitors as DOM in 3D (LIILAB and the Sprint-Innovation win)                                                          |
+| 6     | Interior and props (shrunk)                            | M           | Interior view, wipers, props, Skills hint on the dashboard. **v0.6.0**                                                          |
+| 7     | Ignition, The Forks, **Contact station**, end of shift | L           | Loading screen, roundabout, Contact station, sunrise, reset. **v0.7.0**                                                         |
+| 8     | Navigation polish (shrunk)                             | M           | U-turn (shares the path maths with the parking path), mobile polish, shortcut overlay, 2-click e2e. **v0.8.0**                  |
+| 9     | Sound                                                  | M           | Toggle, engine and tires, radio chirp, static bursts, captions. **v0.9.0**                                                      |
+| 10    | Art pass                                               | L           | Hand-modelled landmarks, the car, the library and office detail. **v0.10.0**                                                    |
+| 11    | Performance, accessibility, launch                     | M           | Hardening, Lighthouse, custom domain. **v1.0.0**                                                                                |
 
 Why this order:
 
@@ -279,27 +346,28 @@ Any stop, station, the contact details or the resume is at most **two clicks** f
 
 ## Performance risks
 
-| Risk                                    | Why                                                                                        | Mitigation                                                                                                                                         |
-| --------------------------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| DOM in 3D every frame                   | `Html transform` recomputes layout as the camera moves; CSS 3D text can blur on iOS Safari | Mount only when parked; one transform when the camera settles; no `occlude`; sheet fallback on small screens                                       |
-| Many 3D DOM surfaces (monitors)         | The office has several screens                                                             | One transform helper, a handful of surfaces, mounted only when parked                                                                              |
-| Fill rate with a wall filling the frame | The wall shader (grid and a 14-lamp loop) covers the screen, plus bloom and snow overdraw  | Headlights only in the wall light loop while parked; cap snow density near the camera; `low` tier skips bloom, uses the decal                      |
-| The library interior                    | An interior room, a shelf and instanced books                                              | A hollow shell, instanced books and shelf, drawn only when the camera is near; about 3 draw calls                                                  |
-| Draw calls                              | A building per station                                                                     | 4 to 6 frustum-culled meshes each; five stations add about 25, so about 95 against 150                                                             |
-| Signal state                            | Instance colour writes                                                                     | A handful of heads, written only when a state changes                                                                                              |
-| Menu in the DOM                         | A list of 12 stops, 5 stations and an SVG line, always mounted                             | Small; the car marker moves by transform; no layout work per frame                                                                                 |
-| State machine bugs                      | Scroll, Prev/Next, menu jumps and Esc during a manoeuvre                                   | A pure reducer with exhaustive tests; a Playwright flow per station; manoeuvres are timed and skippable                                            |
-| E2E time                                | SwiftShader is slow and several accessibility tests are already slow                       | Station tests use the `low` tier; one shared flow helper                                                                                           |
-| Accessibility                           | Content in a hidden 3D container, or read twice; 3D books and monitors have no semantics   | The wall, monitors and books each have a real DOM list as their accessible UI; the sheet and the wall are never both exposed; axe on every station |
-| Audio                                   | Several sounds at once, and autoplay rules                                                 | Off by default; a user action starts audio; one shared mixer; captions for everything                                                              |
+| Risk                                    | Why                                                                                        | Mitigation                                                                                                                                                                                  |
+| --------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| DOM in 3D every frame                   | `Html transform` recomputes layout as the camera moves; CSS 3D text can blur on iOS Safari | Mount only when parked; one transform when the camera settles; no `occlude`; sheet fallback on small screens                                                                                |
+| Many 3D DOM surfaces (monitors)         | The office has several screens                                                             | One transform helper, a handful of surfaces, mounted only when parked                                                                                                                       |
+| Fill rate with a wall filling the frame | The wall shader (grid and a 14-lamp loop) covers the screen, plus bloom and snow overdraw  | Headlights only in the wall light loop while parked; cap snow density near the camera; `low` tier skips bloom, uses the decal                                                               |
+| The library interior                    | A room with shelves, nine books, a table, a lamp, a featured stand and a catalog           | Mounted only while the station is open on a wide screen; instanced shelves and books; about 6 interior draw calls (about 10 for the station); no interior on a phone; see the size estimate |
+| Draw calls                              | A building per station                                                                     | 4 to 6 frustum-culled meshes each; five stations add about 30, so about 100 against 150                                                                                                     |
+| Signal state                            | Instance colour writes                                                                     | A handful of heads, written only when a state changes                                                                                                                                       |
+| Menu in the DOM                         | A list of 12 stops, 5 stations and an SVG line, always mounted                             | Small; the car marker moves by transform; no layout work per frame                                                                                                                          |
+| State machine bugs                      | Scroll, Prev/Next, menu jumps and Esc during a manoeuvre                                   | A pure reducer with exhaustive tests; a Playwright flow per station; manoeuvres are timed and skippable                                                                                     |
+| E2E time                                | SwiftShader is slow and several accessibility tests are already slow                       | Station tests use the `low` tier; one shared flow helper                                                                                                                                    |
+| Accessibility                           | Content in a hidden 3D container, or read twice; 3D books and monitors have no semantics   | The wall, monitors and books each have a real DOM list as their accessible UI; the sheet and the wall are never both exposed; axe on every station                                          |
+| Audio                                   | Several sounds at once, and autoplay rules                                                 | Off by default; a user action starts audio; one shared mixer; captions for everything                                                                                                       |
 
 ## Content and rule changes needed
 
 - `src/content/stations.ts` (new), validated, with integrity checks (known stops and landmarks, lights clear of other stops).
 - `skills.ts`: done (see above).
-- `signage.ts`: the library and LIILAB office wording. `ui.ts`: section labels, the menu, the status line.
+- `src/content/library.ts` (new): the category labels and order, call number prefixes and the featured project. `projects.ts`: a `category` field on every project.
+- `signage.ts`: the Millennium Library and LIILAB office wording. `ui.ts`: section labels, the menu, the status line.
 - `projects.ts`: done in the content sync (Connexions Spectrum added as a library book; stacks and case study links follow mahfuj.dev).
-- CLAUDE.md rule 10: updated in this PR (the plain-text-name exception, approved).
+- CLAUDE.md rule 10: the plain-text-name exception (approved earlier) now also covers public civic landmarks on the route (the Millennium Library, the CMHR stop): plain lettering in our own type, no logos.
 - Everything unverified is `// TODO(content): verify`.
 
 ## Open questions
