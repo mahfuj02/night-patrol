@@ -52,8 +52,9 @@ describe('buildBuildings', () => {
       const [start, end] = stretchRange(routeModel, stretch);
       expect(distanceAlong(b)).toBeGreaterThanOrEqual(start);
       expect(distanceAlong(b)).toBeLessThanOrEqual(end);
-      expect(b.footprint.width).toBeGreaterThanOrEqual(stretch.lotWidth[0]);
-      expect(b.footprint.width).toBeLessThanOrEqual(stretch.lotWidth[1]);
+      // Lots next to an intersection or the stretch end are shortened (down to half the minimum).
+      expect(b.footprint.width).toBeGreaterThanOrEqual(stretch.lotWidth[0] * 0.5);
+      expect(b.footprint.width).toBeLessThanOrEqual(stretch.lotWidth[1] + 1.2);
       expect(b.footprint.depth).toBeGreaterThanOrEqual(stretch.depth[0]);
       expect(b.height).toBeLessThanOrEqual(stretch.height[1]);
     }
@@ -74,12 +75,63 @@ describe('buildBuildings', () => {
     }
   });
 
-  it('never overlaps another building or garage', () => {
-    const rects = buildings.flatMap((b) => (b.garage ? [b.footprint, b.garage] : [b.footprint]));
-    for (let i = 0; i < rects.length; i++) {
-      for (let j = i + 1; j < rects.length; j++) {
-        expect(rectsOverlap(rects[i]!, rects[j]!)).toBe(false);
+  it('only overlaps where neighbours on one side form an attached street wall', () => {
+    const items = buildings.flatMap((b) => [
+      { b, rect: b.footprint },
+      ...(b.garage ? [{ b, rect: b.garage }] : []),
+    ]);
+    for (let i = 0; i < items.length; i++) {
+      for (let j = i + 1; j < items.length; j++) {
+        const a = items[i]!;
+        const c = items[j]!;
+        const attachedPair =
+          a.b.attached && c.b.attached && a.b.stretchId === c.b.stretchId && a.b.side === c.b.side;
+        if (attachedPair) continue;
+        expect(rectsOverlap(a.rect, c.rect)).toBe(false);
       }
+    }
+  });
+
+  it('builds a continuous street wall in the Exchange District, broken only at intersections', () => {
+    const wall = buildings.filter((b) => b.stretchId === 'exchange-warehouses');
+    for (const side of [-1, 1]) {
+      const row = wall.filter((b) => b.side === side).sort((a, b) => a.u - b.u);
+      expect(row.length).toBeGreaterThan(4);
+      row.slice(1).forEach((b, i) => {
+        const previous = row[i]!;
+        const along = (b.u - previous.u) * routeModel.length;
+        const gap = along - (b.footprint.width + previous.footprint.width) / 2;
+        const crossing = routeModel.intersections.some((x) => x.to >= previous.u && x.from <= b.u);
+        if (!crossing) expect(gap).toBeLessThan(0.5);
+      });
+    }
+  });
+
+  it('keeps the downtown frontage near-continuous and the houses spaced', () => {
+    const downtown = buildings.filter((b) => b.stretchId === 'downtown-towers');
+    const houses = buildings.filter((b) => b.stretchId === 'residential');
+    const gaps = (list: typeof buildings) =>
+      [-1, 1].flatMap((side) => {
+        const row = list.filter((b) => b.side === side).sort((a, b) => a.u - b.u);
+        return row.slice(1).map((b, i) => {
+          const previous = row[i]!;
+          return (
+            (b.u - previous.u) * routeModel.length -
+            (b.footprint.width + previous.footprint.width) / 2
+          );
+        });
+      });
+    const downtownGaps = gaps(downtown).filter((g) => g < 20);
+    expect(Math.max(...downtownGaps)).toBeLessThan(2);
+    expect(Math.min(...gaps(houses))).toBeGreaterThan(1.5);
+  });
+
+  it('gives most houses a porch light and nothing else', () => {
+    const houses = buildings.filter((b) => b.style === 'house');
+    expect(houses.filter((b) => b.porch).length).toBeGreaterThan(houses.length / 2);
+    expect(buildings.filter((b) => b.porch).every((b) => b.style === 'house')).toBe(true);
+    for (const b of houses) {
+      if (b.porch) expect(b.porch.y).toBeGreaterThan(1.5);
     }
   });
 
@@ -117,9 +169,14 @@ describe('buildBuildings', () => {
 });
 
 describe('selectBuildingsForTier', () => {
-  it('builds half as many on low and all on high and medium', () => {
+  it('keeps every building on high and medium, and thins only the unattached ones on low', () => {
     expect(selectBuildingsForTier(buildings, 'high')).toHaveLength(buildings.length);
     expect(selectBuildingsForTier(buildings, 'medium')).toHaveLength(buildings.length);
-    expect(selectBuildingsForTier(buildings, 'low')).toHaveLength(Math.ceil(buildings.length / 2));
+    const low = selectBuildingsForTier(buildings, 'low');
+    expect(low.length).toBeLessThan(buildings.length);
+    expect(low.filter((b) => b.attached)).toHaveLength(buildings.filter((b) => b.attached).length);
+    expect(low.filter((b) => b.style === 'house').length).toBeLessThan(
+      buildings.filter((b) => b.style === 'house').length,
+    );
   });
 });

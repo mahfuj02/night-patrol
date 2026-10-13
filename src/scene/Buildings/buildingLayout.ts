@@ -14,6 +14,8 @@ export interface Building {
   u: number;
   /** -1 left of travel, 1 right. */
   side: -1 | 1;
+  /** Part of a continuous street wall: neighbours on this side may touch and overlap. */
+  attached: boolean;
   /** Footprint: width runs along the road, depth away from it. */
   footprint: Rect;
   /** Wall height in metres (without roof). */
@@ -22,9 +24,11 @@ export interface Building {
   /** Upper tier of a tower: a smaller block on top. */
   crown?: { scale: number; height: number };
   garage?: Rect & { height: number };
+  /** A warm light by the front door, in world coordinates. */
+  porch?: { x: number; y: number; z: number };
   /** Index into the style's colour list. */
   colour: number;
-  /** Random value for the window pattern. */
+  /** Whole-number seed for the window pattern. */
   seed: number;
   /** Share of windows lit warm and cool, already scaled for the stretch and the zone. */
   warm: number;
@@ -32,19 +36,22 @@ export interface Building {
 }
 
 const SEED = 4242;
-/** Gap between neighbouring lots along the road, per style. */
-const GAPS: Record<BuildingStyle, [number, number]> = {
-  warehouse: [0, 1.5],
-  tower: [2, 5],
-  house: [2.5, 5],
-};
+/** A stretch whose largest gap is this small or less is a continuous, attached street wall. */
+export const ATTACHED_MAX_GAP = 1.5;
+/** Attached neighbours are widened by this much so they overlap, hiding wedges on bends. */
+const ATTACHED_OVERLAP = 1.2;
 /** Keep lots this far from an intersection gap, so side streets stay clear. */
 const INTERSECTION_MARGIN = 3;
 /** Buildings stay this far beyond the road edge, and this far from each other. */
 const ROAD_CLEARANCE = 3;
 const NEIGHBOUR_CLEARANCE = 1;
+/** On a tight bend a lot that touches the road steps back by these extra metres until it fits. */
+const STEP_BACK = [0, 1.5, 3, 4.5];
 const COLOUR_COUNT = 4;
 const SAMPLE_STEP = 4;
+/** Chance that a house has a porch light, and its height above the ground. */
+const PORCH_CHANCE = 0.8;
+const PORCH_HEIGHT = 2.3;
 
 interface RoadSample {
   x: number;
@@ -79,11 +86,20 @@ export function stretchRange(model: RouteModel, stretch: BuildingStretch): [numb
   return [Math.max(0, start), Math.min(model.length, end)];
 }
 
+interface Placed {
+  rect: Rect;
+  stretchIndex: number;
+  side: -1 | 1;
+  attached: boolean;
+}
+
 /**
  * Buildings along both sides of the route, stretch by stretch. Lots are laid end to end, set back
- * from the road edge by the stretch's `setback`, and skipped where they would touch the road,
- * another building or an intersection gap. Window lighting comes from the zone at each lot, scaled
- * by the stretch. Deterministic: every lot draws the same random numbers whether it is built or not.
+ * from the road edge by the stretch's `setback`. Attached stretches (gap 1.5 m or less) form a
+ * continuous street wall: lots touch, overlap slightly, and run right up to each intersection,
+ * where the last lot is shortened to fit. A lot that would touch the road on a bend steps back a
+ * little instead of leaving a hole. Window lighting comes from the zone at each lot, scaled by the
+ * stretch. Deterministic: every lot draws the same random numbers whether it is built or not.
  */
 export function buildBuildings(
   model: RouteModel,
@@ -91,21 +107,35 @@ export function buildBuildings(
 ): Building[] {
   const samples = sampleRoad(model);
   const buildings: Building[] = [];
-  const taken: Rect[] = [];
+  const taken: Placed[] = [];
   const centre = new Vector3();
   const tangent = new Vector3();
-
-  const free = (rect: Rect) =>
-    !touchesRoad(rect, samples) && !taken.some((t) => rectsOverlap(rect, t, NEIGHBOUR_CLEARANCE));
+  // Intersection gaps in metres along the road, widened by the margin.
+  const gaps = model.intersections.map((x): [number, number] => [
+    x.from * model.length - INTERSECTION_MARGIN,
+    x.to * model.length + INTERSECTION_MARGIN,
+  ]);
 
   stretches.forEach((stretch, stretchIndex) => {
     const [start, end] = stretchRange(model, stretch);
+    const attached = stretch.gap[1] <= ATTACHED_MAX_GAP;
+    const minWidth = stretch.lotWidth[0] * 0.5;
+
     for (const side of [-1, 1] as const) {
+      const free = (rect: Rect) =>
+        !touchesRoad(rect, samples) &&
+        !taken.some(
+          (t) =>
+            !(attached && t.attached && t.stretchIndex === stretchIndex && t.side === side) &&
+            rectsOverlap(rect, t.rect, NEIGHBOUR_CLEARANCE),
+        );
+
       const random = createRandom(SEED + stretchIndex * 31 + (side === 1 ? 7 : 0));
-      let distance = start + range(random, 0, 3);
+      const firstOffset = range(random, 0, 3);
+      let distance = start + (attached ? 0 : firstOffset);
       for (;;) {
         const lotWidth = range(random, ...stretch.lotWidth);
-        const gap = range(random, ...GAPS[stretch.style]);
+        const gap = range(random, ...stretch.gap);
         const depth = range(random, ...stretch.depth);
         const height = range(random, ...stretch.height);
         const present = random();
@@ -117,21 +147,29 @@ export function buildBuildings(
         const seed = Math.floor(random() * 1000);
         const garageShift = range(random, -1, 1);
         const garageSize = [range(random, 5.5, 7), range(random, 5, 6.5)] as const;
+        const porch = random();
+        const porchSide = random() < 0.5 ? -1 : 1;
 
-        if (distance + lotWidth > end) break;
-        const at = distance + lotWidth / 2;
+        // Shorten the lot to the stretch end and to the next intersection; skip it if too short.
+        let width = Math.min(lotWidth, end - distance);
+        if (width < minWidth) break;
         const lotStart = distance;
-        distance += lotWidth + gap;
+        let next = lotStart + width + gap;
+        const blocking = gaps.find(([from, to]) => lotStart < to && lotStart + width > from);
+        if (blocking) {
+          const room = blocking[0] - lotStart;
+          if (lotStart >= blocking[0] || room < minWidth) {
+            distance = blocking[1];
+            continue;
+          }
+          width = room;
+          next = blocking[1];
+        }
+        distance = next;
 
         if (present > stretch.density) continue;
+        const at = lotStart + width / 2;
         const u = at / model.length;
-        if (
-          model.inIntersection(u, INTERSECTION_MARGIN) ||
-          model.inIntersection(lotStart / model.length, INTERSECTION_MARGIN) ||
-          model.inIntersection((lotStart + lotWidth) / model.length, INTERSECTION_MARGIN)
-        ) {
-          continue;
-        }
 
         model.curve.getPointAt(u, centre);
         model.curve.getTangentAt(u, tangent);
@@ -139,15 +177,23 @@ export function buildBuildings(
         const rightX = -tangent.z;
         const rightZ = tangent.x;
         const yaw = Math.atan2(-tangent.z, tangent.x);
-        const out = side * (model.widthAt(u) / 2 + stretch.setback + depth / 2);
-        const footprint: Rect = {
-          x: centre.x + rightX * out,
-          z: centre.z + rightZ * out,
-          yaw,
-          width: lotWidth,
-          depth,
-        };
-        if (!free(footprint)) continue;
+
+        let footprint: Rect | undefined;
+        for (const extra of attached ? STEP_BACK : [0]) {
+          const out = side * (model.widthAt(u) / 2 + stretch.setback + extra + depth / 2);
+          const candidate: Rect = {
+            x: centre.x + rightX * out,
+            z: centre.z + rightZ * out,
+            yaw,
+            width: attached ? width + ATTACHED_OVERLAP : width,
+            depth,
+          };
+          if (free(candidate)) {
+            footprint = candidate;
+            break;
+          }
+        }
+        if (!footprint) continue;
 
         let roof: Building['roof'] = { kind: 'flat' };
         let crownTier: Building['crown'];
@@ -165,7 +211,7 @@ export function buildBuildings(
         let garageRect: Building['garage'];
         if (stretch.style === 'house' && garage < (stretch.garage ?? 0)) {
           const behind = side * (depth / 2 + garageSize[1] / 2 + 2.5);
-          const along = garageShift * Math.max(0, lotWidth / 2 - garageSize[0] / 2);
+          const along = garageShift * Math.max(0, width / 2 - garageSize[0] / 2);
           const candidate: Rect = {
             x: footprint.x + rightX * behind + tangent.x * along,
             z: footprint.z + rightZ * behind + tangent.z * along,
@@ -178,34 +224,48 @@ export function buildBuildings(
           }
         }
 
+        let porchLight: Building['porch'];
+        if (stretch.style === 'house' && porch < PORCH_CHANCE) {
+          // On the wall facing the road, to one side of the front door.
+          const toward = -side * (depth / 2 + 0.15);
+          const along = porchSide * width * 0.3;
+          porchLight = {
+            x: footprint.x + rightX * toward + tangent.x * along,
+            y: PORCH_HEIGHT,
+            z: footprint.z + rightZ * toward + tangent.z * along,
+          };
+        }
+
         const atmosphere = sampleAtmosphere(resolvedZones, u);
         buildings.push({
           stretchId: stretch.id,
           style: stretch.style,
           u,
           side,
+          attached,
           footprint,
           height,
           roof,
           ...(crownTier ? { crown: crownTier } : {}),
           ...(garageRect ? { garage: garageRect } : {}),
+          ...(porchLight ? { porch: porchLight } : {}),
           colour,
           seed,
           warm: atmosphere.windowsWarm * stretch.lit,
           cool: atmosphere.windowsCool * stretch.lit,
         });
-        taken.push(footprint);
-        if (garageRect) taken.push(garageRect);
+        taken.push({ rect: footprint, stretchIndex, side, attached });
+        if (garageRect) taken.push({ rect: garageRect, stretchIndex, side, attached: false });
       }
     }
   });
   return buildings;
 }
 
-/** The low tier builds every other building. */
+/** The low tier builds every other building, except in attached stretches, which stay whole. */
 export function selectBuildingsForTier(
   buildings: readonly Building[],
   tier: QualityTier,
 ): Building[] {
-  return tier === 'low' ? buildings.filter((_, i) => i % 2 === 0) : [...buildings];
+  return tier === 'low' ? buildings.filter((b, i) => b.attached || i % 2 === 0) : [...buildings];
 }

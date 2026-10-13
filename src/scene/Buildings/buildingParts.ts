@@ -57,10 +57,18 @@ export interface CapPart {
   depth: number;
 }
 
+/** A warm light by a front door. */
+export interface PorchPart {
+  x: number;
+  y: number;
+  z: number;
+}
+
 export interface BuildingParts {
   bodies: BodyPart[];
   gables: GablePart[];
   caps: CapPart[];
+  porches: PorchPart[];
 }
 
 /** Thickness of the snow slab on flat roofs. */
@@ -73,8 +81,10 @@ export function buildParts(buildings: readonly Building[]): BuildingParts {
   const bodies: BodyPart[] = [];
   const gables: GablePart[] = [];
   const caps: CapPart[] = [];
+  const porches: PorchPart[] = [];
 
   for (const b of buildings) {
+    if (b.porch) porches.push(b.porch);
     const { x, z, yaw, width, depth } = b.footprint;
     const tokens = WALL_COLOURS[b.style];
     const colour = world[tokens[b.colour % tokens.length]!];
@@ -161,5 +171,5 @@ export function buildParts(buildings: readonly Building[]): BuildingParts {
       });
     }
   }
-  return { bodies, gables, caps };
+  return { bodies, gables, caps, porches };
 }

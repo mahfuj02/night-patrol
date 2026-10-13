@@ -42,6 +42,10 @@ describe('buildParts', () => {
     for (const crown of crowns) expect(crown.height).toBeGreaterThanOrEqual(3);
   });
 
+  it('passes every porch light through', () => {
+    expect(parts.porches).toHaveLength(buildings.filter((b) => b.porch).length);
+  });
+
   it('keeps warm and cool shares in range', () => {
     for (const body of parts.bodies) {
       expect(body.warm + body.cool).toBeLessThanOrEqual(1.0001);
