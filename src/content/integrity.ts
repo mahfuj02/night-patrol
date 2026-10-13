@@ -106,6 +106,13 @@ export function findContentProblems(c: ContentBundle): string[] {
     if (!stopsById.has(crossing.stopId)) {
       problems.push(`Intersection ${crossing.id}: unknown stop ${crossing.stopId}`);
     }
+    // The gap has to be wide enough for the street plus the margin buildings keep from it.
+    if (crossing.street && crossing.halfLength < crossing.street.width / 2 + 3) {
+      problems.push(`Intersection ${crossing.id}: gap is narrower than its cross street`);
+    }
+    if (crossing.control && crossing.control !== 'none' && !crossing.street) {
+      problems.push(`Intersection ${crossing.id}: ${crossing.control} control needs a street`);
+    }
   }
   checkDuplicates(
     'building stretch',
