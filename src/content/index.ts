@@ -31,11 +31,13 @@ import {
   RouteSchema,
   SignageSchema,
   SkillSchema,
+  StationSchema,
   StopSchema,
   UiCopySchema,
 } from './schema';
 import { signage as signageData } from './signage';
 import { skills as skillsData } from './skills';
+import { stations as stationsData } from './stations';
 import { stops as stopsData } from './stops';
 import { simpleCopy as simpleCopyData } from './ui';
 
@@ -51,6 +53,7 @@ export const radioLines = z.array(RadioLineSchema).parse(radioLinesData);
 export const route = RouteSchema.parse(routeData);
 export const signage = SignageSchema.parse(signageData);
 export const skills = z.array(SkillSchema).parse(skillsData);
+export const stations = z.array(StationSchema).parse(stationsData);
 export const stops = z.array(StopSchema).parse(stopsData);
 export const simpleCopy = UiCopySchema.parse(simpleCopyData);
 
@@ -58,6 +61,7 @@ assertContentIntegrity({
   atmosphere: atmosphereZones,
   buildings: buildingStretches,
   checkpoints,
+  stations,
   route,
   stops,
   projects,
