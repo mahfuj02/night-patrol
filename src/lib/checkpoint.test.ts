@@ -2,15 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { checkpoints } from '@/content/checkpoints';
 import { experience } from '@/content/experience';
 import { projects } from '@/content/projects';
+import { stations } from '@/content/stations';
 import { stops } from '@/content/stops';
-import { resolveCheckpoint } from './checkpoint';
+import { resolveCheckpoint, resolveStation } from './checkpoint';
 
 const sources = { checkpoints, experience, projects };
 const stop = (id: string) => stops.find((s) => s.id === id);
 
 describe('resolveCheckpoint', () => {
-  it('shows the diploma at the RRC campus, with the Sprint-Innovation win as the teaser', () => {
-    const result = resolveCheckpoint(stop('rrc-campus'), sources)!;
+  it('shows the diploma at the Education station, with the Sprint-Innovation win as the teaser', () => {
+    const result = resolveStation(stations[0]!, { experience, projects })!;
     expect(result.stopId).toBe('rrc-campus');
     expect(result.main.kind).toBe('experience');
     expect(result.main.title).toBe('Diploma in Full Stack Web Development');
@@ -35,6 +36,8 @@ describe('resolveCheckpoint', () => {
 
   it('returns null for stops without a checkpoint or without content', () => {
     expect(resolveCheckpoint(stop('ignition'), sources)).toBeNull();
+    // The RRC campus is a station, so it has no side panel.
+    expect(resolveCheckpoint(stop('rrc-campus'), sources)).toBeNull();
     expect(resolveCheckpoint(stop('city-services'), sources)).toBeNull();
     expect(resolveCheckpoint(undefined, sources)).toBeNull();
   });
