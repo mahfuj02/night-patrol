@@ -42,11 +42,6 @@ interface DriveState {
   stopIndex: number;
   /** True when `target` is close enough to `stopIndex` for the stop to count as reached. */
   atStop: boolean;
-  /**
-   * The stop whose checkpoint panel the visitor closed (Esc or the close button). The panel stays
-   * closed while the visitor stays at that stop, and may open again when they come back to it.
-   */
-  dismissedStop: number | null;
   /** The station whose red light the car is stopped at, or null. */
   atLight: number | null;
   /** The station the visitor can open right now (at its light, or at its stop), or null. */
@@ -63,14 +58,13 @@ interface DriveState {
   goToStop: (index: number) => void;
   /** Drives to a station and opens it once there. */
   goToStation: (index: number) => void;
-  dismissPanel: () => void;
   openStation: () => void;
   closeStation: () => void;
   finishManeuver: () => void;
   setWallLegible: (legible: boolean) => void;
 }
 
-function derive(target: number, dismissed: number | null = null) {
+function derive(target: number) {
   const t = clamp01(target);
   const stopIndex = nearestStopIndex(t, STOP_TS);
   const magnetIndex = nearestStopIndex(t, MAGNET_TS);
@@ -85,8 +79,6 @@ function derive(target: number, dismissed: number | null = null) {
     atStop,
     atLight,
     openable: atLight ?? (stationAtStop >= 0 ? stationAtStop : null),
-    // A dismissal only lasts while the visitor is still at that stop.
-    dismissedStop: atStop && dismissed === stopIndex ? dismissed : null,
   };
 }
 
@@ -117,19 +109,19 @@ export const useDriveStore = create<DriveState>((set, get) => {
     wallLegible: true,
     nudge: (delta) =>
       move(delta > 0 ? 1 : delta < 0 ? -1 : 0, () =>
-        set({ ...derive(get().target + delta, get().dismissedStop), pendingOpen: null }),
+        set({ ...derive(get().target + delta), pendingOpen: null }),
       ),
     next: () =>
       move(1, () =>
         set({
-          ...derive(stepToStop(get().target, 1, STOP_TS), get().dismissedStop),
+          ...derive(stepToStop(get().target, 1, STOP_TS)),
           pendingOpen: null,
         }),
       ),
     prev: () =>
       move(-1, () =>
         set({
-          ...derive(stepToStop(get().target, -1, STOP_TS), get().dismissedStop),
+          ...derive(stepToStop(get().target, -1, STOP_TS)),
           pendingOpen: null,
         }),
       ),
@@ -139,7 +131,7 @@ export const useDriveStore = create<DriveState>((set, get) => {
         () => {
           const stopT = STOP_TS[index];
           if (stopT !== undefined) {
-            set({ ...derive(stopT, get().dismissedStop), pendingOpen: null });
+            set({ ...derive(stopT), pendingOpen: null });
           }
         },
         index,
@@ -149,16 +141,7 @@ export const useDriveStore = create<DriveState>((set, get) => {
       const stopIndex = stops.findIndex((s) => s.id === station?.stopId);
       const stopT = STOP_TS[stopIndex];
       if (!station || stopT === undefined) return;
-      move(
-        0,
-        () => set({ ...derive(stopT, get().dismissedStop), pendingOpen: index }),
-        stopIndex,
-        index,
-      );
-    },
-    dismissPanel: () => {
-      const { atStop, stopIndex } = get();
-      if (atStop) set({ dismissedStop: stopIndex });
+      move(0, () => set({ ...derive(stopT), pendingOpen: index }), stopIndex, index);
     },
     openStation: () => {
       const { openable, station } = get();

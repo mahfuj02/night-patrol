@@ -7,7 +7,6 @@ import { simpleCopy } from '@/content/ui';
 import { useDriveInput } from '@/hooks/useDriveInput';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useWebGLSupport } from '@/hooks/useWebGLSupport';
-import { CheckpointPanel } from '@/ui/CheckpointPanel';
 import { DriveControls } from '@/ui/DriveControls';
 import { Subtitles } from '@/ui/Hud';
 import { RouteMap } from '@/ui/RouteMap';
@@ -60,7 +59,6 @@ export function HomeExperience() {
       <DriveControls />
       <StationControls />
       <RouteMap />
-      <CheckpointPanel />
       <StationWall />
       <Subtitles />
       <noscript>
