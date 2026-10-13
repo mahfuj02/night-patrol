@@ -1,9 +1,11 @@
 import { CatmullRomCurve3, Vector3 } from 'three';
 import { route as routeContent } from '@/content/route';
 import type { Route } from '@/content/schema';
+import { driveOffset } from '@/lib/lanes';
 import { interpolateWidth } from '@/lib/route';
 
 const DEFAULT_WIDTH = 8;
+const laneTangent = new Vector3();
 /** Arc-length samples per curve segment; keeps control point fractions accurate. */
 const DIVISIONS_PER_SEGMENT = 200;
 
@@ -19,7 +21,9 @@ export interface RouteModel {
   /** Road width at arc-length fraction `u`. */
   widthAt: (u: number) => number;
   /** Stretches of road (as arc-length fractions) where side streets cross. */
-  intersections: { from: number; to: number }[];
+  intersections: { id: string; from: number; to: number }[];
+  /** Where the car drives: the centre of the right-hand lane at `u`, written into `out`. */
+  lanePointAt: (u: number, out?: Vector3) => Vector3;
   /** True if `u` falls inside an intersection, widened by `margin` metres either side. */
   inIntersection: (u: number, margin?: number) => boolean;
 }
@@ -42,10 +46,11 @@ export function createRouteModel(route: Route): RouteModel {
   });
 
   const intersections = (route.intersections ?? []).flatMap((crossing) => {
-    const centre = stopFractions.get(crossing.stopId);
-    if (centre === undefined) return [];
+    const anchor = stopFractions.get(crossing.stopId);
+    if (anchor === undefined) return [];
+    const centre = anchor + (crossing.offset ?? 0) / length;
     const half = crossing.halfLength / length;
-    return [{ from: centre - half, to: centre + half }];
+    return [{ id: crossing.id, from: centre - half, to: centre + half }];
   });
 
   return {
@@ -56,6 +61,13 @@ export function createRouteModel(route: Route): RouteModel {
     stopFractions,
     widthAt: (u) => interpolateWidth(fractions, widths, u),
     intersections,
+    lanePointAt: (u, out = new Vector3()) => {
+      curve.getPointAt(u, out);
+      curve.getTangentAt(u, laneTangent);
+      // To the right of the direction of travel: (-tangent.z, 0, tangent.x).
+      const offset = driveOffset(interpolateWidth(fractions, widths, u));
+      return out.set(out.x - laneTangent.z * offset, out.y, out.z + laneTangent.x * offset);
+    },
     inIntersection: (u, margin = 0) =>
       intersections.some(
         ({ from, to }) => u >= from - margin / length && u <= to + margin / length,

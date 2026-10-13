@@ -96,9 +96,13 @@ export function findContentProblems(c: ContentBundle): string[] {
   if (pinnedOrder.some((order, i) => i > 0 && order <= pinnedOrder[i - 1]!)) {
     problems.push('Route points must pin stops in stop order');
   }
+  checkDuplicates(
+    'intersection',
+    (c.route.intersections ?? []).map((x) => x.id),
+  );
   for (const crossing of c.route.intersections ?? []) {
     if (!stopsById.has(crossing.stopId)) {
-      problems.push(`Intersection refers to unknown stop ${crossing.stopId}`);
+      problems.push(`Intersection ${crossing.id}: unknown stop ${crossing.stopId}`);
     }
   }
   problems.push(...findZoneProblems(c.atmosphere, c.stops));

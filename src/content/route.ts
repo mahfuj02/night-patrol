@@ -37,7 +37,16 @@ export const route: Route = {
     { x: 830, z: 420, width: 10 },
     { x: 860, z: 500, width: 10, stopId: 'the-forks' },
   ],
-  // Side streets cross here, so the plowed ridge and the tree rows are broken.
-  // TODO(content): owner to add the other intersections along the route.
-  intersections: [{ stopId: 'portage-main', halfLength: 22 }],
+  // Side streets cross here, so the plowed ridge and the tree rows are broken. Each is measured
+  // in metres from a stop, so it can sit between stops. Stops stay mid-block, except Portage &
+  // Main, which is the intersection. Residential gaps are 8 m each side; the street names (Princess
+  // St) arrive with the signs.
+  // TODO(content): owner to review the positions along the route.
+  intersections: [
+    { id: 'princess-st', stopId: 'rrc-campus', offset: 16, halfLength: 10 },
+    { id: 'portage-main', stopId: 'portage-main', halfLength: 22 },
+    { id: 'residential-a', stopId: 'warming-shelter', offset: -28, halfLength: 8 },
+    { id: 'residential-b', stopId: 'warming-shelter', offset: 40, halfLength: 8 },
+    { id: 'residential-c', stopId: 'cmhr-esplanade', offset: -30, halfLength: 8 },
+  ],
 };
