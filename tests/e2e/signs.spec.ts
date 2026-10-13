@@ -20,6 +20,7 @@ test.describe('project signs at drive-by stops', () => {
   for (const [stopId, caption] of [
     ['exchange-warehouses', 'Tickets running through EventFlow, on your left.'],
     ['city-services', 'City services building on your left.'],
+    ['portage-main', 'the wind at Portage and Main'],
   ] as const) {
     test(`${stopId}: the caption and the sign text are announced, and no panel pops up`, async ({
       page,
