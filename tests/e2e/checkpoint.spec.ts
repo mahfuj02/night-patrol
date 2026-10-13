@@ -27,7 +27,7 @@ test.describe('checkpoint panel', () => {
     await driveToRrc(page);
     await expect(panel(page)).toBeVisible();
     await expect(panel(page)).toContainText('Red River College Polytechnic');
-    await expect(panel(page)).toContainText('Sep 2023');
+    await expect(panel(page)).toContainText('Aug 2023');
     await expect(panel(page)).toContainText('Sprint-Innovation 2025: Winner');
     await expect(page.getByRole('region', { name: 'Dispatch radio' })).toContainText(
       'RRC campus on your left',
@@ -82,10 +82,14 @@ test.describe('checkpoint panel', () => {
     const eventflow = page.getByRole('complementary', { name: 'EventFlow' });
     await expect(eventflow).toBeVisible();
     await expect(eventflow).toContainText('Scoped ticketing and CRM platform for events.');
-    await expect(eventflow).toContainText('Stripe (test mode)');
+    await expect(eventflow).toContainText('Stripe Checkout');
     await expect(eventflow.getByRole('link', { name: /GitHub repository/ })).toHaveAttribute(
       'href',
       'https://github.com/mahfuj02/eventflow',
+    );
+    await expect(eventflow.getByRole('link', { name: /Case study/ })).toHaveAttribute(
+      'href',
+      'https://mahfuj.dev/projects/eventflow',
     );
     await expect(eventflow.getByRole('link', { name: /Live site/ })).toHaveAttribute(
       'href',

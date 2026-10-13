@@ -4,6 +4,11 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ## [Unreleased]
 
+### Changed
+
+- Content synced with mahfuj.dev (owner overrides kept: the email): LIILAB as Junior Software Engineer, Feb 2021 to May 2023; the RRC diploma from August 2023 to August 2025 (graduation TODO removed); a new Industrial Project entry (RRC Polytechnic, mobile app development, May to September 2025); the new Connexions Spectrum project (a library book, no route stop); Safe Drive AI and RoleReady stacks; the CivicTrack repository link; case study links to mahfuj.dev for the projects that have one; and the resume link on mahfuj.dev (`profile.resumeUrl` replaces the local `/resume.pdf`)
+- Skills are grouped by category (web, backend, embedded, ai, mobile) instead of dashboard widget groups, with Tailwind, Netlify Functions, React Native and Expo added, `C / C++` split into `C` and `C++`, and `Claude` renamed `Claude Code`
+
 ### Added
 
 - Phase 5, stop 4 (Exchange District warehouses, EventFlow): three attached brick warehouses with faded painted ghost signs (generic trades, plus a Winnipeg grain-trade one) and a venue under a marquee sign that names the project, which lights up as the car arrives; the EventFlow checkpoint panel with its links; and a radio caption (`checkpoints.ts`, `radio.ts` and `signage.ts`)

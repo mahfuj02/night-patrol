@@ -11,9 +11,9 @@ Each file exports plain typed data. `src/content/index.ts` parses every file wit
 
 | File            | Holds                                                                           |
 | --------------- | ------------------------------------------------------------------------------- |
-| `profile.ts`    | Name, role, pitch, contact links, resume path                                   |
+| `profile.ts`    | Name, role, pitch, contact links, resume URL (on mahfuj.dev)                    |
 | `projects.ts`   | Projects. `stopId` is optional; projects without one show only in `/simple`     |
-| `skills.ts`     | Skills by group (gauge, switch, indicator, preset)                              |
+| `skills.ts`     | Skills by category (web, backend, embedded, ai, mobile)                         |
 | `experience.ts` | Patrol log: work, education, achievements                                       |
 | `community.ts`  | Community notes (the warming shelter note)                                      |
 | `stops.ts`      | Route order and `t` along the path, landmark id, `contentRef`                   |
@@ -40,7 +40,7 @@ The road should stay gentle (the test rejects sharp kinks) and flat.
 
 ## Resume
 
-Put the real PDF at `public/resume.pdf`. The link on `/simple` points there.
+The resume lives on mahfuj.dev (`profile.resumeUrl`, `https://mahfuj.dev/resume/MahfujAhmed_Resume.pdf`). The link on `/simple` and the Contact station point there; there is no local copy to keep in sync.
 
 ## Site URL
 

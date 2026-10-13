@@ -146,7 +146,7 @@ The Projects station is the **browse hub** for projects. The route stops stay as
 
 - **Building.** An office with a glass front. The sign reads **"LIILAB · Sylhet, Bangladesh"**, in plain lettering, with the wording in `src/content/signage.ts` (the place matches `experience.ts`). The owner worked there in person, so there is no "(remote)".
 - **Arrival.** The standard pattern: park in front of the glass, headlights light the front.
-- **Monitors.** Behind the glass, desks with monitors. Each **monitor screen is real DOM placed in 3D** (the same transform as the wall content, one per monitor), showing one entry from `experience.ts`: the **LIILAB** entries, and the **Sprint-Innovation 2025 win**. The list is also a normal list for keyboard and screen readers, in the same order.
+- **Monitors.** Behind the glass, desks with monitors. Each **monitor screen is real DOM placed in 3D** (the same transform as the wall content, one per monitor), showing one entry from `experience.ts`: the **LIILAB** entry, the **Industrial Project** (RRC Polytechnic, mobile app development, May to September 2025) and the **Sprint-Innovation 2025 win**. The list is also a normal list for keyboard and screen readers, in the same order.
 - **Rule 10 note.** CLAUDE.md rule 10 says "no logos or trademarks of real organizations … in signage". A sign with an employer's name as plain words is not a logo, so the rule now says so. **Approved by the owner and updated in this PR:** the owner's own school, employers and projects may appear as plain lettering (as "RRC Polytechnic" already does); still no logos, crests, banners or brand marks, and no lettering, colours or typography copied from the real brand.
 
 ## Skills station
@@ -159,20 +159,21 @@ Skills move from the dashboard to their own **tech building** using the standard
 | -------- | ----------------------------------------------------------------------------- |
 | Web      | TypeScript, React, Next.js, Vue, Angular, Tailwind, WordPress                 |
 | Backend  | Node.js, Django, C# / .NET, SQL, Prisma, MongoDB, Firebase, Netlify Functions |
-| Embedded | C, C++, Arduino, I2C                                                          |
+| Embedded | C, C++                                                                        |
 | AI tools | Gemini, Groq Whisper, Claude Code                                             |
-| Mobile   | [framework used]                                                              |
+| Mobile   | React Native, Expo                                                            |
 | Also     | Competitive programming (1000+ problems solved)                               |
 
-All of it is `// TODO(content): verify`, including the levels, which are placeholders until the owner reviews them. The Mobile framework is not named yet, so it stays `// TODO(content)`.
+All of it is `// TODO(content): verify`, including the levels, which are placeholders until the owner reviews them. The skills content is in `skills.ts` (see below).
 
 ### Changes to `skills.ts`
 
-- A `category` field (`web`, `backend`, `embedded`, `ai`, `mobile`, `also`) replaces the dashboard `group` (`gauge`, `switch`, `indicator`, `preset`). `ui.ts` gets the group labels.
-- **New:** Tailwind, Netlify Functions, Arduino, I2C, the Mobile framework and the competitive programming line. `C / C++` becomes two entries, `C` and `C++`. `Claude` becomes `Claude Code`. `Groq / Whisper` becomes `Groq Whisper`.
-- **WordPress stays**, under Web (the existing entry and its note, "Theme performance at LIILAB").
-- **The AV Device Controller is already in `projects.ts`** (a C++17 command-line system simulating control of AV displays, with a GitHub link and no route stop), so it is a library book only, as asked. Its stack there is C++17 and CMake, with no Arduino or I2C. See the open questions.
-- The `/simple` skills list follows the same categories.
+Done in the content PR that syncs the content with mahfuj.dev (`content/sync-mahfuj-dev`):
+
+- A `category` field (`web`, `backend`, `embedded`, `ai`, `mobile`) replaced the dashboard `group` (`gauge`, `switch`, `indicator`, `preset`). `ui.ts` has the labels, and `/simple` follows the same categories.
+- New skills: Tailwind, Netlify Functions, React Native and Expo. `C / C++` became two entries, `C` and `C++`. `Claude` became `Claude Code`, and `Groq / Whisper` became `Groq Whisper`. WordPress stays, under Web.
+- The competitive programming line ("Also") stays in `profile.ts` highlights for now. The Skills station (5f) decides how the wall shows it, because a count of solved problems is not a 1 to 5 level.
+- The AV Device Controller is a library book only (no route stop). Its stack stays C++17 and CMake.
 
 ### What the dashboard keeps
 
@@ -293,14 +294,12 @@ Any stop, station, the contact details or the resume is at most **two clicks** f
 ## Content and rule changes needed
 
 - `src/content/stations.ts` (new), validated, with integrity checks (known stops and landmarks, lights clear of other stops).
-- `skills.ts`: the `category` field and the new list above; `/simple` follows.
+- `skills.ts`: done (see above).
 - `signage.ts`: the library and LIILAB office wording. `ui.ts`: section labels, the menu, the status line.
-- `projects.ts`: no new entry is needed (AV Device Controller exists); its stack may change (see the open questions).
+- `projects.ts`: done in the content sync (Connexions Spectrum added as a library book; stacks and case study links follow mahfuj.dev).
 - CLAUDE.md rule 10: updated in this PR (the plain-text-name exception, approved).
 - Everything unverified is `// TODO(content): verify`.
 
 ## Open questions
 
-1. **AV Device Controller and the Embedded group.** The existing project is a C++17 command-line simulation (CMake). Are Arduino and I2C part of it, or a different embedded project? If part of it, its `stack` should change; if different, say what it is and whether it is a project too.
-2. **Golden Rule.** Do the volunteer website for the senior resource centre and its entry go on an Experience monitor? It is not in `experience.ts`, and the owner supplies the wording and dates.
-3. **Mobile framework.** Which one? It stays `// TODO(content)` until named.
+None. The owner answered the earlier ones: the AV Device Controller stays C++17 and CMake with no Arduino or I2C, the Golden Rule entry is skipped, and the Mobile skills are React Native and Expo.

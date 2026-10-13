@@ -16,8 +16,8 @@ describe('resolveCheckpoint', () => {
     expect(result.main.title).toBe('Diploma in Full Stack Web Development');
     if (result.main.kind === 'experience') {
       expect(result.main.org).toBe('Red River College Polytechnic');
-      expect(result.main.dates).toBe('Sep 2023 \u2013 Aug 2025');
-      expect(result.main.isoDate).toBe('2023-09');
+      expect(result.main.dates).toBe('Aug 2023 \u2013 Aug 2025');
+      expect(result.main.isoDate).toBe('2023-08');
     }
     expect(result.teaser?.title).toBe('Sprint-Innovation 2025: Winner');
   });

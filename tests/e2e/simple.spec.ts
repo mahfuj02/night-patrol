@@ -43,7 +43,7 @@ test.describe('/simple', () => {
     await page.goto('/simple');
     await expect(page.getByRole('link', { name: /Download resume/ })).toHaveAttribute(
       'href',
-      profile.resumePath,
+      profile.resumeUrl,
     );
     await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
   });
