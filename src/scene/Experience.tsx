@@ -22,6 +22,8 @@ import { Snow } from './Environment/Snow';
 import { ProgressDriver } from './ProgressDriver';
 import { CrossStreetRoads } from './Road/CrossStreetRoads';
 import { Road } from './Road/Road';
+import { Roundabout } from './Road/RoundaboutRoad';
+import { RoundaboutDriver } from './Road/RoundaboutDriver';
 import { SnowRidge } from './Road/SnowRidge';
 import { Streetlights } from './Road/Streetlights';
 import { Signals } from './Signals/Signals';
@@ -64,6 +66,7 @@ export function Experience() {
       <LoadReporter />
       <ProgressDriver reducedMotion={reducedMotion} />
       <StationDriver reducedMotion={reducedMotion} />
+      <RoundaboutDriver />
       <StationWalls />
       <AtmosphereDriver />
       <Sky />
@@ -71,6 +74,7 @@ export function Experience() {
       <Road tier={tier} />
       <SnowRidge tier={tier} />
       <CrossStreetRoads tier={tier} />
+      <Roundabout tier={tier} />
       <Suspense fallback={null}>
         <Buildings tier={tier} />
       </Suspense>

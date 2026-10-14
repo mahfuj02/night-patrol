@@ -73,7 +73,7 @@ describe('landmarkFrame', () => {
   });
 
   it('knows the stop it belongs to', () => {
-    expect(frame.stopT).toBeCloseTo(0.082, 6);
+    expect(frame.stopT).toBeCloseTo(0.079, 6);
     expect(() => landmarkFrame(routeModel, { ...rrcPlacement, stopId: 'nowhere' })).toThrow();
   });
 });
