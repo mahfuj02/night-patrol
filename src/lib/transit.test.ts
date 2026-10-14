@@ -32,6 +32,7 @@ describe('buildTransit', () => {
     expect(byId('city-services').zone).toBe('exchange');
     expect(byId('portage-main').zone).toBe('downtown');
     expect(byId('dashcam').zone).toBe('residential');
+    expect(byId('liilab-office').zone).toBe('avenue');
     expect(byId('the-forks').zone).toBe('forks');
   });
 

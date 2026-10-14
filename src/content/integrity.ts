@@ -110,7 +110,7 @@ export function findContentProblems(c: ContentBundle): string[] {
     if (!stopsById.has(station.stopId)) {
       problems.push(`Station ${station.id}: unknown stop ${station.stopId}`);
     }
-    for (const ref of [station.contentRef, station.teaserRef]) {
+    for (const ref of [station.contentRef, station.teaserRef, ...(station.entryRefs ?? [])]) {
       if (ref && !refIds.has(ref)) problems.push(`Station ${station.id}: unknown content ${ref}`);
     }
   }

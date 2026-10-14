@@ -171,4 +171,21 @@ describe('StationWall', () => {
       expect(screen.queryByRole('complementary')).toBeNull();
     });
   });
+
+  describe('at the LIILAB office', () => {
+    it('shows the entries as a picture only, with no sheet on a small screen', () => {
+      const stop = stops.findIndex((x) => x.id === 'liilab-office');
+      act(() => useDriveStore.setState({ wallLegible: false }));
+      render(<StationWall />);
+      act(() => {
+        state().goToStop(stop);
+        state().openStation();
+        state().finishManeuver();
+      });
+      expect(wall()).toHaveAttribute('aria-hidden', 'true');
+      expect(wall()).toHaveAttribute('inert');
+      expect(wall()).toHaveTextContent('Junior Software Engineer');
+      expect(screen.queryByRole('complementary')).toBeNull();
+    });
+  });
 });

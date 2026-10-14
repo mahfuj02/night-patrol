@@ -50,4 +50,15 @@ export const stations: Station[] = [
     camera: { back: 7, up: 4.6, fov: 45 },
     wall: { landmark: 'skills-station', rect: { x: 0, y: 1.6, z: -8, width: 12, height: 6 } },
   },
+  {
+    // The LIILAB office, on the right of the route: no single entry, the wall shows the entries.
+    id: 'experience',
+    section: 'experience',
+    stopId: 'liilab-office',
+    light: { offset: -23 },
+    bay: { turn: 'right', depth: 3, width: 4.6, clearBefore: 12, clearAfter: 5 },
+    camera: { back: 7, up: 4.6, fov: 45 },
+    wall: { landmark: 'liilab-office', rect: { x: 0, y: 1.6, z: -7, width: 12, height: 6 } },
+    entryRefs: ['liilab', 'industrial-project', 'sprint-innovation-2025'],
+  },
 ];

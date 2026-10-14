@@ -103,6 +103,19 @@ export const skillsPlacement: LandmarkPlacement = {
   reserved: { min: -20, max: 20 },
 };
 
+/**
+ * The LIILAB office: a small glass office on the RIGHT of the route on the third straight, about
+ * 940 m along, on the avenue. The Experience station parks in front of it.
+ */
+export const officePlacement: LandmarkPlacement = {
+  stopId: 'liilab-office',
+  offset: 0,
+  side: 1,
+  depth: 14,
+  setback: 7.5,
+  reserved: { min: -16, max: 16 },
+};
+
 /** Every landmark that stands on the route, so ordinary buildings can leave its ground free. */
 export const landmarkPlacements: readonly LandmarkPlacement[] = [
   rrcPlacement,
@@ -111,6 +124,7 @@ export const landmarkPlacements: readonly LandmarkPlacement[] = [
   roleReadyPlacement,
   libraryPlacement,
   skillsPlacement,
+  officePlacement,
 ];
 
 /**

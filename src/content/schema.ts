@@ -16,6 +16,7 @@ export const landmarkIds = [
   'millennium-library',
   'skills-station',
   'dashcam',
+  'liilab-office',
   'the-forks',
 ] as const;
 export const LandmarkIdSchema = z.enum(landmarkIds);
@@ -200,6 +201,8 @@ export const SignageSchema = z.object({
   cityRooftop: z.string().min(1).max(30),
   // The lettering on the Millennium Library: plain words in our own type, no logo.
   libraryLettering: z.string().min(1).max(30),
+  // The sign on the LIILAB office: plain words in our own type, no logo.
+  officeSign: z.string().min(1).max(40),
   requestBoard: z.object({
     statuses: z.tuple([
       z.string().min(1).max(20),
@@ -300,6 +303,8 @@ export const StationSchema = z.object({
   /** What the wall shows (an experience entry or project); the library has none (it lists books). */
   contentRef: kebabId.optional(),
   teaserRef: kebabId.optional(),
+  /** For a station that lists several entries (Experience): their ids in `experience.ts`, in order. */
+  entryRefs: z.array(kebabId).optional(),
 });
 export type Station = z.infer<typeof StationSchema>;
 

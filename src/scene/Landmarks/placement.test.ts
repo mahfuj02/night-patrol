@@ -179,11 +179,15 @@ describe('scenery', () => {
       const at = routeModel.stopFractions.get(p.stopId)! * routeModel.length + p.offset;
       return [at - p.reserved.max, at - p.reserved.min] as const;
     };
-    const all = [...landmarkPlacements, ...sceneryPlacements]
-      .map(range)
-      .sort((a, b) => a[0] - b[0]);
-    for (let i = 1; i < all.length; i++) {
-      expect(all[i]![0]).toBeGreaterThan(all[i - 1]![1]);
+    // Pieces on opposite sides of the road may share a stretch of it; those on one side may not.
+    for (const side of [-1, 1] as const) {
+      const all = [...landmarkPlacements, ...sceneryPlacements]
+        .filter((p) => p.side === side)
+        .map(range)
+        .sort((a, b) => a[0] - b[0]);
+      for (let i = 1; i < all.length; i++) {
+        expect(all[i]![0]).toBeGreaterThan(all[i - 1]![1]);
+      }
     }
   });
 

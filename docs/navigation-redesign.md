@@ -1,6 +1,6 @@
 # Navigation redesign
 
-> **Status:** the Skills station is built too (Phase 5f, see [docs/skills-station.md](skills-station.md)). The Millennium Library's building and interface are built (Phase 5e part 1, see [docs/library.md](library.md)); the interior is part 2.
+> **Status:** the Experience station (the LIILAB office) is built (Phase 5g, see [docs/experience-station.md](experience-station.md)). The Skills station is built too (Phase 5f, see [docs/skills-station.md](skills-station.md)). The Millennium Library's building and interface are built (Phase 5e part 1, see [docs/library.md](library.md)); the interior is part 2.
 >
 > **Earlier status:** the station arrival pattern and the Education station are built (Phase 5b); see [docs/stations.md](stations.md) for how. The transit-map menu is built too (Phase 5c, [docs/routemap.md](routemap.md)). Drive-by project stops are lit signs with a slogan, not popups (see [docs/adding-a-stop.md](adding-a-stop.md)); the project details live in the route map and the library. The route has been simplified (see [Simplified route](#simplified-route)). The other stations follow.
 
