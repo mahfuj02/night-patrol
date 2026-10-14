@@ -1,7 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { stops } from '@/content';
-import { LOOP_MAX_MS, SHIFT_FADE_MS } from '@/lib/shift';
+import { LOOP_STALL_MS, SHIFT_FADE_MS } from '@/lib/shift';
 import { INITIAL_STATION } from '@/lib/station';
 import { useDriveStore } from '@/store/drive';
 import { ShiftFade } from './ShiftFade';
@@ -67,18 +67,48 @@ describe('ShiftFade', () => {
     expect(state().shift).toBe('idle');
   });
 
-  it('moves on from a lap the scene never finishes', () => {
+  it('moves on from a lap the scene has stopped drawing, after the stall limit', () => {
     stubMotion(false);
     render(<ShiftFade />);
     act(() => state().startNewPatrol());
     act(() => {
-      vi.advanceTimersByTime(LOOP_MAX_MS - 1);
+      vi.advanceTimersByTime(LOOP_STALL_MS - 1);
     });
     expect(state().shift).toBe('looping');
     act(() => {
       vi.advanceTimersByTime(1);
     });
     expect(state().shift).toBe('fading-out');
+  });
+
+  it('never cuts short a lap that is still being drawn, however slowly: each frame restarts the clock', () => {
+    stubMotion(false);
+    render(<ShiftFade />);
+    act(() => state().startNewPatrol());
+    // A slow machine: a frame every 20 seconds for ten minutes, far longer than the stall limit.
+    for (let i = 0; i < 30; i++) {
+      act(() => {
+        vi.advanceTimersByTime(LOOP_STALL_MS - 10_000);
+        state().tickLoop();
+      });
+      expect(state().shift).toBe('looping');
+    }
+    // Then it stops drawing: the stall limit applies from the last frame.
+    act(() => {
+      vi.advanceTimersByTime(LOOP_STALL_MS);
+    });
+    expect(state().shift).toBe('fading-out');
+  });
+
+  it('only counts frames while looping', () => {
+    stubMotion(false);
+    render(<ShiftFade />);
+    const before = state().loopTicks;
+    act(() => state().tickLoop());
+    expect(state().loopTicks).toBe(before);
+    act(() => state().startNewPatrol());
+    act(() => state().tickLoop());
+    expect(state().loopTicks).toBe(before + 1);
   });
 
   it('cuts under reduced motion: no lap, no veil, and the reset runs at once', () => {
