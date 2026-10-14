@@ -7,7 +7,7 @@ export const stops: Stop[] = [
   {
     id: 'dispatch',
     order: 1,
-    t: 0.028,
+    t: 0.027,
     title: 'Dispatch',
     landmark: 'dispatch-street',
     kind: 'intro',
@@ -16,7 +16,7 @@ export const stops: Stop[] = [
   {
     id: 'rrc-campus',
     order: 2,
-    t: 0.082,
+    t: 0.079,
     title: 'RRC Polytechnic, Exchange District Campus',
     landmark: 'rrc-campus',
     kind: 'education',
@@ -26,7 +26,7 @@ export const stops: Stop[] = [
   {
     id: 'exchange-warehouses',
     order: 3,
-    t: 0.136,
+    t: 0.131,
     title: 'Exchange District warehouses',
     landmark: 'exchange-warehouses',
     kind: 'project',
@@ -36,7 +36,7 @@ export const stops: Stop[] = [
   {
     id: 'city-services',
     order: 4,
-    t: 0.191,
+    t: 0.185,
     title: 'City services building',
     landmark: 'city-services',
     kind: 'project',
@@ -46,7 +46,7 @@ export const stops: Stop[] = [
   {
     id: 'portage-main',
     order: 5,
-    t: 0.444,
+    t: 0.429,
     title: 'Portage & Main',
     landmark: 'portage-main',
     kind: 'project',
@@ -56,7 +56,7 @@ export const stops: Stop[] = [
   {
     id: 'millennium-library',
     order: 6,
-    t: 0.541,
+    t: 0.523,
     title: 'Millennium Library',
     landmark: 'millennium-library',
     kind: 'section',
@@ -64,7 +64,7 @@ export const stops: Stop[] = [
   {
     id: 'skills-station',
     order: 7,
-    t: 0.632,
+    t: 0.611,
     title: 'Skills station',
     landmark: 'skills-station',
     kind: 'section',
@@ -72,7 +72,7 @@ export const stops: Stop[] = [
   {
     id: 'dashcam',
     order: 8,
-    t: 0.733,
+    t: 0.709,
     title: 'Dashcam moment',
     landmark: 'dashcam',
     kind: 'project',
@@ -81,7 +81,7 @@ export const stops: Stop[] = [
   {
     id: 'liilab-office',
     order: 9,
-    t: 0.848,
+    t: 0.82,
     title: 'LIILAB office',
     landmark: 'liilab-office',
     kind: 'section',
@@ -89,7 +89,7 @@ export const stops: Stop[] = [
   {
     id: 'the-forks',
     order: 10,
-    t: 1,
+    t: 0.967,
     title: 'The Forks: End of shift',
     landmark: 'the-forks',
     kind: 'contact',

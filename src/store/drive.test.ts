@@ -25,7 +25,8 @@ describe('drive store', () => {
     state().nudge(-1);
     expect(state().target).toBe(0);
     state().nudge(5);
-    expect(state().target).toBe(1);
+    // The drive ends at the last stop (the road runs a little past it, for the roundabout).
+    expect(state().target).toBe(STOP_TS[STOP_TS.length - 1]);
     expect(state().stopIndex).toBe(stops.length - 1);
   });
 
