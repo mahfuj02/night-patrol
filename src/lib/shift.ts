@@ -5,4 +5,4 @@ export const SHIFT_FADE_MS = 800;
  * The longest the roundabout lap may take before the shift moves on anyway, in milliseconds. A lap
  * takes about ten seconds of animation, but a slow machine draws fewer frames, so this is generous.
  */
-export const LOOP_MAX_MS = 70_000;
+export const LOOP_MAX_MS = 120_000;

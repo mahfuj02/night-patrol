@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 import { Vector3 } from 'three';
-import { easeInOut, parkingPath, vectorHeading, type ParkingPath } from '@/lib/parking';
+import { easeInOut, parkingPath, type ParkingPath } from '@/lib/parking';
 import {
   BACK_OUT_SECONDS,
   TURN_IN_SECONDS,
@@ -14,7 +14,7 @@ import { matrix3dFor, quadWidth, type Quad } from '@/lib/homography';
 import { wallDom } from '@/lib/wallDom';
 import { useDriveStore } from '@/store/drive';
 import { progress } from '../progress';
-import { routeModel } from '../Road/route';
+import { carPoseAt, travel } from '../travel';
 import { CAR_HALF_LENGTH } from './stationGeometry';
 import { stationFrames } from './stationFrames';
 import { stationView } from './stationView';
@@ -22,8 +22,6 @@ import { stationView } from './stationView';
 /** How close (in route `t`) the car must be to a stop for a station chosen from the map to open. */
 const ARRIVED = 0.002;
 
-const lane = new Vector3();
-const tangent = new Vector3();
 const corner = new Vector3();
 
 /** Progress of the wall content fade, over the later part of the turn in. */
@@ -59,12 +57,7 @@ export function StationDriver({ reducedMotion }: { reducedMotion: boolean }) {
     if (station.phase !== l.phase) {
       if (station.phase === 'turning-in' && frame) {
         // From where the car is on the road, with the road's heading, to the bay.
-        routeModel.lanePointAt(progress.t, lane);
-        routeModel.curve.getTangentAt(progress.t, tangent);
-        l.path = parkingPath(
-          { x: lane.x, z: lane.z, heading: vectorHeading(tangent.x, tangent.z) },
-          frame.geometry.car,
-        );
+        l.path = parkingPath(carPoseAt(progress.t, travel.direction), frame.geometry.car);
         l.p = 0;
         l.s = 0;
       } else if (station.phase === 'backing-out') {

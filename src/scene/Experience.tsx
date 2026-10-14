@@ -22,6 +22,7 @@ import { LoadReporter } from './LoadReporter';
 import { Sky } from './Environment/Sky';
 import { Snow } from './Environment/Snow';
 import { ProgressDriver } from './ProgressDriver';
+import { UTurnDriver } from './UTurnDriver';
 import { CrossStreetRoads } from './Road/CrossStreetRoads';
 import { Road } from './Road/Road';
 import { Roundabout } from './Road/RoundaboutRoad';
@@ -71,6 +72,7 @@ export function Experience() {
       {probe && <CarProbe />}
       <ProgressDriver reducedMotion={reducedMotion} />
       <StationDriver reducedMotion={reducedMotion} />
+      <UTurnDriver reducedMotion={reducedMotion} />
       <RoundaboutDriver />
       <StationWalls />
       <AtmosphereDriver />
