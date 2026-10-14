@@ -66,14 +66,16 @@ describe('DriveControls', () => {
     );
   });
 
-  it('disables Next at the last stop', () => {
+  it('turns Next into New patrol at the last stop, which starts the end-of-shift fade', async () => {
+    const user = userEvent.setup();
     state().goToStop(stops.length - 1);
     render(<DriveControls />);
-    expect(screen.getByRole('button', { name: 'Next stop ›' })).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
+    expect(screen.queryByRole('button', { name: 'Next stop ›' })).toBeNull();
+    const button = screen.getByRole('button', { name: 'New patrol ›' });
+    expect(button).toHaveAttribute('aria-disabled', 'false');
     expect(screen.getByRole('status')).toHaveTextContent('The Forks: End of shift');
+    await user.click(button);
+    expect(state().shift).toBe('fading-out');
   });
 
   it('keeps focus on a button that becomes inert, and ignores its clicks', async () => {

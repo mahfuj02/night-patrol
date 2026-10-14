@@ -54,4 +54,14 @@ describe('Subtitles', () => {
     act(() => state().nudge((STOP_TS[i + 1]! - STOP_TS[i]!) / 2));
     expect(region()).toHaveTextContent('');
   });
+
+  it('shows "New patrol starting." while the shift resets, wherever the car is', () => {
+    render(<Subtitles />);
+    act(() => state().goToStop(stops.length - 1));
+    expect(region()).toHaveTextContent('Shift complete.');
+    act(() => useDriveStore.setState({ shift: 'fading-out' }));
+    expect(region()).toHaveTextContent('New patrol starting.');
+    act(() => useDriveStore.setState({ shift: 'idle' }));
+    expect(region()).not.toHaveTextContent('New patrol starting.');
+  });
 });

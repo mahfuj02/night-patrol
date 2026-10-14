@@ -17,8 +17,15 @@ import { useDriveStore } from '@/store/drive';
 export function Subtitles() {
   const stopIndex = useDriveStore((s) => s.stopIndex);
   const atStop = useDriveStore((s) => s.atStop);
+  const shift = useDriveStore((s) => s.shift);
   const stop = stops[stopIndex];
-  const line = atStop && stop?.radioId ? radioLines.find((l) => l.id === stop.radioId) : undefined;
+  // While the shift resets the dispatch line is "New patrol starting.", whatever stop the car is at.
+  const line =
+    shift !== 'idle'
+      ? radioLines.find((l) => l.id === 'new-patrol')
+      : atStop && stop?.radioId
+        ? radioLines.find((l) => l.id === stop.radioId)
+        : undefined;
   const sign = atStop && stop ? projects.find((p) => p.stopId === stop.id)?.sign : undefined;
 
   return (

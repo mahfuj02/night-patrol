@@ -8,7 +8,7 @@ import { useDriveInput } from '@/hooks/useDriveInput';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useWebGLSupport } from '@/hooks/useWebGLSupport';
 import { DriveControls } from '@/ui/DriveControls';
-import { Subtitles } from '@/ui/Hud';
+import { ShiftFade, Subtitles } from '@/ui/Hud';
 import { ContactPanel } from '@/ui/Contact';
 import { ExperiencePanel } from '@/ui/Experience';
 import { LibraryPanel } from '@/ui/Library';
@@ -69,6 +69,7 @@ export function HomeExperience() {
       <ExperiencePanel />
       <ContactPanel />
       <Subtitles />
+      <ShiftFade />
       <noscript>
         <Link href="/simple" className="text-hud fixed bottom-4 left-4 underline">
           {copy.home.simpleLink}
