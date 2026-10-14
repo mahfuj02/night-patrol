@@ -5,19 +5,22 @@ import { easeInOut } from '@/lib/parking';
 import { dampT } from '@/lib/route';
 import { progress } from './progress';
 import { FOCUS_PULL, landmarkFocus, resetFocus } from './Landmarks/landmarkFocus';
-import { routeModel } from './Road/route';
+import { useDriveStore } from '@/store/drive';
 import { stationView } from './Stations/stationView';
+import { carPoseAt, travel } from './travel';
 
 const CHASE_BACK = 12;
 const CHASE_UP = 4.8;
 const LOOK_AHEAD = 6;
 const LOOK_UP = 0.8;
-/** Camera smoothing rate (per second). */
+/** Camera smoothing rate (per second), and the gentler rate while the car turns round. */
 const FOLLOW_RATE = 9;
+const TURN_RATE = 4;
 const MAX_DELTA = 0.1;
 /** The field of view on the road; a station can narrow it while the car is parked. */
 const BASE_FOV = 55;
 
+const pose = { x: 0, z: 0, heading: 0 };
 const point = new Vector3();
 const tangent = new Vector3();
 const desired = new Vector3();
@@ -29,6 +32,7 @@ const lookAt = new Vector3();
  */
 export function CameraRig({ reducedMotion }: { reducedMotion: boolean }) {
   const placed = useRef(false);
+  const seenReset = useRef(useDriveStore.getState().resetCount);
 
   useFrame((state, delta) => {
     if (stationView.active) {
@@ -36,8 +40,10 @@ export function CameraRig({ reducedMotion }: { reducedMotion: boolean }) {
       point.set(stationView.x, 0, stationView.z);
       tangent.set(Math.sin(stationView.heading), 0, Math.cos(stationView.heading));
     } else {
-      routeModel.lanePointAt(progress.t, point);
-      routeModel.curve.getTangentAt(progress.t, tangent);
+      // On the road: behind the car in the way it is going.
+      carPoseAt(progress.t, travel.direction, pose);
+      point.set(pose.x, 0, pose.z);
+      tangent.set(Math.sin(pose.heading), 0, Math.cos(pose.heading));
     }
     desired.copy(point).addScaledVector(tangent, -CHASE_BACK);
     desired.y += CHASE_UP;
@@ -71,15 +77,24 @@ export function CameraRig({ reducedMotion }: { reducedMotion: boolean }) {
     resetFocus();
 
     const { camera } = state;
+    // The end-of-shift reset is a cut back to the first stop: put the camera there at once, not glide
+    // there from the roundabout through the fade.
+    const { resetCount } = useDriveStore.getState();
+    if (resetCount !== seenReset.current) {
+      seenReset.current = resetCount;
+      placed.current = false;
+    }
     if (reducedMotion || !placed.current) {
       camera.position.copy(desired);
       placed.current = true;
     } else {
       const dt = Math.min(delta, MAX_DELTA);
+      // While the car turns round the camera follows more gently, so it swings round with it.
+      const rate = travel.turn ? TURN_RATE : FOLLOW_RATE;
       camera.position.set(
-        dampT(camera.position.x, desired.x, FOLLOW_RATE, dt),
-        dampT(camera.position.y, desired.y, FOLLOW_RATE, dt),
-        dampT(camera.position.z, desired.z, FOLLOW_RATE, dt),
+        dampT(camera.position.x, desired.x, rate, dt),
+        dampT(camera.position.y, desired.y, rate, dt),
+        dampT(camera.position.z, desired.z, rate, dt),
       );
     }
     camera.lookAt(lookAt);

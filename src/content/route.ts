@@ -10,7 +10,7 @@ import type { Route } from './schema';
  * TODO(content): owner to review the shape against real Winnipeg geography.
  */
 export const route: Route = {
-  lengthMetres: 1108.2,
+  lengthMetres: 1146.2,
   points: [
     // Exchange District: narrow streets, tight bends
     { x: 0, z: 0, width: 6, stopId: 'ignition' },
@@ -66,6 +66,10 @@ export const route: Route = {
     { x: 874.6, z: 429.5, width: 10 },
     { x: 884.7, z: 445.6, width: 10 },
     { x: 894.8, z: 461.7, width: 10, stopId: 'the-forks' },
+    // 38 m of road past The Forks stop: the lead-in to the roundabout the car loops at the end of the
+    // shift (src/scene/Road/roundabout.ts). The drive itself ends at the stop.
+    { x: 904.9, z: 477.8, width: 10 },
+    { x: 915, z: 493.9, width: 10 },
   ],
   // Side streets cross here, so the plowed ridge and the tree rows are broken. Each is measured
   // in metres from a stop, so it can sit between stops. Stops stay mid-block, except Portage &

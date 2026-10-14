@@ -24,10 +24,15 @@ function perform(action: DriveAction) {
  * - Key handling ignores modified key presses and anything that happened inside a focused control,
  *   so Tab, Enter, Space on a button, and screen reader commands behave normally.
  */
-export function useDriveInput(containerRef: RefObject<HTMLElement | null>, reducedMotion: boolean) {
+export function useDriveInput(
+  containerRef: RefObject<HTMLElement | null>,
+  reducedMotion: boolean,
+  /** False while something covers the drive (the loading screen): no input drives the car. */
+  enabled = true,
+) {
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || !enabled) return;
 
     let lastStepAt = -Infinity;
     const stepWithCooldown = (dir: 1 | -1) => {
@@ -88,5 +93,5 @@ export function useDriveInput(containerRef: RefObject<HTMLElement | null>, reduc
       container.removeEventListener('touchcancel', onTouchEnd);
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [containerRef, reducedMotion]);
+  }, [containerRef, reducedMotion, enabled]);
 }

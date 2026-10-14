@@ -42,6 +42,14 @@ export const simpleCopy: UiCopy = {
     contact: 'Contact details',
     projectDetails: 'Project details',
   },
+  intro: {
+    label: 'Ignition',
+    gauge: 'Fuel: engine start-up progress',
+    loading: 'Starting the engine… {n}%',
+    ready: 'Engine ready.',
+    start: 'Start Patrol',
+    skip: 'Skip to simple view',
+  },
   skills: { levelOf: 'Level {n} of 5', also: 'Also' },
   library: {
     catalog: 'Catalog',

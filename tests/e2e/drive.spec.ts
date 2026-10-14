@@ -11,7 +11,7 @@ const total = stops.length;
 // avoids post-processing, which is slow on the software renderer the CI runners use. The high and
 // medium tiers have their own render and accessibility checks below.
 async function openHome(page: Page, tier: 'high' | 'medium' | 'low' = 'low') {
-  await page.goto(`/?quality=${tier}`);
+  await page.goto(`/?quality=${tier}&intro=off`);
   await expect(page.locator('canvas')).toBeVisible();
 }
 
@@ -147,7 +147,7 @@ test.describe('quality override', () => {
       await countDrawCalls(page);
       const errors: string[] = [];
       page.on('pageerror', (error) => errors.push(error.message));
-      await page.goto(`/?quality=${tier}`);
+      await page.goto(`/?quality=${tier}&intro=off`);
       await expect(page.locator('canvas')).toBeVisible();
       await expect(status(page)).toContainText(`Stop 1 of ${total}`);
       await page.waitForTimeout(1500);

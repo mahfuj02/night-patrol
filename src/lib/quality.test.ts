@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
+  GRAIN_NIGHT,
+  GRAIN_SUNRISE,
   dprForTier,
   effectsForTier,
+  grainOpacity,
   isQualityTier,
   lowerTier,
   parseQualityParam,
@@ -71,5 +74,24 @@ describe('effectsForTier', () => {
       expect(calm.bloom).toBe(true);
       expect(calm.vignette).toBe(true);
     }
+  });
+});
+
+describe('grainOpacity', () => {
+  it('is the night strength in the dark and the sunrise strength at full sunrise, easing between', () => {
+    expect(grainOpacity(0)).toBe(GRAIN_NIGHT);
+    expect(grainOpacity(1)).toBeCloseTo(GRAIN_SUNRISE, 10);
+    expect(grainOpacity(0.5)).toBeCloseTo((GRAIN_NIGHT + GRAIN_SUNRISE) / 2, 10);
+  });
+
+  it('never exceeds the night strength, and clamps outside 0 to 1', () => {
+    expect(GRAIN_SUNRISE).toBeLessThan(GRAIN_NIGHT);
+    expect(grainOpacity(-3)).toBe(GRAIN_NIGHT);
+    expect(grainOpacity(9)).toBeCloseTo(GRAIN_SUNRISE, 10);
+    for (let k = 0; k <= 1; k += 0.1) expect(grainOpacity(k)).toBeLessThanOrEqual(GRAIN_NIGHT);
+  });
+
+  it('is weaker than it was (0.35) at every sunrise amount', () => {
+    expect(GRAIN_NIGHT).toBeLessThan(0.35);
   });
 });

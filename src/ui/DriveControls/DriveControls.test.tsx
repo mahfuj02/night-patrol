@@ -9,6 +9,8 @@ const state = () => useDriveStore.getState();
 
 describe('DriveControls', () => {
   beforeEach(() => {
+    // Another test may have left the end of the shift running.
+    useDriveStore.setState({ shift: 'idle' });
     state().goToStop(0);
   });
 
@@ -66,7 +68,7 @@ describe('DriveControls', () => {
     );
   });
 
-  it('turns Next into New patrol at the last stop, which starts the end-of-shift fade', async () => {
+  it('turns Next into New patrol at the last stop, which starts the end of the shift', async () => {
     const user = userEvent.setup();
     state().goToStop(stops.length - 1);
     render(<DriveControls />);
@@ -75,7 +77,7 @@ describe('DriveControls', () => {
     expect(button).toHaveAttribute('aria-disabled', 'false');
     expect(screen.getByRole('status')).toHaveTextContent('The Forks: End of shift');
     await user.click(button);
-    expect(state().shift).toBe('fading-out');
+    expect(state().shift).toBe('looping');
   });
 
   it('keeps focus on a button that becomes inert, and ignores its clicks', async () => {

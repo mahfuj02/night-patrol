@@ -5,7 +5,7 @@ import { stops } from '../../src/content';
 const map = (page: Page) => page.getByRole('navigation', { name: 'Route map' });
 
 async function openHome(page: Page) {
-  await page.goto('/?quality=low');
+  await page.goto('/?quality=low&intro=off');
   await expect(page.locator('canvas')).toBeVisible();
 }
 
