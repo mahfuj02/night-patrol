@@ -188,4 +188,21 @@ describe('StationWall', () => {
       expect(screen.queryByRole('complementary')).toBeNull();
     });
   });
+
+  describe('at The Forks market', () => {
+    it('shows the headline contact details as a picture only, with no sheet on a small screen', () => {
+      const stop = stops.findIndex((x) => x.id === 'the-forks');
+      act(() => useDriveStore.setState({ wallLegible: false }));
+      render(<StationWall />);
+      act(() => {
+        state().goToStop(stop);
+        state().openStation();
+        state().finishManeuver();
+      });
+      expect(wall()).toHaveAttribute('aria-hidden', 'true');
+      expect(wall()).toHaveAttribute('inert');
+      expect(wall()).toHaveTextContent('ahmedmahfujsy@gmail.com');
+      expect(screen.queryByRole('complementary')).toBeNull();
+    });
+  });
 });
