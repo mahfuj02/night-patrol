@@ -7,8 +7,8 @@ import type { AtmosphereZone } from './schema';
  * Zones must stay in route order; `pnpm test` checks that and that blends fit the gaps.
  *
  * t values (from stops.ts): city-services 0.194, portage-main 0.451, dashcam 0.744, the-forks 1.0.
- * The avenue and the Forks zones hang off The Forks stop by offset until the LIILAB office stop
- * exists (the Experience station adds it at about t 0.86, and the avenue then anchors on it).
+ * liilab-office 0.861. The avenue is anchored on the LIILAB office; the Forks zone hangs off The
+ * Forks stop by offset.
  * TODO(content): owner to tune the look of each zone by eye.
  */
 export const atmosphereZones: AtmosphereZone[] = [
@@ -69,10 +69,10 @@ export const atmosphereZones: AtmosphereZone[] = [
     // The avenue (the LIILAB office, then the Human Rights Museum and Esplanade Riel as scenery):
     // cool LED, clear night, snow stops, big moon.
     id: 'avenue',
-    from: 'the-forks',
-    to: 'the-forks',
-    startOffset: -0.235,
-    endOffset: -0.09,
+    from: 'liilab-office',
+    to: 'liilab-office',
+    startOffset: -0.095,
+    endOffset: 0.05,
     blend: 0.02,
     sky: { zenith: 'skyClearZenith', horizon: 'skyClearHorizon' },
     fog: { color: 'skyClearHorizon', near: 60, far: 320 },

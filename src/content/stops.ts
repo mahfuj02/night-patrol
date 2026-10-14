@@ -79,8 +79,16 @@ export const stops: Stop[] = [
     contentRef: 'safe-drive-ai',
   },
   {
-    id: 'the-forks',
+    id: 'liilab-office',
     order: 9,
+    t: 0.861,
+    title: 'LIILAB office',
+    landmark: 'liilab-office',
+    kind: 'section',
+  },
+  {
+    id: 'the-forks',
+    order: 10,
     t: 1,
     title: 'The Forks: End of shift',
     landmark: 'the-forks',

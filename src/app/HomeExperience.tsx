@@ -9,6 +9,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useWebGLSupport } from '@/hooks/useWebGLSupport';
 import { DriveControls } from '@/ui/DriveControls';
 import { Subtitles } from '@/ui/Hud';
+import { ExperiencePanel } from '@/ui/Experience';
 import { LibraryPanel } from '@/ui/Library';
 import { RouteMap } from '@/ui/RouteMap';
 import { SkillsPanel } from '@/ui/Skills';
@@ -64,6 +65,7 @@ export function HomeExperience() {
       <StationWall />
       <LibraryPanel />
       <SkillsPanel />
+      <ExperiencePanel />
       <Subtitles />
       <noscript>
         <Link href="/simple" className="text-hud fixed bottom-4 left-4 underline">

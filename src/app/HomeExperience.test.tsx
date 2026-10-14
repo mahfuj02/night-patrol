@@ -57,7 +57,7 @@ describe('HomeExperience', () => {
     });
     // The stop announcement is in the drive controls; the station and the panel have their own.
     const controls = screen.getByRole('navigation', { name: 'Patrol controls' });
-    expect(within(controls).getByRole('status')).toHaveTextContent('Stop 2 of 10: Dispatch');
+    expect(within(controls).getByRole('status')).toHaveTextContent('Stop 2 of 11: Dispatch');
   });
 
   it('drives with the wheel over the scene', () => {

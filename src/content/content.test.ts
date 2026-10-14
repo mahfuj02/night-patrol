@@ -41,7 +41,7 @@ const bundle = {
 
 describe('content data', () => {
   it('has one stop per route entry, in order', () => {
-    expect(stops).toHaveLength(10);
+    expect(stops).toHaveLength(11);
     expect(stops.map((s) => s.order)).toEqual(stops.map((_, i) => i));
   });
 
@@ -457,7 +457,13 @@ describe('stations', () => {
 
 describe('transit zones', () => {
   it('colour the route by zone, starting at the first stop and in route order', () => {
-    expect(transitZones.map((z) => z.id)).toEqual(['exchange', 'downtown', 'residential', 'forks']);
+    expect(transitZones.map((z) => z.id)).toEqual([
+      'exchange',
+      'downtown',
+      'residential',
+      'avenue',
+      'forks',
+    ]);
     expect(transitZones[0]!.fromStopId).toBe(stops[0]!.id);
     const orders = transitZones.map((z) => stops.find((s) => s.id === z.fromStopId)!.order);
     expect([...orders]).toEqual([...orders].sort((a, b) => a - b));

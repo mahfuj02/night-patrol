@@ -54,6 +54,8 @@ export const route: Route = {
     { x: 753.2, z: 300.7, width: 10 },
     { x: 767.4, z: 314.8, width: 10 },
     { x: 782.2, z: 328.2, width: 10 },
+    // The Experience station stop (the LIILAB office), 940 m along the route, on the third straight.
+    { x: 788, z: 333.5, width: 10, stopId: 'liilab-office' },
     { x: 797, z: 341.7, width: 10 },
     { x: 811.8, z: 355.2, width: 10 },
     { x: 826.6, z: 368.6, width: 10 },

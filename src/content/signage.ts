@@ -17,6 +17,9 @@ export const signage: Signage = {
   cityRooftop: 'City Services',
   // The lettering on the Millennium Library: plain words in our own type, no logo or crest.
   libraryLettering: 'Millennium Library',
+  // The sign on the LIILAB office (the owner's employer, where he worked in person): plain words in
+  // our own type, no logo or brand mark (rule 10).
+  officeSign: 'LIILAB · Sylhet, Bangladesh',
   // The board over its door: the sign wording comes from projects.ts; these are the three stages
   // a request moves through.
   requestBoard: { statuses: ['Received', 'In progress', 'Resolved'] },
