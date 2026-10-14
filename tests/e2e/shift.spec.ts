@@ -29,14 +29,21 @@ async function atTheEnd(page: Page) {
 }
 
 test.describe('end of shift', () => {
-  test('New patrol fades out and starts again at the first stop', async ({ page }) => {
-    test.setTimeout(400_000);
+  test('New patrol loops the roundabout, fades out and starts again at the first stop', async ({
+    page,
+  }) => {
+    test.setTimeout(600_000);
     await page.setViewportSize({ width: 1280, height: 800 });
     await atTheEnd(page);
     const button = page.getByRole('button', { name: 'New patrol ›' });
     await expect(button).toBeVisible();
     await button.click();
-    await expect(status(page)).toContainText(`Stop 1 of ${total}: Ignition`, { timeout: 60_000 });
+    // The car loops the roundabout with the caption up, and the Open button is not offered.
+    await expect(page.getByRole('region', { name: 'Dispatch radio' })).toContainText(
+      'New patrol starting.',
+    );
+    await expect(page.getByRole('button', { name: 'Open Contact' })).toHaveCount(0);
+    await expect(status(page)).toContainText(`Stop 1 of ${total}: Ignition`, { timeout: 240_000 });
     await expect(page.getByRole('button', { name: 'Next stop ›' })).toBeVisible();
     // The page keeps working: the veil takes no clicks and is gone.
     await expect(page.getByTestId('shift-fade')).toHaveAttribute('data-shift', 'idle');
