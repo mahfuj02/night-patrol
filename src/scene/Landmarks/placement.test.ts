@@ -99,7 +99,7 @@ describe('every landmark', () => {
   const crossings = routeModel.intersections;
 
   it.each(landmarkPlacements.map((p) => [p.stopId, p] as const))(
-    '%s stands on the left, clear of the intersections and of the road',
+    '%s stands on its side of the route, clear of the intersections and of the road',
     (_name, placement) => {
       const f = landmarkFrame(routeModel, placement);
       const at = (x: number, z: number) => {
@@ -110,7 +110,8 @@ describe('every landmark', () => {
         );
         return onRoute(p);
       };
-      expect(onRoute(f.position).across).toBeLessThan(0);
+      // Negative is the left of the route, positive the right.
+      expect(Math.sign(onRoute(f.position).across)).toBe(placement.side);
       const { min, max } = placement.reserved;
       for (const x of [min, max, (min + max) / 2]) {
         const front = at(x, -placement.depth / 2);

@@ -40,6 +40,8 @@ export const route: Route = {
     { x: 576.7, z: 147.7, width: 10 },
     { x: 594.2, z: 157.5, width: 10 },
     { x: 612.1, z: 166.4, width: 10 },
+    // The Skills station stop, 700 m along the route, on the second straight.
+    { x: 619.1, z: 169.8, width: 10, stopId: 'skills-station' },
     { x: 630, z: 175.2, width: 10 },
     { x: 647.9, z: 184.1, width: 10 },
     { x: 665.8, z: 193.2, width: 9 },

@@ -150,4 +150,25 @@ describe('StationWall', () => {
       expect(screen.queryByRole('complementary')).toBeNull();
     });
   });
+
+  describe('at the skills building', () => {
+    const SKILLS_STOP = stops.findIndex((x) => x.id === 'skills-station');
+    const parkAtSkills = () =>
+      act(() => {
+        state().goToStop(SKILLS_STOP);
+        state().openStation();
+        state().finishManeuver();
+      });
+
+    it('shows the groups as a picture only, with no sheet on a small screen', () => {
+      act(() => useDriveStore.setState({ wallLegible: false }));
+      render(<StationWall />);
+      parkAtSkills();
+      expect(wall()).toHaveAttribute('aria-hidden', 'true');
+      expect(wall()).toHaveAttribute('inert');
+      expect(wall()).toHaveTextContent('Backend');
+      expect(wall()).toHaveTextContent('TypeScript');
+      expect(screen.queryByRole('complementary')).toBeNull();
+    });
+  });
 });

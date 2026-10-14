@@ -41,7 +41,7 @@ const bundle = {
 
 describe('content data', () => {
   it('has one stop per route entry, in order', () => {
-    expect(stops).toHaveLength(9);
+    expect(stops).toHaveLength(10);
     expect(stops.map((s) => s.order)).toEqual(stops.map((_, i) => i));
   });
 

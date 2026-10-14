@@ -9,7 +9,7 @@ import { routeModel } from './route';
  */
 const STATION_SITES = [
   { id: 'millennium-library', at: 600 },
-  { id: 'skills', at: 700 },
+  { id: 'skills-station', at: 700 },
   { id: 'liilab-office', at: 940 },
 ] as const;
 

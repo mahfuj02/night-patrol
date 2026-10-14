@@ -40,4 +40,14 @@ export const stations: Station[] = [
     camera: { back: 7, up: 4.6, fov: 45 },
     wall: { landmark: 'millennium-library', rect: { x: 0, y: 1.6, z: -8, width: 12, height: 6 } },
   },
+  {
+    // The Skills building, on the right of the route: no single entry, the wall shows the skill groups.
+    id: 'skills',
+    section: 'skills',
+    stopId: 'skills-station',
+    light: { offset: -23 },
+    bay: { turn: 'right', depth: 3, width: 4.6, clearBefore: 12, clearAfter: 5 },
+    camera: { back: 7, up: 4.6, fov: 45 },
+    wall: { landmark: 'skills-station', rect: { x: 0, y: 1.6, z: -8, width: 12, height: 6 } },
+  },
 ];

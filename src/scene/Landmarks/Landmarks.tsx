@@ -5,6 +5,7 @@ import { ExchangeWarehouses } from './ExchangeWarehouses';
 import { MillenniumLibrary } from './MillenniumLibrary';
 import { RoleReadyTower } from './RoleReadyTower';
 import { RrcCampus } from './RrcCampus';
+import { SkillsBuilding } from './SkillsBuilding';
 import { Scenery } from './Scenery';
 
 /** Props every landmark component takes. */
@@ -24,6 +25,7 @@ export const landmarkComponents: Partial<
   'city-services': CityServices,
   'portage-main': RoleReadyTower,
   'millennium-library': MillenniumLibrary,
+  'skills-station': SkillsBuilding,
 };
 
 /** Draws every landmark that has been built, and the scenery (lit buildings with no stop). */

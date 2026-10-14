@@ -26,9 +26,9 @@ describe('DriveControls', () => {
     const user = userEvent.setup();
     render(<DriveControls />);
     await user.click(screen.getByRole('button', { name: 'Next stop ›' }));
-    expect(screen.getByRole('status')).toHaveTextContent('Stop 2 of 9: Dispatch');
+    expect(screen.getByRole('status')).toHaveTextContent('Stop 2 of 10: Dispatch');
     await user.click(screen.getByRole('button', { name: '‹ Prev' }));
-    expect(screen.getByRole('status')).toHaveTextContent('Stop 1 of 9: Ignition');
+    expect(screen.getByRole('status')).toHaveTextContent('Stop 1 of 10: Ignition');
   });
 
   it('moves one stop per Enter or Space press on a focused button', async () => {

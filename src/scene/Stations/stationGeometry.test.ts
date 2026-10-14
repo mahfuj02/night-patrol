@@ -108,3 +108,52 @@ describe('station geometry', () => {
     expect(stationFrames).toHaveLength(stations.length);
   });
 });
+
+describe.each(stationFrames.map((frame) => [frame.station.id, frame] as const))(
+  'the %s station, whichever side it is on',
+  (_id, frame) => {
+    const { geometry: g, station } = frame;
+    const side = station.bay.turn === 'left' ? -1 : 1;
+    const across = () => {
+      const c = routeModel.curve.getPointAt(g.bayU);
+      const t = routeModel.curve.getTangentAt(g.bayU);
+      return {
+        across: (g.car.x - c.x) * -t.z + (g.car.z - c.z) * t.x,
+        half: routeModel.widthAt(g.bayU) / 2,
+      };
+    };
+
+    it('parks on the side it turns to, clear of the road, facing the wall', () => {
+      const a = across();
+      expect(Math.sign(a.across)).toBe(side);
+      expect(Math.abs(a.across)).toBeGreaterThan(a.half + 1.2);
+      const [hx, hz] = headingVector(g.car.heading);
+      expect(hx * g.wall.normal.x + hz * g.wall.normal.z).toBeCloseTo(-1, 6);
+    });
+
+    it('puts the red light before the bay and the stop, 20 m or more before the stop', () => {
+      expect(frame.lightT).toBeLessThan(g.bayU);
+      expect(frame.lightT).toBeLessThan(frame.stopT);
+      const metres = (frame.stopT - frame.lightT) * routeModel.length;
+      expect(metres).toBeGreaterThanOrEqual(20 - 1e-6);
+      expect(metres).toBeLessThanOrEqual(25);
+    });
+
+    it('leaves no tree trunk or lamp pole in the bay, and clears the road edge round it', () => {
+      for (const tree of buildTrees(routeModel, 4)) {
+        expect(Math.hypot(tree.base.x - g.car.x, tree.base.z - g.car.z)).toBeGreaterThan(3);
+      }
+      for (const lamp of lamps) {
+        expect(Math.hypot(lamp.pole.x - g.car.x, lamp.pole.z - g.car.z)).toBeGreaterThan(3);
+      }
+      expect(routeModel.clearings.some((c) => c.id === `${station.id}-bay`)).toBe(true);
+    });
+
+    it('lays its pad from the road edge to the wall', () => {
+      expect(g.pad.dir.dot(g.wall.normal)).toBeCloseTo(-1, 6);
+      const end = g.pad.origin.clone().addScaledVector(g.pad.dir, g.pad.length);
+      const toWall = end.clone().sub(g.wall.centre).setY(0).dot(g.wall.normal);
+      expect(Math.abs(toWall)).toBeLessThan(0.05);
+    });
+  },
+);
