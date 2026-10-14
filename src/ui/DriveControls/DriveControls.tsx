@@ -19,6 +19,9 @@ export function DriveControls() {
   const atStop = useDriveStore((s) => s.atStop);
   const next = useDriveStore((s) => s.next);
   const prev = useDriveStore((s) => s.prev);
+  const startNewPatrol = useDriveStore((s) => s.startNewPatrol);
+  const shift = useDriveStore((s) => s.shift);
+  const inStation = useDriveStore((s) => s.station.phase !== 'idle');
   const stop = stops[stopIndex];
   const total = stops.length;
   const copy = simpleCopy.drive;
@@ -65,10 +68,10 @@ export function DriveControls() {
             type="button"
             className={buttonClass}
             data-drive-next
-            onClick={atLast ? undefined : next}
-            aria-disabled={atLast}
+            onClick={atLast ? startNewPatrol : next}
+            aria-disabled={atLast && (shift !== 'idle' || inStation)}
           >
-            {copy.next}
+            {atLast ? copy.newPatrol : copy.next}
           </button>
         </div>
         <p className="text-snow/80 hidden max-w-md text-center text-xs sm:block">{copy.hint}</p>

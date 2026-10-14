@@ -1,5 +1,5 @@
 import { useFrame } from '@react-three/fiber';
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { applyMagnet, dampT } from '@/lib/route';
 import { MAGNET_TS, useDriveStore } from '@/store/drive';
 import { progress } from './progress';
@@ -23,8 +23,17 @@ export function ProgressDriver({ reducedMotion }: { reducedMotion: boolean }) {
     progress.t = desiredProgress();
   }, []);
 
+  const seenReset = useRef(useDriveStore.getState().resetCount);
+
   useFrame((_, delta) => {
     const desired = desiredProgress();
+    // The end-of-shift reset is a cut back to the first stop, not a drive back along the route.
+    const { resetCount } = useDriveStore.getState();
+    if (resetCount !== seenReset.current) {
+      seenReset.current = resetCount;
+      progress.t = desired;
+      return;
+    }
     progress.t = reducedMotion
       ? desired
       : dampT(progress.t, desired, FOLLOW_RATE, Math.min(delta, MAX_DELTA));

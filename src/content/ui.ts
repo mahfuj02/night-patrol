@@ -14,6 +14,7 @@ export const simpleCopy: UiCopy = {
     navLabel: 'Patrol controls',
     prev: '‹ Prev',
     next: 'Next stop ›',
+    newPatrol: 'New patrol ›',
     simpleView: 'Simple view',
     enRoute: 'En route',
     atStop: 'Stop {n} of {total}: {title}',

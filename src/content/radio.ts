@@ -32,4 +32,11 @@ export const radioLines: RadioLine[] = [
     text: 'Dispatch, the wind at Portage and Main is doing its usual thing. Hold your hat.',
   },
   { id: 'shift-complete', stopId: 'the-forks', text: 'Shift complete.' },
+  {
+    // Shown while the view fades out and the drive starts again (stopId is where it starts).
+    id: 'new-patrol',
+    stopId: 'ignition',
+    // TODO(content): owner to tweak the wording.
+    text: 'New patrol starting.',
+  },
 ];

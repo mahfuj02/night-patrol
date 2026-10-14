@@ -341,6 +341,8 @@ export const UiCopySchema = z.object({
     navLabel: z.string(),
     prev: z.string(),
     next: z.string(),
+    /** The button at the last stop: it fades out and starts again from the first stop. */
+    newPatrol: z.string(),
     simpleView: z.string(),
     enRoute: z.string(),
     /** Placeholders: {n}, {total}, {title}. */
