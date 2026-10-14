@@ -60,3 +60,16 @@ export function effectsForTier(tier: QualityTier, reducedMotion: boolean): Effec
     multisampling: tier === 'high' ? 4 : 2,
   };
 }
+
+/** The film grain's strength on a dark night scene, and at the full sunrise (it is a lot in a bright one). */
+export const GRAIN_NIGHT = 0.22;
+export const GRAIN_SUNRISE = 0.05;
+
+/**
+ * Film grain strength for a sunrise amount from 0 (night) to 1 (full sunrise). Grain shows most on
+ * bright, flat snow, so it eases down as the sunrise comes up and the sky and snow brighten.
+ */
+export function grainOpacity(sunrise: number): number {
+  const k = Math.min(1, Math.max(0, sunrise));
+  return GRAIN_NIGHT + (GRAIN_SUNRISE - GRAIN_NIGHT) * k;
+}

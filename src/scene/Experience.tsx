@@ -4,6 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import { PerformanceMonitor } from '@react-three/drei';
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { parseProbeParam } from '@/lib/probe';
 import { dprForTier, parseQualityParam } from '@/lib/quality';
 import { palette } from '@/lib/palette';
 import { useQualityStore } from '@/store/quality';
@@ -12,6 +13,7 @@ import { Buildings } from './Buildings';
 import { Car } from './Car/Car';
 import { Effects } from './Effects/Effects';
 import { CameraRig } from './CameraRig';
+import { CarProbe } from './CarProbe';
 import { AtmosphereDriver } from './Environment/AtmosphereDriver';
 import { Trees } from './Environment/Trees';
 import { Ground } from './Environment/Ground';
@@ -41,6 +43,8 @@ export function Experience() {
   // ?quality=... pins the tier and turns off adaptation (for comparing and measuring tiers).
   const [pinnedTier] = useState(() => parseQualityParam(window.location.search));
   const tier = pinnedTier ?? storedTier;
+  // ?probe=on makes the scene write the car's position to the page, for the end-to-end tests.
+  const [probe] = useState(() => parseProbeParam(window.location.search));
 
   useEffect(() => {
     useQualityStore.getState().hydrate();
@@ -64,6 +68,7 @@ export function Experience() {
       <fog attach="fog" args={[palette.night, 40, 280]} />
 
       <LoadReporter />
+      {probe && <CarProbe />}
       <ProgressDriver reducedMotion={reducedMotion} />
       <StationDriver reducedMotion={reducedMotion} />
       <RoundaboutDriver />
