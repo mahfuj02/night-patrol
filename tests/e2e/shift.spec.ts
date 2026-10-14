@@ -12,7 +12,7 @@ const map = (page: Page) => page.getByRole('navigation', { name: 'Route map' });
 
 /** Drives to The Forks through the route map and leaves its station, so the car is at the last stop. */
 async function atTheEnd(page: Page) {
-  await page.goto('/?quality=low');
+  await page.goto('/?quality=low&intro=off');
   await expect(page.locator('canvas')).toBeVisible();
   if (!(await map(page).isVisible())) await page.getByRole('button', { name: 'Route map' }).click();
   await map(page)

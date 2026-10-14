@@ -16,7 +16,7 @@ const wall = (page: Page) =>
 const MANEUVER = 90_000;
 
 async function openHome(page: Page) {
-  await page.goto('/?quality=low');
+  await page.goto('/?quality=low&intro=off');
   await expect(page.locator('canvas')).toBeVisible();
 }
 
