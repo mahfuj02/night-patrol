@@ -406,6 +406,16 @@ export const UiCopySchema = z.object({
     contact: z.string(),
     projectDetails: z.string(),
   }),
+  intro: z.object({
+    /** The loading screen: its name, the gauge's accessible name and its status text. */
+    label: z.string(),
+    gauge: z.string(),
+    /** `{n}` is the percentage loaded. */
+    loading: z.string(),
+    ready: z.string(),
+    start: z.string(),
+    skip: z.string(),
+  }),
   skills: z.object({
     /** A skill's level as text: `{n}` is 1 to 5. */
     levelOf: z.string(),
