@@ -52,6 +52,13 @@ interface DriveState {
   station: StationState;
   /** False when the wall is too small on screen to read, so the content opens in the sheet too. */
   wallLegible: boolean;
+  /**
+   * The end-of-shift reset: `fading-out` (the view goes dark), then the car is put back at the first
+   * stop and the view `fading-in`, then `idle`. `resetCount` goes up at the cut so the scene snaps
+   * its progress instead of easing back along the whole route.
+   */
+  shift: 'idle' | 'fading-out' | 'fading-in';
+  resetCount: number;
   nudge: (delta: number) => void;
   next: () => void;
   prev: () => void;
@@ -62,6 +69,12 @@ interface DriveState {
   closeStation: () => void;
   finishManeuver: () => void;
   setWallLegible: (legible: boolean) => void;
+  /** At the last stop with the car out of its station: fade out and start again at the first stop. */
+  startNewPatrol: () => void;
+  /** The view is dark: cut back to the first stop and fade in. */
+  completeFadeOut: () => void;
+  /** The view is back: the reset is over. */
+  finishReset: () => void;
 }
 
 function derive(target: number) {
@@ -107,6 +120,8 @@ export const useDriveStore = create<DriveState>((set, get) => {
     station: INITIAL_STATION,
     pendingOpen: null,
     wallLegible: true,
+    shift: 'idle',
+    resetCount: 0,
     nudge: (delta) =>
       move(delta > 0 ? 1 : delta < 0 ? -1 : 0, () =>
         set({ ...derive(get().target + delta), pendingOpen: null }),
@@ -165,6 +180,26 @@ export const useDriveStore = create<DriveState>((set, get) => {
     },
     setWallLegible: (legible) => {
       if (get().wallLegible !== legible) set({ wallLegible: legible });
+    },
+    startNewPatrol: () => {
+      const { shift, atStop, stopIndex, station } = get();
+      if (shift !== 'idle' || station.phase !== 'idle') return;
+      if (!atStop || stopIndex !== stops.length - 1) return;
+      set({ shift: 'fading-out', pendingOpen: null });
+    },
+    completeFadeOut: () => {
+      if (get().shift !== 'fading-out') return;
+      set({
+        ...derive(0),
+        station: INITIAL_STATION,
+        pendingOpen: null,
+        wallLegible: true,
+        shift: 'fading-in',
+        resetCount: get().resetCount + 1,
+      });
+    },
+    finishReset: () => {
+      if (get().shift === 'fading-in') set({ shift: 'idle' });
     },
   };
 });
