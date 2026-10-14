@@ -10,6 +10,7 @@ import { WALL_DESIGN_WIDTH } from '@/lib/stationCamera';
 import { wallDom } from '@/lib/wallDom';
 import { useDriveStore } from '@/store/drive';
 import { CheckpointContent } from '../CheckpointPanel/CheckpointContent';
+import { ExperienceWall } from '../Experience/ExperienceWall';
 import { LibraryWall } from '../Library/LibraryWall';
 import { SkillsWall } from '../Skills/SkillsWall';
 
@@ -84,7 +85,13 @@ export function StationWall() {
       >
         {hasPanel ? (
           <div aria-hidden="true">
-            {shown?.section === 'skills' ? <SkillsWall /> : <LibraryWall />}
+            {shown?.section === 'skills' ? (
+              <SkillsWall />
+            ) : shown?.section === 'experience' ? (
+              <ExperienceWall />
+            ) : (
+              <LibraryWall />
+            )}
           </div>
         ) : content && wallAccessible ? (
           <section aria-labelledby={wallHeading}>
