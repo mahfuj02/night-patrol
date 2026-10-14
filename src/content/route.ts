@@ -10,7 +10,7 @@ import type { Route } from './schema';
  * TODO(content): owner to review the shape against real Winnipeg geography.
  */
 export const route: Route = {
-  lengthMetres: 1092.2,
+  lengthMetres: 1108.2,
   points: [
     // Exchange District: narrow streets, tight bends
     { x: 0, z: 0, width: 6, stopId: 'ignition' },
@@ -61,9 +61,11 @@ export const route: Route = {
     { x: 826.6, z: 368.6, width: 10 },
     { x: 841.1, z: 382.4, width: 10 },
     { x: 854.4, z: 397.3, width: 10 },
-    { x: 866.1, z: 413.5, width: 10 },
-    { x: 876.3, z: 430.7, width: 10 },
-    { x: 884.6, z: 448.9, width: 10, stopId: 'the-forks' },
+    // The last 75 m run straight, so the Contact station at The Forks gets a bay and a red light.
+    { x: 864.5, z: 413.4, width: 10 },
+    { x: 874.6, z: 429.5, width: 10 },
+    { x: 884.7, z: 445.6, width: 10 },
+    { x: 894.8, z: 461.7, width: 10, stopId: 'the-forks' },
   ],
   // Side streets cross here, so the plowed ridge and the tree rows are broken. Each is measured
   // in metres from a stop, so it can sit between stops. Stops stay mid-block, except Portage &
