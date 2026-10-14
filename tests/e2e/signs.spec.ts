@@ -10,7 +10,7 @@ const radio = (page: Page) => page.getByRole('region', { name: 'Dispatch radio' 
 // The low tier: these tests are about the words, not the looks, and it is the cheapest to render.
 async function driveTo(page: Page, stopId: string) {
   const index = stops.findIndex((s) => s.id === stopId);
-  await page.goto('/?quality=low');
+  await page.goto('/?quality=low&intro=off');
   await expect(page.locator('canvas')).toBeVisible();
   for (let i = 0; i < index; i++) await page.keyboard.press('PageDown');
   await expect(status(page)).toContainText(`Stop ${index + 1} of ${total}`);
@@ -41,7 +41,7 @@ test.describe('project signs at drive-by stops', () => {
   test('the project details are still one click away in the route map', async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto('/?quality=low');
+    await page.goto('/?quality=low&intro=off');
     await expect(page.locator('canvas')).toBeVisible();
     await page
       .getByRole('navigation', { name: 'Route map' })

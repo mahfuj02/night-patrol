@@ -10,7 +10,7 @@ const map = (page: Page) => page.getByRole('navigation', { name: 'Route map' });
 
 /** Opens the Experience station from the route map: the car drives there, turns right and parks. */
 async function openExperience(page: Page) {
-  await page.goto('/?quality=low');
+  await page.goto('/?quality=low&intro=off');
   await expect(page.locator('canvas')).toBeVisible();
   if (!(await map(page).isVisible())) await page.getByRole('button', { name: 'Route map' }).click();
   await map(page)
