@@ -11,6 +11,8 @@ const STATION_SITES = [
   { id: 'millennium-library', at: 600 },
   { id: 'skills-station', at: 700 },
   { id: 'liilab-office', at: 940 },
+  // The end of the route (1,108 m): the Contact station's bay and red light are in the last 50 m.
+  { id: 'the-forks', at: 1108 },
 ] as const;
 
 /** How far each side of the stop the road must stay straight: the reserved footprint and the bay. */
@@ -22,7 +24,7 @@ const MAX_BEND = 3.5;
 
 const L = routeModel.length;
 const heading = (metres: number) => {
-  const t = routeModel.curve.getTangentAt(metres / L);
+  const t = routeModel.curve.getTangentAt(Math.min(1, Math.max(0, metres / L)));
   return Math.atan2(t.z, t.x);
 };
 /** Turn over 30 m centred on `metres`, in degrees. */

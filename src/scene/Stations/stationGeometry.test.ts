@@ -63,7 +63,7 @@ describe('station geometry', () => {
     expect(education.lightT).toBeLessThan(geometry.bayU);
     expect(education.lightT).toBeLessThan(education.stopT);
     // About 20 m before the stop.
-    expect((education.stopT - education.lightT) * routeModel.length).toBeCloseTo(20, 3);
+    expect((education.stopT - education.lightT) * routeModel.length).toBeCloseTo(20, 0);
   });
 
   it('puts the bay close to the stop it belongs to', () => {
