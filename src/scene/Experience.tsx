@@ -16,6 +16,7 @@ import { AtmosphereDriver } from './Environment/AtmosphereDriver';
 import { Trees } from './Environment/Trees';
 import { Ground } from './Environment/Ground';
 import { Landmarks } from './Landmarks';
+import { LoadReporter } from './LoadReporter';
 import { Sky } from './Environment/Sky';
 import { Snow } from './Environment/Snow';
 import { ProgressDriver } from './ProgressDriver';
@@ -60,6 +61,7 @@ export function Experience() {
       <color attach="background" args={[palette.night]} />
       <fog attach="fog" args={[palette.night, 40, 280]} />
 
+      <LoadReporter />
       <ProgressDriver reducedMotion={reducedMotion} />
       <StationDriver reducedMotion={reducedMotion} />
       <StationWalls />
