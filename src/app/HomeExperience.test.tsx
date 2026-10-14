@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDriveStore } from '@/store/drive';
+import { useIntroStore } from '@/store/intro';
 import { HomeExperience } from './HomeExperience';
 
 const webgl = vi.hoisted(() => ({ value: true as boolean | null }));
@@ -19,6 +20,8 @@ const state = () => useDriveStore.getState();
 describe('HomeExperience', () => {
   beforeEach(() => {
     webgl.value = true;
+    // Most tests are about the drive, so start past the loading screen.
+    useIntroStore.getState().start();
     state().goToStop(0);
   });
 
@@ -78,5 +81,33 @@ describe('HomeExperience', () => {
     expect(next).toHaveFocus();
     await user.keyboard(' ');
     expect(state().stopIndex).toBe(1);
+  });
+
+  describe('the Ignition loading screen', () => {
+    it('covers the page and makes the controls inert until Start Patrol', () => {
+      useIntroStore.getState().reset();
+      render(<HomeExperience />);
+      expect(screen.getByTestId('loading-screen')).toHaveAttribute('data-phase', 'loading');
+      const controls = screen.getByRole('navigation', { name: 'Patrol controls', hidden: true });
+      expect(controls.closest('[inert]')).not.toBeNull();
+      act(() => useIntroStore.getState().start());
+      expect(controls.closest('[inert]')).toBeNull();
+    });
+
+    it('does not drive the car from the keyboard while it is up', async () => {
+      const user = userEvent.setup();
+      useIntroStore.getState().reset();
+      render(<HomeExperience />);
+      await user.keyboard('{ArrowDown}{ArrowDown}{PageDown}');
+      expect(state().stopIndex).toBe(0);
+      expect(state().target).toBe(0);
+    });
+
+    it('is not shown without WebGL', () => {
+      useIntroStore.getState().reset();
+      webgl.value = false;
+      render(<HomeExperience />);
+      expect(screen.queryByTestId('loading-screen')).toBeNull();
+    });
   });
 });

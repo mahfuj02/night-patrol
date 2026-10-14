@@ -7,8 +7,10 @@ import { simpleCopy } from '@/content/ui';
 import { useDriveInput } from '@/hooks/useDriveInput';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useWebGLSupport } from '@/hooks/useWebGLSupport';
+import { useIntroStore } from '@/store/intro';
 import { DriveControls } from '@/ui/DriveControls';
 import { ShiftFade, Subtitles } from '@/ui/Hud';
+import { LoadingScreen } from '@/ui/Ignition';
 import { ContactPanel } from '@/ui/Contact';
 import { ExperiencePanel } from '@/ui/Experience';
 import { LibraryPanel } from '@/ui/Library';
@@ -32,7 +34,9 @@ export function HomeExperience() {
   const webgl = useWebGLSupport();
   const reducedMotion = useReducedMotion();
   const container = useRef<HTMLDivElement>(null);
-  useDriveInput(container, reducedMotion);
+  // While the Ignition loading screen is up nothing drives the car and the page behind it is inert.
+  const introActive = useIntroStore((s) => s.phase !== 'started') && webgl === true;
+  useDriveInput(container, reducedMotion, !introActive);
 
   if (webgl === false) {
     return (
@@ -60,16 +64,19 @@ export function HomeExperience() {
           </p>
         )}
       </div>
-      <DriveControls />
-      <StationControls />
-      <RouteMap />
-      <StationWall />
-      <LibraryPanel />
-      <SkillsPanel />
-      <ExperiencePanel />
-      <ContactPanel />
-      <Subtitles />
-      <ShiftFade />
+      {webgl === true && <LoadingScreen />}
+      <div inert={introActive} className="contents">
+        <DriveControls />
+        <StationControls />
+        <RouteMap />
+        <StationWall />
+        <LibraryPanel />
+        <SkillsPanel />
+        <ExperiencePanel />
+        <ContactPanel />
+        <Subtitles />
+        <ShiftFade />
+      </div>
       <noscript>
         <Link href="/simple" className="text-hud fixed bottom-4 left-4 underline">
           {copy.home.simpleLink}
