@@ -15,6 +15,8 @@ export const signage: Signage = {
   },
   // The City services building: plain words in our own type, no city logo or crest.
   cityRooftop: 'City Services',
+  // The lettering on the Millennium Library: plain words in our own type, no logo or crest.
+  libraryLettering: 'Millennium Library',
   // The board over its door: the sign wording comes from projects.ts; these are the three stages
   // a request moves through.
   requestBoard: { statuses: ['Received', 'In progress', 'Resolved'] },

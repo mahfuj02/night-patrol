@@ -14,7 +14,8 @@ import type { Station } from './schema';
  * - `camera`: the parked view, behind the car: metres back, metres up and the field of view.
  * - `wall`: the landmark whose wall is lit, and the lit rectangle on that wall in the landmark's
  *   own frame (`x` along the wall, `y` up, `z` the plane the rectangle lies on).
- * - `contentRef` and `teaserRef`: what the wall shows, from `experience.ts` or `projects.ts`.
+ * - `contentRef` and `teaserRef`: what the wall shows, from `experience.ts` or `projects.ts` (the
+ *   library has none: its wall lists the books).
  * TODO(content): add the Education courses (the entry has none yet).
  */
 export const stations: Station[] = [
@@ -28,5 +29,15 @@ export const stations: Station[] = [
     wall: { landmark: 'rrc-campus', rect: { x: -4, y: 1.7, z: -5, width: 9, height: 4.5 } },
     contentRef: 'rrc-diploma',
     teaserRef: 'sprint-innovation-2025',
+  },
+  {
+    // The Millennium Library: no single entry, the wall lists the books (see library.ts).
+    id: 'projects',
+    section: 'projects',
+    stopId: 'millennium-library',
+    light: { offset: -23 },
+    bay: { turn: 'left', depth: 3, width: 4.6, clearBefore: 12, clearAfter: 5 },
+    camera: { back: 7, up: 4.6, fov: 45 },
+    wall: { landmark: 'millennium-library', rect: { x: 0, y: 1.6, z: -8, width: 12, height: 6 } },
   },
 ];

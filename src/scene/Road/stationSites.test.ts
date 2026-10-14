@@ -61,6 +61,8 @@ describe('station sites', () => {
         expect(clear, `${site.id} vs ${crossing.id}`).toBe(true);
       }
       for (const [stopId, fraction] of routeModel.stopFractions) {
+        // A site's own stop (the Library's, once it exists) stands at the site.
+        if (stopId === site.id) continue;
         expect(Math.abs(fraction * L - site.at), `${site.id} vs ${stopId}`).toBeGreaterThan(
           HALF_LENGTH + 10,
         );

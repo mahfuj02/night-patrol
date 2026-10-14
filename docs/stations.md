@@ -50,3 +50,7 @@ When the wall is too small to read (its on-screen width is under `MIN_WALL_SCALE
 ## Cost
 
 One extra draw call for the pad's road patch (merged into the cross street mesh, so none), one for the lit-area rectangle while it is lit, and the station light's lamps (merged into the signal meshes). The wall DOM costs nothing on the GPU. Measured numbers are in the PR.
+
+## The Projects station
+
+A station may have no single entry of its own: the Projects station (the Millennium Library) leaves `contentRef` out, its wall shows a stack of titles as a picture, and a DOM panel is the accessible interface. See [library.md](library.md).

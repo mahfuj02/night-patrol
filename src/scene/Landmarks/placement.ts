@@ -76,12 +76,26 @@ export const roleReadyPlacement: LandmarkPlacement = {
   reserved: { min: -13, max: 13 },
 };
 
+/**
+ * The Millennium Library: on the left of the route on the first straight after Portage & Main,
+ * about 600 m along. A wide glazed front with a lit lobby (the Projects station parks in front of it).
+ */
+export const libraryPlacement: LandmarkPlacement = {
+  stopId: 'millennium-library',
+  offset: 0,
+  side: -1,
+  depth: 16,
+  setback: 7.5,
+  reserved: { min: -22, max: 22 },
+};
+
 /** Every landmark that stands on the route, so ordinary buildings can leave its ground free. */
 export const landmarkPlacements: readonly LandmarkPlacement[] = [
   rrcPlacement,
   warehousesPlacement,
   cityServicesPlacement,
   roleReadyPlacement,
+  libraryPlacement,
 ];
 
 /**

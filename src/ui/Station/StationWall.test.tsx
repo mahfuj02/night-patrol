@@ -123,4 +123,31 @@ describe('StationWall', () => {
     act(() => state().finishManeuver());
     expect(wall()).toHaveAttribute('aria-hidden', 'true');
   });
+
+  describe('at the library', () => {
+    const LIBRARY_STOP = stops.findIndex((x) => x.id === 'millennium-library');
+    const parkAtLibrary = () =>
+      act(() => {
+        state().goToStop(LIBRARY_STOP);
+        state().openStation();
+        state().finishManeuver();
+      });
+
+    it('shows the stack of titles as a picture only, since the accessible shelf is the panel', () => {
+      render(<StationWall />);
+      parkAtLibrary();
+      expect(wall()).toHaveAttribute('aria-hidden', 'true');
+      expect(wall()).toHaveAttribute('inert');
+      expect(wall()).toHaveTextContent('WEB-01');
+      expect(wall()).toHaveTextContent('EventFlow');
+      expect(screen.queryByRole('region')).toBeNull();
+    });
+
+    it('opens no sheet on a small screen (the library panel is its own sheet)', () => {
+      act(() => useDriveStore.setState({ wallLegible: false }));
+      render(<StationWall />);
+      parkAtLibrary();
+      expect(screen.queryByRole('complementary')).toBeNull();
+    });
+  });
 });

@@ -5,6 +5,8 @@ import type { Project } from './schema';
 export const allProjects: Project[] = [
   {
     id: 'eventflow',
+    // TODO(content): owner to confirm the shelf.
+    category: 'web',
     name: 'EventFlow',
     tagline: 'Scoped ticketing and CRM platform for events.',
     problem: 'Event organisers need ticketing and attendee management in one place.',
@@ -36,6 +38,8 @@ export const allProjects: Project[] = [
   },
   {
     id: 'civictrack',
+    // TODO(content): owner to confirm the shelf.
+    category: 'web',
     name: 'CivicTrack',
     tagline: '311-style civic service request tracker.',
     problem: 'Residents need a clear way to report and follow city service requests.',
@@ -53,6 +57,8 @@ export const allProjects: Project[] = [
   },
   {
     id: 'roleready',
+    // TODO(content): owner to confirm the shelf.
+    category: 'ai',
     name: 'RoleReady',
     tagline: 'AI-powered interview prep platform.',
     problem: 'Job seekers need realistic interview practice with useful feedback.',
@@ -76,6 +82,8 @@ export const allProjects: Project[] = [
   },
   {
     id: 'safe-drive-ai',
+    // TODO(content): owner to confirm the shelf.
+    category: 'mobile',
     name: 'Safe Drive AI',
     tagline: 'Mobile app that includes speed monitoring.',
     // TODO(content): verify; this was written when the project was a dashcam app.
@@ -99,6 +107,8 @@ export const allProjects: Project[] = [
   },
   {
     id: 'akari',
+    // TODO(content): owner to confirm the shelf.
+    category: 'systems',
     name: 'Akari Puzzle Game',
     tagline: 'A Light Up logic puzzle game.',
     problem: 'A classic logic puzzle, rebuilt as a playable game.',
@@ -111,6 +121,8 @@ export const allProjects: Project[] = [
   },
   {
     id: 'site-audit-extension',
+    // TODO(content): owner to confirm the shelf.
+    category: 'web',
     name: 'Site Audit Extension',
     tagline: 'A debugger-style browser extension for reviewing sites.',
     problem: 'Reviewing a site page by page is slow, and issues are hard to trace back to code.',
@@ -123,6 +135,8 @@ export const allProjects: Project[] = [
   },
   {
     id: 'game-hub',
+    // TODO(content): owner to confirm the shelf.
+    category: 'web',
     name: 'Game Hub',
     tagline: 'A React practice project.',
     problem: 'A hands-on project for practising React with TypeScript.',
@@ -137,6 +151,8 @@ export const allProjects: Project[] = [
   },
   {
     id: 'av-device-controller',
+    // TODO(content): owner to confirm the shelf.
+    category: 'systems',
     name: 'AV Device Controller',
     tagline: 'C++17 command-line system simulating control of AV displays in a venue.',
     problem:
@@ -153,6 +169,8 @@ export const allProjects: Project[] = [
   {
     // A library book only: no route stop.
     id: 'connexions-spectrum',
+    // TODO(content): owner to confirm the shelf.
+    category: 'mobile',
     name: 'Connexions Spectrum',
     tagline: 'A mobile app built with React Native.',
     // TODO(content): owner to describe the problem and what was built; the case study has the detail.

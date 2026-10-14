@@ -12,6 +12,7 @@ Each file exports plain typed data. `src/content/index.ts` parses every file wit
 | File            | Holds                                                                                                                                                          |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `profile.ts`    | Name, role, pitch, contact links, resume URL (on mahfuj.dev)                                                                                                   |
+| `library.ts`    | The library's shelves (labels, order, call prefixes) and the featured project                                                                                  |
 | `projects.ts`   | Projects. `stopId` is optional; projects without one are library books and `/simple` only. `published: false` hides a project everywhere until it is published |
 | `skills.ts`     | Skills by category (web, backend, embedded, ai, mobile)                                                                                                        |
 | `experience.ts` | Patrol log: work, education, achievements                                                                                                                      |

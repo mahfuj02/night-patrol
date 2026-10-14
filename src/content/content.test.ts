@@ -9,6 +9,7 @@ import {
   stations,
   transitZones,
   experience,
+  library,
   profile,
   projects,
   radioLines,
@@ -28,6 +29,7 @@ const bundle = {
   atmosphere: atmosphereZones,
   buildings: buildingStretches,
   stations,
+  library,
   transitZones,
   route,
   stops,
@@ -39,7 +41,7 @@ const bundle = {
 
 describe('content data', () => {
   it('has one stop per route entry, in order', () => {
-    expect(stops).toHaveLength(8);
+    expect(stops).toHaveLength(9);
     expect(stops.map((s) => s.order)).toEqual(stops.map((_, i) => i));
   });
 
@@ -314,6 +316,44 @@ describe('project images', () => {
         ProjectSchema.safeParse({ ...base, images: [{ src, alt: 'A picture' }] }).success,
       ).toBe(false);
     }
+  });
+});
+
+describe('library', () => {
+  it('has four shelves in order, each with its own call prefix, and features EventFlow', () => {
+    expect(library.categories.map((k) => k.id)).toEqual(['web', 'mobile', 'systems', 'ai']);
+    expect(library.categories.map((k) => k.prefix)).toEqual(['WEB', 'MOB', 'SYS', 'AI']);
+    expect(library.featured).toBe('eventflow');
+  });
+
+  it('puts every project on a shelf', () => {
+    const shelves = library.categories.map((k) => k.id);
+    for (const project of allProjects) expect(shelves).toContain(project.category);
+  });
+
+  it('is the Projects station, on the library stop, with no single entry on its wall', () => {
+    const station = stations.find((s) => s.section === 'projects')!;
+    expect(station.stopId).toBe('millennium-library');
+    expect(station.contentRef).toBeUndefined();
+    expect(signage.libraryLettering).toBe('Millennium Library');
+  });
+
+  it('reports an unknown featured project, a project with no shelf and duplicate prefixes', () => {
+    const broken = {
+      ...bundle,
+      library: {
+        featured: 'nothing',
+        categories: [
+          { id: 'web' as const, label: 'Web', prefix: 'X' + 'XX' },
+          { id: 'mobile' as const, label: 'Mobile', prefix: 'XXX' },
+          { id: 'systems' as const, label: 'Systems', prefix: 'SYS' },
+        ],
+      },
+    };
+    const problems = findContentProblems(broken).join(' | ');
+    expect(problems).toContain('featured project nothing');
+    expect(problems).toContain('no library shelf for category ai');
+    expect(problems).toContain('Duplicate library call prefix');
   });
 });
 

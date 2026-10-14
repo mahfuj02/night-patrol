@@ -1,6 +1,8 @@
 # Navigation redesign
 
-> **Status:** the station arrival pattern and the Education station are built (Phase 5b); see [docs/stations.md](stations.md) for how. The transit-map menu is built too (Phase 5c, [docs/routemap.md](routemap.md)). Drive-by project stops are lit signs with a slogan, not popups (see [docs/adding-a-stop.md](adding-a-stop.md)); the project details live in the route map and the library. The route has been simplified (see [Simplified route](#simplified-route)). The other stations follow.
+> **Status:** the Millennium Library's building and interface are built (Phase 5e part 1, see [docs/library.md](library.md)); the interior is part 2.
+>
+> **Earlier status:** the station arrival pattern and the Education station are built (Phase 5b); see [docs/stations.md](stations.md) for how. The transit-map menu is built too (Phase 5c, [docs/routemap.md](routemap.md)). Drive-by project stops are lit signs with a slogan, not popups (see [docs/adding-a-stop.md](adding-a-stop.md)); the project details live in the route map and the library. The route has been simplified (see [Simplified route](#simplified-route)). The other stations follow.
 
 How visitors move through Night Patrol and read its content: five **section stations** the car parks at, a **transit-map menu** that replaces the Phase 8 mini-map, and the changes to the plan, the code already built and the phase order. This is a plan, not built.
 

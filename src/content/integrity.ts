@@ -7,6 +7,7 @@ import type {
   Project,
   RadioLine,
   Route,
+  Library,
   Station,
   Stop,
   TransitZone,
@@ -16,6 +17,7 @@ export interface ContentBundle {
   atmosphere: AtmosphereZone[];
   buildings: BuildingStretch[];
   stations: Station[];
+  library: Library;
   transitZones: TransitZone[];
   route: Route;
   stops: Stop[];
@@ -86,6 +88,24 @@ export function findContentProblems(c: ContentBundle): string[] {
     'station section',
     c.stations.map((s) => s.section),
   );
+  // The library: every shelf exists once, every project is on a known shelf, the featured book exists.
+  checkDuplicates(
+    'library shelf',
+    c.library.categories.map((k) => k.id),
+  );
+  checkDuplicates(
+    'library call prefix',
+    c.library.categories.map((k) => k.prefix),
+  );
+  const shelves = new Set(c.library.categories.map((k) => k.id));
+  for (const project of c.projects) {
+    if (!shelves.has(project.category)) {
+      problems.push(`Project ${project.id}: no library shelf for category ${project.category}`);
+    }
+  }
+  if (!c.projects.some((p) => p.id === c.library.featured)) {
+    problems.push(`Library: the featured project ${c.library.featured} is not a published project`);
+  }
   for (const station of c.stations) {
     if (!stopsById.has(station.stopId)) {
       problems.push(`Station ${station.id}: unknown stop ${station.stopId}`);
