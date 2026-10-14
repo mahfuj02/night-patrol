@@ -61,4 +61,15 @@ export const stations: Station[] = [
     wall: { landmark: 'liilab-office', rect: { x: 0, y: 1.6, z: -7, width: 12, height: 6 } },
     entryRefs: ['liilab', 'industrial-project', 'sprint-innovation-2025'],
   },
+  {
+    // The market building at The Forks, at the end of the route, on the right: no single entry, the
+    // wall shows the headline contact details.
+    id: 'contact',
+    section: 'contact',
+    stopId: 'the-forks',
+    light: { offset: -23 },
+    bay: { turn: 'right', depth: 3, width: 4.6, clearBefore: 12, clearAfter: 5 },
+    camera: { back: 7, up: 4.6, fov: 45 },
+    wall: { landmark: 'the-forks', rect: { x: 0, y: 1.2, z: -6, width: 12, height: 4.4 } },
+  },
 ];

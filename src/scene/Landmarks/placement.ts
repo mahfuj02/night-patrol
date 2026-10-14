@@ -116,6 +116,19 @@ export const officePlacement: LandmarkPlacement = {
   reserved: { min: -16, max: 16 },
 };
 
+/**
+ * The market building at The Forks, the end of the route: on the RIGHT, standing just before the
+ * route's last point so the car parks in front of it. The Contact station parks in front of it.
+ */
+export const forksPlacement: LandmarkPlacement = {
+  stopId: 'the-forks',
+  offset: -2,
+  side: 1,
+  depth: 16,
+  setback: 7.5,
+  reserved: { min: -20, max: 20 },
+};
+
 /** Every landmark that stands on the route, so ordinary buildings can leave its ground free. */
 export const landmarkPlacements: readonly LandmarkPlacement[] = [
   rrcPlacement,
@@ -125,6 +138,7 @@ export const landmarkPlacements: readonly LandmarkPlacement[] = [
   libraryPlacement,
   skillsPlacement,
   officePlacement,
+  forksPlacement,
 ];
 
 /**

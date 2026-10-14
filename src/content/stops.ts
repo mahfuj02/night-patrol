@@ -16,7 +16,7 @@ export const stops: Stop[] = [
   {
     id: 'rrc-campus',
     order: 2,
-    t: 0.083,
+    t: 0.082,
     title: 'RRC Polytechnic, Exchange District Campus',
     landmark: 'rrc-campus',
     kind: 'education',
@@ -26,7 +26,7 @@ export const stops: Stop[] = [
   {
     id: 'exchange-warehouses',
     order: 3,
-    t: 0.138,
+    t: 0.136,
     title: 'Exchange District warehouses',
     landmark: 'exchange-warehouses',
     kind: 'project',
@@ -36,7 +36,7 @@ export const stops: Stop[] = [
   {
     id: 'city-services',
     order: 4,
-    t: 0.194,
+    t: 0.191,
     title: 'City services building',
     landmark: 'city-services',
     kind: 'project',
@@ -46,7 +46,7 @@ export const stops: Stop[] = [
   {
     id: 'portage-main',
     order: 5,
-    t: 0.451,
+    t: 0.444,
     title: 'Portage & Main',
     landmark: 'portage-main',
     kind: 'project',
@@ -56,7 +56,7 @@ export const stops: Stop[] = [
   {
     id: 'millennium-library',
     order: 6,
-    t: 0.549,
+    t: 0.541,
     title: 'Millennium Library',
     landmark: 'millennium-library',
     kind: 'section',
@@ -64,7 +64,7 @@ export const stops: Stop[] = [
   {
     id: 'skills-station',
     order: 7,
-    t: 0.641,
+    t: 0.632,
     title: 'Skills station',
     landmark: 'skills-station',
     kind: 'section',
@@ -72,7 +72,7 @@ export const stops: Stop[] = [
   {
     id: 'dashcam',
     order: 8,
-    t: 0.744,
+    t: 0.733,
     title: 'Dashcam moment',
     landmark: 'dashcam',
     kind: 'project',
@@ -81,7 +81,7 @@ export const stops: Stop[] = [
   {
     id: 'liilab-office',
     order: 9,
-    t: 0.861,
+    t: 0.848,
     title: 'LIILAB office',
     landmark: 'liilab-office',
     kind: 'section',

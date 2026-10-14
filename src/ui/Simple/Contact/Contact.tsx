@@ -1,26 +1,16 @@
 import { simpleCopy } from '@/content/ui';
 import type { Profile } from '@/content/schema';
+import { contactItems } from '@/lib/contact';
 import { h2Class, linkClass, sectionClass } from '../styles';
 
 export function Contact({ profile }: { profile: Profile }) {
-  const items = [
-    { label: simpleCopy.links.email, href: `mailto:${profile.email}`, text: profile.email },
-    {
-      label: simpleCopy.links.linkedin,
-      href: profile.links.linkedin,
-      text: profile.links.linkedin,
-    },
-    {
-      label: simpleCopy.links.githubProfile,
-      href: profile.links.github,
-      text: profile.links.github,
-    },
-    {
-      label: simpleCopy.links.portfolio,
-      href: profile.links.portfolio,
-      text: profile.links.portfolio,
-    },
-  ];
+  const labels = {
+    email: simpleCopy.links.email,
+    linkedin: simpleCopy.links.linkedin,
+    github: simpleCopy.links.githubProfile,
+    portfolio: simpleCopy.links.portfolio,
+  } as const;
+  const items = contactItems(profile).map((item) => ({ ...item, label: labels[item.id] }));
   return (
     <section aria-labelledby="contact-heading" className={sectionClass}>
       <h2 id="contact-heading" className={h2Class}>

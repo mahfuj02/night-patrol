@@ -2,6 +2,7 @@ import type { ComponentType } from 'react';
 import type { LandmarkId } from '@/content/schema';
 import { CityServices } from './CityServices';
 import { ExchangeWarehouses } from './ExchangeWarehouses';
+import { ForksMarket } from './ForksMarket';
 import { MillenniumLibrary } from './MillenniumLibrary';
 import { OfficeBuilding } from './OfficeBuilding';
 import { RoleReadyTower } from './RoleReadyTower';
@@ -28,6 +29,7 @@ export const landmarkComponents: Partial<
   'millennium-library': MillenniumLibrary,
   'skills-station': SkillsBuilding,
   'liilab-office': OfficeBuilding,
+  'the-forks': ForksMarket,
 };
 
 /** Draws every landmark that has been built, and the scenery (lit buildings with no stop). */

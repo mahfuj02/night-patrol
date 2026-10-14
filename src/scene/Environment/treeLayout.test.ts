@@ -30,8 +30,8 @@ describe('buildTrees', () => {
   });
 
   it('follows the zone density: dense on the avenue, almost none downtown', () => {
-    expect(count(0.738, 0.798)).toBeGreaterThan(count(0.44, 0.61));
-    expect(count(0.738, 0.798)).toBeGreaterThanOrEqual(5);
+    expect(count(0.76, 0.84)).toBeGreaterThan(count(0.44, 0.61));
+    expect(count(0.76, 0.84)).toBeGreaterThanOrEqual(5);
     expect(count(0.44, 0.61)).toBeLessThanOrEqual(4);
   });
 
