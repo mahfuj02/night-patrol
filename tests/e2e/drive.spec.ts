@@ -85,10 +85,9 @@ test.describe('drive (WebGL)', () => {
     await expect(status(page)).toContainText(
       `Stop ${total} of ${total}: ${stops[total - 1]!.title}`,
     );
-    await expect(page.getByRole('button', { name: 'Next stop ›' })).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
+    // At the end the Next button becomes New patrol (see shift.spec.ts).
+    await expect(page.getByRole('button', { name: 'New patrol ›' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Next stop ›' })).toHaveCount(0);
   });
 
   test('Next and Prev buttons work with the mouse', async ({ page }) => {
