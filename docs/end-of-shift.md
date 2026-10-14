@@ -10,7 +10,7 @@ How the drive ends and starts again (Phase 7a and 7c): the roundabout at The For
 4. With the car back on the road, the view fades to black (800 ms). While it is dark the car is put back at the first stop with a **cut**: the scene snaps its progress to the start, so it never drives back along the whole route. Any station state and pending station open are cleared.
 5. The view fades back in (800 ms) at the first stop, and the drive controls say "Stop 1 of 11: Ignition".
 
-Under **reduced motion** there is no lap and no veil at all: the reset runs at once and the view cuts. A lap the scene never finishes (a very slow machine) is ended after 70 s so the shift cannot hang.
+Under **reduced motion** there is no lap and no veil at all: the reset runs at once and the view cuts. A lap the scene never finishes (a very slow machine) is ended after two minutes so the shift cannot hang.
 
 Scrolling back mid-route does not reset; that is the Phase 8 U-turn.
 
