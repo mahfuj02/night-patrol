@@ -21,8 +21,9 @@ The Contact station is the fifth and last section station (Phase 5h). The car pa
 
 ## The route here
 
+The road runs 38 m past The Forks stop, to the roundabout the car loops at the end of the shift ([end-of-shift.md](end-of-shift.md)); the drive itself ends at the stop, so the Contact station is unchanged.
 The last 75 m of the road run straight so the station has a bay and a red light (`stationSites.test.ts` keeps them straight). That changed the end of the route, so the route is 1,108 m long (it was 1,092 m) and every stop's `t` moved a little. The Phase 7 roundabout and end-of-shift loop will reshape the end again; the station's data is measured from the stop, so it follows.
 
-## Still to come in Phase 7
+## Rest of Phase 7
 
-The loading screen, the roundabout, the sunrise and the reset to the first stop.
+The loading screen ([ignition.md](ignition.md)), the roundabout and the reset to the first stop ([end-of-shift.md](end-of-shift.md)) are built. The frozen-river skating trail with lights at The Forks is not (it would be scenery).

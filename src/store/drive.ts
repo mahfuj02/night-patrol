@@ -13,6 +13,12 @@ import {
 
 export const STOP_TS: readonly number[] = stops.map((stop) => stop.t);
 
+/**
+ * The farthest the car can be driven: the last stop. The road runs a little past it (the lead-in to
+ * the roundabout at the end of the shift), but only the end-of-shift loop drives there.
+ */
+export const LAST_STOP_T = STOP_TS[STOP_TS.length - 1] ?? 1;
+
 /** Where each station's car stops at its red light, as `t`. */
 export const STATION_LIGHT_TS: readonly number[] = stations.map((station) => {
   const stop = stops.find((s) => s.id === station.stopId);
@@ -53,12 +59,15 @@ interface DriveState {
   /** False when the wall is too small on screen to read, so the content opens in the sheet too. */
   wallLegible: boolean;
   /**
-   * The end-of-shift reset: `fading-out` (the view goes dark), then the car is put back at the first
-   * stop and the view `fading-in`, then `idle`. `resetCount` goes up at the cut so the scene snaps
-   * its progress instead of easing back along the whole route.
+   * The end of the shift: the car `looping` the roundabout past The Forks, then `fading-out` (the
+   * view goes dark), then the car is put back at the first stop and the view `fading-in`, then
+   * `idle`. `resetCount` goes up at the cut so the scene snaps its progress instead of easing back
+   * along the whole route.
    */
-  shift: 'idle' | 'fading-out' | 'fading-in';
+  shift: 'idle' | 'looping' | 'fading-out' | 'fading-in';
   resetCount: number;
+  /** Counts the frames the scene has advanced the lap, as a heartbeat for the stall timer. */
+  loopTicks: number;
   nudge: (delta: number) => void;
   next: () => void;
   prev: () => void;
@@ -69,8 +78,12 @@ interface DriveState {
   closeStation: () => void;
   finishManeuver: () => void;
   setWallLegible: (legible: boolean) => void;
-  /** At the last stop with the car out of its station: fade out and start again at the first stop. */
+  /** At the last stop with the car out of its station: loop the roundabout, fade out and start again. */
   startNewPatrol: () => void;
+  /** The lap is done (or skipped): fade out. */
+  finishLoop: () => void;
+  /** The scene advanced the lap by a frame: a heartbeat, so a lap that is running is never cut short. */
+  tickLoop: () => void;
   /** The view is dark: cut back to the first stop and fade in. */
   completeFadeOut: () => void;
   /** The view is back: the reset is over. */
@@ -78,7 +91,7 @@ interface DriveState {
 }
 
 function derive(target: number) {
-  const t = clamp01(target);
+  const t = Math.min(clamp01(target), LAST_STOP_T);
   const stopIndex = nearestStopIndex(t, STOP_TS);
   const magnetIndex = nearestStopIndex(t, MAGNET_TS);
   const point = isAtStop(t, MAGNET_TS) ? POINTS[magnetIndex] : undefined;
@@ -98,6 +111,8 @@ function derive(target: number) {
 export const useDriveStore = create<DriveState>((set, get) => {
   /** Applies a movement unless the car is in a station: then it backs out first (or is ignored). */
   const move = (dir: 1 | -1 | 0, go: () => void, jump?: number, open?: number) => {
+    // Nothing drives the car while the end of the shift plays (the loop, the fade and the reset).
+    if (get().shift !== 'idle') return;
     const { station } = get();
     if (station.phase === 'idle') return go();
     if (station.phase === 'parked' && (dir !== 0 || jump !== undefined)) {
@@ -122,6 +137,7 @@ export const useDriveStore = create<DriveState>((set, get) => {
     wallLegible: true,
     shift: 'idle',
     resetCount: 0,
+    loopTicks: 0,
     nudge: (delta) =>
       move(delta > 0 ? 1 : delta < 0 ? -1 : 0, () =>
         set({ ...derive(get().target + delta), pendingOpen: null }),
@@ -159,8 +175,8 @@ export const useDriveStore = create<DriveState>((set, get) => {
       move(0, () => set({ ...derive(stopT), pendingOpen: index }), stopIndex, index);
     },
     openStation: () => {
-      const { openable, station } = get();
-      if (openable !== null && station.phase === 'idle') {
+      const { openable, station, shift } = get();
+      if (openable !== null && station.phase === 'idle' && shift === 'idle') {
         set({ pendingOpen: null });
         dispatch({ type: 'open', index: openable });
       }
@@ -185,7 +201,13 @@ export const useDriveStore = create<DriveState>((set, get) => {
       const { shift, atStop, stopIndex, station } = get();
       if (shift !== 'idle' || station.phase !== 'idle') return;
       if (!atStop || stopIndex !== stops.length - 1) return;
-      set({ shift: 'fading-out', pendingOpen: null });
+      set({ shift: 'looping', pendingOpen: null });
+    },
+    tickLoop: () => {
+      if (get().shift === 'looping') set({ loopTicks: get().loopTicks + 1 });
+    },
+    finishLoop: () => {
+      if (get().shift === 'looping') set({ shift: 'fading-out' });
     },
     completeFadeOut: () => {
       if (get().shift !== 'fading-out') return;

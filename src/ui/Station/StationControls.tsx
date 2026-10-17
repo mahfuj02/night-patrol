@@ -29,6 +29,8 @@ export function StationControls() {
   const phase = useDriveStore((s) => s.station.phase);
   const index = useDriveStore((s) => s.station.index);
   const openStation = useDriveStore((s) => s.openStation);
+  // The Open button is not offered while the end of the shift plays.
+  const shiftIdle = useDriveStore((s) => s.shift === 'idle');
   // On a small screen the content opens in a sheet with its own close button.
   const legible = useDriveStore((s) => s.wallLegible);
 
@@ -55,7 +57,7 @@ export function StationControls() {
         {phase === 'parked' && label ? formatTemplate(copy.opened, { section: label }) : ''}
       </p>
       <div className="pointer-events-none fixed inset-x-0 bottom-36 z-20 flex justify-center px-4 sm:bottom-40">
-        {phase === 'idle' && offered && (
+        {phase === 'idle' && shiftIdle && offered && (
           <button
             type="button"
             className={`${buttonClass} pointer-events-auto`}

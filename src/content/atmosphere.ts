@@ -6,8 +6,8 @@ import type { AtmosphereZone } from './schema';
  * where the zone starts. Colours are names from the world palette in src/lib/palette.ts.
  * Zones must stay in route order; `pnpm test` checks that and that blends fit the gaps.
  *
- * t values (from stops.ts): city-services 0.194, portage-main 0.451, dashcam 0.744, the-forks 1.0.
- * liilab-office 0.861. The avenue is anchored on the LIILAB office; the Forks zone hangs off The
+ * t values (from stops.ts): city-services 0.185, portage-main 0.429, dashcam 0.709, the-forks 0.967.
+ * liilab-office 0.82. The avenue is anchored on the LIILAB office; the Forks zone hangs off The
  * Forks stop by offset.
  * TODO(content): owner to tune the look of each zone by eye.
  */
@@ -71,7 +71,7 @@ export const atmosphereZones: AtmosphereZone[] = [
     id: 'avenue',
     from: 'liilab-office',
     to: 'liilab-office',
-    startOffset: -0.095,
+    startOffset: -0.08,
     endOffset: 0.05,
     blend: 0.02,
     sky: { zenith: 'skyClearZenith', horizon: 'skyClearHorizon' },

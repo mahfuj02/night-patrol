@@ -6,6 +6,7 @@ import { dampT } from '@/lib/route';
 import { progress } from './progress';
 import { FOCUS_PULL, landmarkFocus, resetFocus } from './Landmarks/landmarkFocus';
 import { routeModel } from './Road/route';
+import { useDriveStore } from '@/store/drive';
 import { stationView } from './Stations/stationView';
 
 const CHASE_BACK = 12;
@@ -29,6 +30,7 @@ const lookAt = new Vector3();
  */
 export function CameraRig({ reducedMotion }: { reducedMotion: boolean }) {
   const placed = useRef(false);
+  const seenReset = useRef(useDriveStore.getState().resetCount);
 
   useFrame((state, delta) => {
     if (stationView.active) {
@@ -71,6 +73,13 @@ export function CameraRig({ reducedMotion }: { reducedMotion: boolean }) {
     resetFocus();
 
     const { camera } = state;
+    // The end-of-shift reset is a cut back to the first stop: put the camera there at once, not glide
+    // there from the roundabout through the fade.
+    const { resetCount } = useDriveStore.getState();
+    if (resetCount !== seenReset.current) {
+      seenReset.current = resetCount;
+      placed.current = false;
+    }
     if (reducedMotion || !placed.current) {
       camera.position.copy(desired);
       placed.current = true;
