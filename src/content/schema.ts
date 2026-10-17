@@ -108,6 +108,10 @@ export const StopSchema = z.object({
   contentRef: kebabId.optional(),
   /** Id of a line in radio.ts. */
   radioId: kebabId.optional(),
+  /** Id of a line in radio.ts for the way back; without one the outbound line is reused. */
+  radioReturn: kebabId.optional(),
+  /** False when the patrol only passes this stop on the way back, without visiting it. Default true. */
+  onReturn: z.boolean().optional(),
 });
 export type Stop = z.infer<typeof StopSchema>;
 
@@ -138,6 +142,8 @@ export const RadioLineSchema = z.object({
   id: kebabId,
   stopId: kebabId,
   text: z.string().min(1),
+  /** True for a line that is only said on the first lap of the patrol (the call that starts it). */
+  firstLapOnly: z.boolean().optional(),
 });
 export type RadioLine = z.infer<typeof RadioLineSchema>;
 
@@ -339,13 +345,21 @@ export const UiCopySchema = z.object({
   home: z.object({ heading: z.string(), intro: z.string(), simpleLink: z.string() }),
   drive: z.object({
     navLabel: z.string(),
-    prev: z.string(),
+    /** Backward input brakes the car to a stop; the button does the same. */
+    brake: z.string(),
     next: z.string(),
-    /** The button at the last stop: it fades out and starts again from the first stop. */
-    newPatrol: z.string(),
+    /** Turns the car round in the road. */
+    turnAround: z.string(),
+    /** Fades out and starts again from the first stop, heading out. */
+    startOver: z.string(),
+    /** Shown once the car has braked to a stop. */
+    brakeHint: z.string(),
+    /** Which way along the route the car is heading. */
+    outbound: z.string(),
+    headingBack: z.string(),
     simpleView: z.string(),
     enRoute: z.string(),
-    /** Placeholders: {n}, {total}, {title}. */
+    /** Placeholders: {n}, {total}, {title}, {direction}. */
     atStop: z.string(),
     hint: z.string(),
     loading: z.string(),

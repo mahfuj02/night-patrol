@@ -7,7 +7,8 @@ import { progress } from './progress';
 import { FOCUS_PULL, landmarkFocus, resetFocus } from './Landmarks/landmarkFocus';
 import { useDriveStore } from '@/store/drive';
 import { stationView } from './Stations/stationView';
-import { carPoseAt, travel } from './travel';
+import { loopPoseAt } from './Road/loop';
+import { travel } from './travel';
 
 const CHASE_BACK = 12;
 const CHASE_UP = 4.8;
@@ -41,7 +42,7 @@ export function CameraRig({ reducedMotion }: { reducedMotion: boolean }) {
       tangent.set(Math.sin(stationView.heading), 0, Math.cos(stationView.heading));
     } else {
       // On the road: behind the car in the way it is going.
-      carPoseAt(progress.t, travel.direction, pose);
+      loopPoseAt(progress.s, pose);
       point.set(pose.x, 0, pose.z);
       tangent.set(Math.sin(pose.heading), 0, Math.cos(pose.heading));
     }

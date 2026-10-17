@@ -2,7 +2,7 @@ import { useFrame } from '@react-three/fiber';
 import { formatCarPose } from '@/lib/probe';
 import { progress } from './progress';
 import { stationView } from './Stations/stationView';
-import { carPoseAt, travel } from './travel';
+import { loopPoseAt } from './Road/loop';
 
 const pose = { x: 0, z: 0, heading: 0 };
 
@@ -18,7 +18,7 @@ export function CarProbe() {
     if (stationView.active) {
       ({ x, z, heading } = stationView);
     } else {
-      carPoseAt(progress.t, travel.direction, pose);
+      loopPoseAt(progress.s, pose);
       ({ x, z, heading } = pose);
     }
     document.body.dataset.car = formatCarPose(x, z, heading);

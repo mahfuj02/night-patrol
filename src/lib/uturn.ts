@@ -1,9 +1,9 @@
 import { bezierPoint, bezierTangent, headingVector, vectorHeading, type Pose } from './parking';
 
 /**
- * The U-turn: when the car has to go back the way it came (Prev, a map jump back, scrolling back),
- * it never drives backwards. It swings across the road in a smooth U and carries on facing forward
- * in the other lane (Canada drives on the right, so each direction has its own right-hand lane).
+ * The U-turn: the "Turn around" button, and a map jump to a stop that is nearer the other way. The car
+ * never drives backwards: it swings across the road in a smooth U and carries on facing the other
+ * way in the other lane (Canada drives on the right, so each direction has its own right-hand lane).
  * Pure maths on the ground plane, sharing its Bezier helpers with the parking path.
  */
 
@@ -16,40 +16,6 @@ export const UTURN_SECONDS = 1.8;
 export const UTURN_RUN = 10;
 /** How far the Bezier handles reach, which sets how wide the U is, in metres. */
 export const UTURN_HANDLE = 6;
-/** The car turns round only once the requested spot is more than this far behind it, in metres. */
-export const TURN_TRIGGER_METRES = 5;
-
-/**
- * Whether the car should turn round: the requested progress is behind it, against its direction of
- * travel, by more than the trigger distance. A small step back (a magnet settling) is not a reason
- * to turn: the car just holds still (see `followDirection`).
- */
-export function needsTurn(
-  direction: Direction,
-  progressT: number,
-  desiredT: number,
-  routeLength: number,
-  trigger = TURN_TRIGGER_METRES,
-): boolean {
-  const behind = direction === 1 ? progressT - desiredT : desiredT - progressT;
-  return behind * routeLength > trigger;
-}
-
-/** Moves toward `eased` but never against the direction of travel: the car does not reverse. */
-export function followDirection(direction: Direction, current: number, eased: number): number {
-  return direction === 1 ? Math.max(current, eased) : Math.min(current, eased);
-}
-
-/** Where along the route the car comes out of the U-turn: a little further in its old direction. */
-export function uTurnEnd(
-  startT: number,
-  direction: Direction,
-  routeLength: number,
-  run = UTURN_RUN,
-): number {
-  return Math.min(1, Math.max(0, startT + (direction * run) / routeLength));
-}
-
 export interface UTurnPath {
   /** Length of the path in metres, measured along the curve. */
   length: number;

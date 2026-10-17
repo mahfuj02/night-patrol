@@ -26,7 +26,6 @@ import { UTurnDriver } from './UTurnDriver';
 import { CrossStreetRoads } from './Road/CrossStreetRoads';
 import { Road } from './Road/Road';
 import { Roundabout } from './Road/RoundaboutRoad';
-import { RoundaboutDriver } from './Road/RoundaboutDriver';
 import { SnowRidge } from './Road/SnowRidge';
 import { Streetlights } from './Road/Streetlights';
 import { Signals } from './Signals/Signals';
@@ -73,7 +72,6 @@ export function Experience() {
       <ProgressDriver reducedMotion={reducedMotion} />
       <StationDriver reducedMotion={reducedMotion} />
       <UTurnDriver reducedMotion={reducedMotion} />
-      <RoundaboutDriver />
       <StationWalls />
       <AtmosphereDriver />
       <Sky />

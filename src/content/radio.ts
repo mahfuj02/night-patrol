@@ -7,6 +7,14 @@ export const radioLines: RadioLine[] = [
     id: 'dispatch',
     stopId: 'dispatch',
     text: 'Unit 02, Mahfuj, Full Stack Developer, starting patrol.',
+    firstLapOnly: true,
+  },
+  {
+    // Heading back past Dispatch, on the return half of the patrol loop.
+    id: 'dispatch-return',
+    stopId: 'dispatch',
+    // TODO(content): owner to tweak the wording.
+    text: 'Unit 02, heading back to base.',
   },
   {
     id: 'rrc-campus',
@@ -32,11 +40,4 @@ export const radioLines: RadioLine[] = [
     text: 'Dispatch, the wind at Portage and Main is doing its usual thing. Hold your hat.',
   },
   { id: 'shift-complete', stopId: 'the-forks', text: 'Shift complete.' },
-  {
-    // Shown while the view fades out and the drive starts again (stopId is where it starts).
-    id: 'new-patrol',
-    stopId: 'ignition',
-    // TODO(content): owner to tweak the wording.
-    text: 'New patrol starting.',
-  },
 ];

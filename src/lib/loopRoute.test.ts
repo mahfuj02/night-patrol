@@ -100,9 +100,38 @@ describe('the loop', () => {
     }
   });
 
+  it('lands a U-turn a little further on in the old direction, in the other lane', () => {
+    const out = loop.landing(loop.outS(300), 10)!;
+    expect(loop.direction(out)).toBe(-1);
+    expect(loop.roadMetres(out)).toBeCloseTo(310, 9);
+    const back = loop.landing(loop.backS(300), 10)!;
+    expect(loop.direction(back)).toBe(1);
+    expect(loop.roadMetres(back)).toBeCloseTo(290, 9);
+  });
+
+  it('keeps the landing on the road piece it turns onto, near the ends', () => {
+    const nearEnd = loop.landing(loop.outS(980), 10)!;
+    expect(loop.where(nearEnd).piece.kind).toBe('back');
+    expect(loop.roadMetres(nearEnd)).toBeLessThanOrEqual(986 + 1e-9);
+    expect(loop.landing(976 + 10, 10)).toBeNull();
+  });
+
   it('cannot turn round on a roundabout', () => {
     expect(loop.mirror(976 + 10)).toBeNull();
     expect(loop.mirror(loop.length - 10)).toBeNull();
+  });
+
+  it('finds the next roundabout pass between two distances, on any lap', () => {
+    expect(loop.gate(0, 500)).toBeNull();
+    expect(loop.gate(900, 1100)).toBe(976);
+    expect(loop.gate(976, 1100)).toBeNull(); // already in it
+    expect(loop.gate(975.5, 976)).toBe(976);
+    expect(loop.gate(1200, 2300)).toBe(976 + 150 + 976);
+    expect(loop.gate(2000, loop.length + 10)).toBe(976 + 150 + 976);
+    expect(loop.gate(loop.length - 5, loop.length + 5)).toBeNull();
+    expect(loop.gate(loop.length + 900, loop.length + 1100)).toBe(loop.length + 976);
+    // The turnaround's pass starts at 2102; the seam after it is not a gate.
+    expect(loop.gate(2000, 2150)).toBe(2102);
   });
 
   it('measures the way ahead round the seam', () => {

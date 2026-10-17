@@ -72,6 +72,17 @@ export interface Loop {
   backS: (m: number) => number;
   /** Where a U-turn from `s` puts the car: the same spot of road in the other lane. Null on a roundabout. */
   mirror: (s: number) => number | null;
+  /**
+   * Where a U-turn from `s` comes out: the same road in the other lane, `run` metres further on in
+   * the direction the car was going (so the turn is a swing across the road, not a spin on the spot).
+   * Null on a roundabout.
+   */
+  landing: (s: number, run: number) => number | null;
+  /**
+   * The first roundabout pass that starts in (`from`, `to`] on an unwrapped distance, as its
+   * unwrapped start; null if none does. The car must stop its approach there and drive the pass.
+   */
+  gate: (from: number, to: number) => number | null;
   /** Metres to drive forward from `from` to reach `to` (0 up to the loop length). */
   ahead: (from: number, to: number) => number;
 }
@@ -92,7 +103,7 @@ export function createLoop(spec: LoopSpec): Loop {
     at += size;
   }
   const length = at;
-  const [out, forks, back, start] = pieces as [Piece, Piece, Piece, Piece];
+  const [out, , back, start] = pieces as [Piece, Piece, Piece, Piece];
 
   const wrap = (s: number) => {
     const w = s % length;
@@ -135,6 +146,13 @@ export function createLoop(spec: LoopSpec): Loop {
     }
   };
 
+  const mirror = (s: number) => {
+    const { piece, d } = where(s);
+    if (piece.kind === 'out') return back.from + (span - d);
+    if (piece.kind === 'back') return out.from + (span - d);
+    return null;
+  };
+
   return {
     spec,
     length,
@@ -151,11 +169,24 @@ export function createLoop(spec: LoopSpec): Loop {
     },
     outS: (m) => out.from + (m - spec.startRun),
     backS: (m) => back.from + (spec.road - spec.forksRun - m),
-    mirror: (s) => {
-      const { piece, d } = where(s);
-      if (piece.kind === 'out') return back.from + (span - d);
-      if (piece.kind === 'back') return out.from + (span - d);
-      return null;
+    mirror,
+    landing: (s, run) => {
+      const { piece } = where(s);
+      const across = mirror(s);
+      if (across === null) return null;
+      // The other lane's piece: out if this is back, and the other way round.
+      const other = piece.kind === 'out' ? back : out;
+      return Math.max(other.from, across - run);
+    },
+    gate: (from, to) => {
+      let best: number | null = null;
+      for (let lap = Math.floor(from / length); lap <= Math.floor(to / length); lap++) {
+        for (const piece of [pieces[1]!, pieces[3]!]) {
+          const start = lap * length + piece.from;
+          if (start > from + 1e-9 && start <= to && (best === null || start < best)) best = start;
+        }
+      }
+      return best;
     },
     ahead: (from, to) => wrap(to - from),
   };

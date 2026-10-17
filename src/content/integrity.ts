@@ -79,6 +79,9 @@ export function findContentProblems(c: ContentBundle): string[] {
     if (stop.radioId && !radioIds.has(stop.radioId)) {
       problems.push(`Stop ${stop.id}: unknown radioId ${stop.radioId}`);
     }
+    if (stop.radioReturn && !radioIds.has(stop.radioReturn)) {
+      problems.push(`Stop ${stop.id}: unknown radioReturn ${stop.radioReturn}`);
+    }
   }
   checkDuplicates(
     'station',

@@ -10,7 +10,9 @@ import { transitZones } from '@/content/transit';
 import { simpleCopy } from '@/content/ui';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { resolveProjectDetails } from '@/lib/checkpoint';
+import { signedGap } from '@/lib/loopRoute';
 import { transit } from '@/lib/palette';
+import { STOP_VISITS, patrolLoop as loop } from '@/lib/patrolLoop';
 import { formatTemplate } from '@/lib/template';
 import {
   buildTransit,
@@ -144,6 +146,8 @@ export function RouteMap() {
   const stopIndex = useDriveStore((s) => s.stopIndex);
   const atStop = useDriveStore((s) => s.atStop);
   const target = useDriveStore((s) => s.target);
+  const goal = useDriveStore((s) => s.goal);
+  const direction = useDriveStore((s) => s.direction);
   const goToStop = useDriveStore((s) => s.goToStop);
   const goToStation = useDriveStore((s) => s.goToStation);
 
@@ -157,6 +161,7 @@ export function RouteMap() {
   const opener = useRef<HTMLElement | null>(null);
   const detailsPanel = useRef<HTMLElement>(null);
   const marker = useRef<HTMLSpanElement>(null);
+  const arrow = useRef<HTMLSpanElement>(null);
   const list = useRef<HTMLOListElement>(null);
 
   // "You are here" moves with the car (the eased progress), written straight to the element.
@@ -169,24 +174,34 @@ export function RouteMap() {
         const y = markerPosition(progress.t, entries) * ROW + ROW / 2 - 14;
         el.style.transform = `translateY(${y}px)`;
       }
+      // Down the line is outbound, up it is heading back.
+      const mark = arrow.current;
+      const symbol = progress.direction === 1 ? '▼' : '▲';
+      if (mark && mark.textContent !== symbol) mark.textContent = symbol;
       frame = requestAnimationFrame(place);
     };
     frame = requestAnimationFrame(place);
     return () => cancelAnimationFrame(frame);
   }, [open]);
 
-  // A destination is forgotten if the visitor drives somewhere else first.
-  const destinationT = chosenDestination ? (stops[chosenDestination.stopIndex]?.t ?? null) : null;
+  // A destination is forgotten if the visitor drives somewhere else first: the request is still at
+  // one of that stop's visits (or waiting for a U-turn to finish).
+  const stopVisits = chosenDestination
+    ? STOP_VISITS.filter((v) => v.stop === chosenDestination.stopIndex)
+    : [];
   const destination =
-    chosenDestination && destinationT !== null && Math.abs(target - destinationT) <= 0.001
+    chosenDestination &&
+    (goal !== null || stopVisits.some((v) => Math.abs(signedGap(loop, target, v.s)) <= 1))
       ? chosenDestination
       : null;
 
-  // The car has arrived once the eased progress reaches the stop (the store's target moves at once).
+  // The car has arrived once the eased progress reaches a visit to the stop (the store's target
+  // moves at once).
   useEffect(() => {
-    if (!destination || destinationT === null) return;
+    if (!destination) return;
+    const visits = STOP_VISITS.filter((v) => v.stop === destination.stopIndex);
     const check = () => {
-      const there = Math.abs(progress.t - destinationT) < 0.002;
+      const there = visits.some((v) => Math.abs(signedGap(loop, progress.s, v.s)) < 2.5);
       const parked =
         destination.stationIndex === null ||
         (useDriveStore.getState().station.phase === 'parked' &&
@@ -195,7 +210,7 @@ export function RouteMap() {
     };
     const timer = window.setInterval(check, 150);
     return () => window.clearInterval(timer);
-  }, [destination, destinationT]);
+  }, [destination]);
 
   // The details panel closes when the car moves on to a different stop.
   const details =
@@ -317,7 +332,9 @@ export function RouteMap() {
             </div>
           )}
 
-          <h3 className="text-hud mb-1 font-mono text-xs">{copy.menu.route}</h3>
+          <h3 className="text-hud mb-1 font-mono text-xs">
+            {copy.menu.route} · {direction === 1 ? copy.drive.outbound : copy.drive.headingBack}
+          </h3>
           <div className="relative">
             <ol ref={list} aria-label={copy.menu.route}>
               {entries.map((entry, i) => (
@@ -338,6 +355,9 @@ export function RouteMap() {
               style={{ transform: `translateY(${ROW / 2 - 14}px)` }}
             >
               <CarGlyph />
+              <span ref={arrow} className="text-hud absolute -right-3.5 text-[9px]">
+                ▼
+              </span>
             </span>
           </div>
 

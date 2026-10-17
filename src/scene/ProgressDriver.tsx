@@ -1,71 +1,94 @@
 import { useFrame } from '@react-three/fiber';
 import { useLayoutEffect, useRef } from 'react';
-import { applyMagnet, dampT } from '@/lib/route';
-import { followDirection, needsTurn, uTurnEnd, uTurnPath } from '@/lib/uturn';
-import { MAGNET_TS, useDriveStore } from '@/store/drive';
+import { stepLoop } from '@/lib/loopDrive';
+import { MAGNETS, START_S, patrolLoop as loop } from '@/lib/patrolLoop';
+import { UTURN_RUN, uTurnPath } from '@/lib/uturn';
+import { useDriveStore } from '@/store/drive';
+import { loopPoseAt } from './Road/loop';
 import { progress } from './progress';
-import { routeModel } from './Road/route';
 import { stationView } from './Stations/stationView';
-import { carPoseAt, travel } from './travel';
+import { travel } from './travel';
 
-/** How quickly on-screen progress catches up with the requested progress (per second). */
-const FOLLOW_RATE = 5;
 /** Ignore long frames (tab switches) so the car does not lurch. */
 const MAX_DELTA = 0.1;
 
-function desiredProgress() {
-  return applyMagnet(useDriveStore.getState().target, MAGNET_TS);
+/** Writes the route position and heading that follow from the car's place on the loop. */
+function publish() {
+  progress.t = loop.routeT(progress.s);
+  progress.direction = loop.direction(progress.s);
 }
 
 /**
- * Eases `progress.t` toward the requested progress, pulled toward the nearest stop by the magnet.
- * The car never reverses: when the requested spot is behind it, it turns round (a U-turn across
- * the road, see `UTurnDriver`) and drives on facing forward in the other lane; a small step back
- * just holds it still. Under reduced motion there is no easing and no U-turn: the view cuts to the
- * destination, and to the other lane when the direction changes. Runs before the car and camera
+ * Drives the car round the patrol loop. `progress.s` (metres driven) eases toward the requested
+ * distance, pulled to a stop by the magnet at each stop and station light. The car never reverses:
+ * it only ever moves forward along the loop, so the visitor's backward input brakes it (the store
+ * pulls the request back to the car), and a U-turn is a separate, deliberate move (see
+ * `UTurnDriver`). The step itself is `stepLoop` in `@/lib/loopDrive`, shared with the tests. Runs before the car and camera
  * (negative priority), so they see this frame's value.
  */
 export function ProgressDriver({ reducedMotion }: { reducedMotion: boolean }) {
+  const seenReset = useRef(useDriveStore.getState().resetCount);
+  const lastKind = useRef(loop.where(progress.s).piece.kind);
+
   useLayoutEffect(() => {
-    progress.t = desiredProgress();
+    publish();
   }, []);
 
-  const seenReset = useRef(useDriveStore.getState().resetCount);
-
   useFrame((_, delta) => {
-    const desired = desiredProgress();
-    // The end-of-shift reset is a cut back to the first stop, not a drive back along the route, and
-    // the new patrol starts facing forward.
-    const { resetCount, shift } = useDriveStore.getState();
-    if (resetCount !== seenReset.current) {
-      seenReset.current = resetCount;
-      travel.direction = 1;
+    const dt = Math.min(delta, MAX_DELTA);
+    const store = useDriveStore.getState();
+
+    // Start over is a cut back to the first stop heading out, not a drive back along the loop.
+    if (store.resetCount !== seenReset.current) {
+      seenReset.current = store.resetCount;
+      progress.s = START_S;
+      progress.speed = 0;
       travel.turn = null;
-      progress.t = desired;
+      lastKind.current = loop.where(START_S).piece.kind;
+      publish();
       return;
     }
     // While the car is turning round the U-turn driver moves it.
-    if (travel.turn) return;
-
-    // A station manoeuvre or the end-of-shift lap owns the car; otherwise turn round if it must.
-    const owned = stationView.active || shift !== 'idle';
-    if (!owned && needsTurn(travel.direction, progress.t, desired, routeModel.length)) {
-      if (reducedMotion) {
-        // A cut to the other lane, at the same spot.
-        travel.direction = travel.direction === 1 ? -1 : 1;
-      } else {
-        const endT = uTurnEnd(progress.t, travel.direction, routeModel.length);
-        const start = carPoseAt(progress.t, travel.direction);
-        const end = carPoseAt(endT, travel.direction === 1 ? -1 : 1);
-        travel.turn = { p: 0, endT, path: uTurnPath(start, end) };
+    if (travel.turn) {
+      progress.speed = 0;
+      return;
+    }
+    // A U-turn has been asked for: start it as soon as the car is on the road and out of a bay.
+    if (store.turnRequest) {
+      progress.speed = 0;
+      if (stationView.active) return;
+      const here = loop.wrap(progress.s);
+      const landing = loop.landing(here, UTURN_RUN);
+      if (landing === null) {
+        store.finishTurn(progress.s);
+        return;
       }
+      // Under reduced motion the U-turn driver finishes it in one frame: a cut to the other lane.
+      travel.turn = {
+        p: 0,
+        toS: landing,
+        path: uTurnPath(loopPoseAt(here), loopPoseAt(landing)),
+      };
       return;
     }
 
-    const eased = reducedMotion
-      ? desired
-      : dampT(progress.t, desired, FOLLOW_RATE, Math.min(delta, MAX_DELTA));
-    progress.t = owned ? eased : followDirection(travel.direction, progress.t, eased);
+    const before = progress.s;
+    const step = stepLoop(loop, {
+      s: before,
+      target: store.target,
+      dt,
+      reducedMotion,
+      owned: stationView.active,
+      magnets: MAGNETS,
+    });
+    store.setArc(step.onArc);
+    const next = step.s;
+    progress.s = next;
+    progress.speed = step.speed;
+    const kind = loop.where(next).piece.kind;
+    if (lastKind.current === 'start' && kind === 'out') store.completeLap();
+    lastKind.current = kind;
+    publish();
   }, -1);
 
   return null;

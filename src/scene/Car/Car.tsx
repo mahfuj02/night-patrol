@@ -5,7 +5,7 @@ import { palette, world } from '@/lib/palette';
 import { carState } from '../carState';
 import { progress } from '../progress';
 import { stationView } from '../Stations/stationView';
-import { carPoseAt, travel } from '../travel';
+import { loopPoseAt } from '../Road/loop';
 
 const HEADLIGHT_COLOR = '#FFE9C4';
 const HEADLIGHT_INTENSITY = 90;
@@ -39,7 +39,7 @@ export function Car() {
     } else {
       // On the road: in the right-hand lane for the way it is going, facing that way (so going back
       // toward the start it is in the other lane and faces back, never driving in reverse).
-      carPoseAt(progress.t, travel.direction, pose);
+      loopPoseAt(progress.s, pose);
       position.set(pose.x, 0, pose.z);
       tangent.set(Math.sin(pose.heading), 0, Math.cos(pose.heading));
       car.rotation.y = pose.heading;

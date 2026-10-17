@@ -10,10 +10,10 @@ const STEP_COOLDOWN_MS = 500;
 const SWIPE_STEP_PIXELS = 60;
 
 function perform(action: DriveAction) {
-  const { nudge, next, prev } = useDriveStore.getState();
+  const { nudge, next, brake } = useDriveStore.getState();
   if (action.type === 'nudge') nudge(action.delta);
   else if (action.dir === 1) next();
-  else prev();
+  else brake();
 }
 
 /**
