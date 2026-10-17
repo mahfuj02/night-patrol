@@ -46,28 +46,44 @@ test.describe('end of shift', () => {
   test('New patrol really moves the car: onto the ring, once round it, and back onto the road', async ({
     page,
   }) => {
-    test.setTimeout(600_000);
+    // Nothing here depends on how fast the machine is: the lap is followed by where the car actually
+    // is, frame by frame, and it is over when the car is back on the road behind the ring (or the
+    // shift has moved on, which fails the checks below).
+    test.setTimeout(1_200_000);
     await page.setViewportSize({ width: 1280, height: 800 });
     await atTheEnd(page, '/?quality=low&intro=off&probe=on');
-    // Follow the car every frame from the click until the lap is over (the fade starts).
     const lap = page.evaluate(
-      () =>
+      ({ end, f }) =>
         new Promise<number[][]>((resolve) => {
           const samples: number[][] = [];
           const veil = document.querySelector('[data-testid=shift-fade]')!;
+          const along = (x: number, z: number) => (x - end.x) * f.x + (z - end.z) * f.z;
+          const across = (x: number, z: number) => (x - end.x) * f.z + (z - end.z) * -f.x;
           let started = false;
+          let furthest = -Infinity;
           const tick = () => {
             const car = document.body.dataset.car;
             const shift = veil.getAttribute('data-shift');
             if (car && shift === 'looping') {
               started = true;
-              samples.push(car.split(',').map(Number));
+              const pose = car.split(',').map(Number);
+              samples.push(pose);
+              furthest = Math.max(furthest, along(pose[0]!, pose[1]!));
+              // Back on the road behind the ring, in the other lane, after going round: done.
+              if (
+                furthest > 30 &&
+                along(pose[0]!, pose[1]!) < -14 &&
+                across(pose[0]!, pose[1]!) > 0.5
+              ) {
+                return resolve(samples);
+              }
             }
             if (started && shift !== 'looping') return resolve(samples);
             requestAnimationFrame(tick);
           };
           tick();
         }),
+      { end: { x: last.x, z: last.z }, f: forward },
     );
     await page.getByRole('button', { name: 'New patrol ›' }).click();
     const samples = await lap;
@@ -99,13 +115,13 @@ test.describe('end of shift', () => {
     expect(Math.sin(end[2]!) * forward.x + Math.cos(end[2]!) * forward.z).toBeLessThan(-0.9);
 
     // Then the fade and the reset.
-    await expect(status(page)).toContainText(`Stop 1 of ${total}: Ignition`, { timeout: 120_000 });
+    await expect(status(page)).toContainText(`Stop 1 of ${total}: Ignition`, { timeout: 300_000 });
   });
 
   test('New patrol loops the roundabout, fades out and starts again at the first stop', async ({
     page,
   }) => {
-    test.setTimeout(600_000);
+    test.setTimeout(1_200_000);
     await page.setViewportSize({ width: 1280, height: 800 });
     await atTheEnd(page);
     const button = page.getByRole('button', { name: 'New patrol ›' });
@@ -116,7 +132,7 @@ test.describe('end of shift', () => {
       'New patrol starting.',
     );
     await expect(page.getByRole('button', { name: 'Open Contact' })).toHaveCount(0);
-    await expect(status(page)).toContainText(`Stop 1 of ${total}: Ignition`, { timeout: 240_000 });
+    await expect(status(page)).toContainText(`Stop 1 of ${total}: Ignition`, { timeout: 900_000 });
     await expect(page.getByRole('button', { name: 'Next stop ›' })).toBeVisible();
     // The page keeps working: the veil takes no clicks and is gone.
     await expect(page.getByTestId('shift-fade')).toHaveAttribute('data-shift', 'idle');

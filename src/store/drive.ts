@@ -66,6 +66,8 @@ interface DriveState {
    */
   shift: 'idle' | 'looping' | 'fading-out' | 'fading-in';
   resetCount: number;
+  /** Counts the frames the scene has advanced the lap, as a heartbeat for the stall timer. */
+  loopTicks: number;
   nudge: (delta: number) => void;
   next: () => void;
   prev: () => void;
@@ -80,6 +82,8 @@ interface DriveState {
   startNewPatrol: () => void;
   /** The lap is done (or skipped): fade out. */
   finishLoop: () => void;
+  /** The scene advanced the lap by a frame: a heartbeat, so a lap that is running is never cut short. */
+  tickLoop: () => void;
   /** The view is dark: cut back to the first stop and fade in. */
   completeFadeOut: () => void;
   /** The view is back: the reset is over. */
@@ -133,6 +137,7 @@ export const useDriveStore = create<DriveState>((set, get) => {
     wallLegible: true,
     shift: 'idle',
     resetCount: 0,
+    loopTicks: 0,
     nudge: (delta) =>
       move(delta > 0 ? 1 : delta < 0 ? -1 : 0, () =>
         set({ ...derive(get().target + delta), pendingOpen: null }),
@@ -197,6 +202,9 @@ export const useDriveStore = create<DriveState>((set, get) => {
       if (shift !== 'idle' || station.phase !== 'idle') return;
       if (!atStop || stopIndex !== stops.length - 1) return;
       set({ shift: 'looping', pendingOpen: null });
+    },
+    tickLoop: () => {
+      if (get().shift === 'looping') set({ loopTicks: get().loopTicks + 1 });
     },
     finishLoop: () => {
       if (get().shift === 'looping') set({ shift: 'fading-out' });

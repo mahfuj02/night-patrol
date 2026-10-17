@@ -23,7 +23,7 @@ export function RoundaboutDriver() {
   const run = useRef<{ path: LoopPath; distance: number } | null>(null);
 
   useFrame((_, delta) => {
-    const { shift, finishLoop } = useDriveStore.getState();
+    const { shift, finishLoop, tickLoop } = useDriveStore.getState();
     if (shift === 'idle' || shift === 'fading-in') {
       run.current = null;
       return;
@@ -35,6 +35,7 @@ export function RoundaboutDriver() {
     if (!r) return;
 
     if (shift === 'looping') {
+      tickLoop();
       const { distance, path } = r;
       const ease = Math.min(
         1,
