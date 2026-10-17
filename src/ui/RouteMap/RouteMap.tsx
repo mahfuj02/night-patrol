@@ -396,7 +396,7 @@ export function RouteMap() {
           ref={detailsPanel}
           tabIndex={-1}
           aria-labelledby={detailsHeading}
-          className="bg-night-2 text-snow border-hud/40 fixed inset-x-0 bottom-[9.5rem] z-30 max-h-[45dvh] overflow-y-auto rounded-t-xl border p-5 shadow-xl lg:inset-x-auto lg:top-28 lg:bottom-36 lg:left-[19.5rem] lg:z-20 lg:max-h-none lg:w-96 lg:rounded-xl"
+          className="bg-night-2 text-snow border-hud/40 fixed inset-x-0 bottom-[12.5rem] z-30 max-h-[45dvh] overflow-y-auto rounded-t-xl border p-5 shadow-xl lg:inset-x-auto lg:top-28 lg:bottom-36 lg:left-[19.5rem] lg:z-20 lg:max-h-none lg:w-96 lg:rounded-xl"
         >
           <button
             type="button"

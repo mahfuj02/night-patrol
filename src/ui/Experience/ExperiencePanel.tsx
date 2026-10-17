@@ -35,7 +35,7 @@ export function ExperiencePanel() {
   return (
     <aside
       aria-labelledby={headingId}
-      className="bg-night-2 text-snow border-hud/40 fixed inset-x-0 bottom-[9.5rem] z-10 max-h-[60dvh] overflow-y-auto rounded-t-xl border p-5 shadow-xl lg:inset-x-auto lg:top-28 lg:right-3 lg:bottom-36 lg:max-h-none lg:w-[28rem] lg:rounded-xl"
+      className="bg-night-2 text-snow border-hud/40 fixed inset-x-0 bottom-[12.5rem] z-10 max-h-[60dvh] overflow-y-auto rounded-t-xl border p-5 shadow-xl lg:inset-x-auto lg:top-28 lg:right-3 lg:bottom-36 lg:max-h-none lg:w-[28rem] lg:rounded-xl"
     >
       <div className="mb-3 flex items-center justify-between gap-3">
         <h2 id={headingId} className="text-street text-lg font-semibold">

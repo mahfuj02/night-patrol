@@ -72,30 +72,29 @@ test.describe('drive (WebGL)', () => {
     await expect(status(page)).toContainText(`Stop 2 of ${total}: ${stops[1]!.title}`);
     await page.keyboard.press('Space');
     await expect(status(page)).toContainText(`Stop 3 of ${total}: ${stops[2]!.title}`);
+    // Backward input brakes: the car stops where it is, and offers to turn round. It never goes back.
     await page.keyboard.press('PageUp');
-    await expect(status(page)).toContainText(`Stop 2 of ${total}`);
-    await page.keyboard.press('Shift+Space');
-    await expect(status(page)).toContainText(`Stop 1 of ${total}`);
+    await expect(page.getByText(/To drive the other way, press Turn around/)).toBeVisible();
+    await page.keyboard.press('PageDown');
+    await expect(page.getByText(/To drive the other way/)).toHaveCount(0);
   });
 
-  test('the wheel drives to the end of the route', async ({ page }) => {
+  test('the wheel drives the car on, and scrolling back brakes it', async ({ page }) => {
     await openHome(page);
     await page.mouse.move(400, 300);
-    for (let i = 0; i < 12; i++) await page.mouse.wheel(0, 2000);
-    await expect(status(page)).toContainText(
-      `Stop ${total} of ${total}: ${stops[total - 1]!.title}`,
-    );
-    // At the end the Next button becomes New patrol (see shift.spec.ts).
-    await expect(page.getByRole('button', { name: 'New patrol ›' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Next stop ›' })).toHaveCount(0);
+    for (let i = 0; i < 3; i++) await page.mouse.wheel(0, 100);
+    // Driving on: between stops now, heading out.
+    await expect(page.getByText('En route · outbound')).toBeVisible();
+    await page.mouse.wheel(0, -100);
+    await expect(page.getByText(/To drive the other way, press Turn around/)).toBeVisible();
   });
 
-  test('Next and Prev buttons work with the mouse', async ({ page }) => {
+  test('Next stop and Brake buttons work with the mouse', async ({ page }) => {
     await openHome(page);
     await page.getByRole('button', { name: 'Next stop ›' }).click();
     await expect(status(page)).toContainText(`Stop 2 of ${total}`);
-    await page.getByRole('button', { name: '‹ Prev' }).click();
-    await expect(status(page)).toContainText(`Stop 1 of ${total}`);
+    await page.getByRole('button', { name: '‹ Brake' }).click();
+    await expect(page.getByText(/To drive the other way, press Turn around/)).toBeVisible();
   });
 
   test('keyboard users are not trapped: Tab reaches the link and buttons, Space acts once', async ({
@@ -105,7 +104,7 @@ test.describe('drive (WebGL)', () => {
     await page.keyboard.press('Tab');
     await expect(page.getByRole('link', { name: 'Simple view' })).toBeFocused();
     await page.keyboard.press('Tab');
-    await expect(page.getByRole('button', { name: '‹ Prev' })).toBeFocused();
+    await expect(page.getByRole('button', { name: '‹ Brake' })).toBeFocused();
     await page.keyboard.press('Tab');
     const next = page.getByRole('button', { name: 'Next stop ›' });
     await expect(next).toBeFocused();

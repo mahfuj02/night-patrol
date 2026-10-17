@@ -65,11 +65,16 @@ describe('Subtitles', () => {
 
   it('reuses the outbound line heading back unless the stop has a return line of its own', () => {
     render(<Subtitles />);
+    // The campus was on the left going out, and is on the right coming back.
     act(() => arriveAt(indexOf('rrc-campus'), -1));
-    expect(region()).toHaveTextContent('RRC campus on your left.');
+    expect(region()).toHaveTextContent('RRC campus on your right.');
+    expect(region()).not.toHaveTextContent('on your left');
     act(() => arriveAt(indexOf('dispatch'), -1));
     expect(region()).toHaveTextContent('Unit 02, heading back to base.');
     expect(region()).not.toHaveTextContent('starting patrol');
+    // Portage & Main has no return line, so its outbound one is reused.
+    act(() => arriveAt(indexOf('portage-main'), -1));
+    expect(region()).toHaveTextContent('the wind at Portage and Main');
   });
 
   it('says the call that starts the patrol on the first lap only', () => {

@@ -31,6 +31,7 @@ export const stops: Stop[] = [
     kind: 'education',
     contentRef: 'rrc-diploma',
     radioId: 'rrc-campus',
+    radioReturn: 'rrc-campus-return',
   },
   {
     id: 'exchange-warehouses',
@@ -41,6 +42,7 @@ export const stops: Stop[] = [
     kind: 'project',
     contentRef: 'eventflow',
     radioId: 'exchange-warehouses',
+    radioReturn: 'exchange-warehouses-return',
   },
   {
     id: 'city-services',
@@ -51,6 +53,7 @@ export const stops: Stop[] = [
     kind: 'project',
     contentRef: 'civictrack',
     radioId: 'city-services',
+    radioReturn: 'city-services-return',
   },
   {
     id: 'portage-main',

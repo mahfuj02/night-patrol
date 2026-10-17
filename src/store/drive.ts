@@ -222,8 +222,14 @@ export const useDriveStore = create<DriveState>((set, get) => {
       move(0, () => jumpTo(stopIndex, index), stopIndex, index);
     },
     openStation: () => {
-      const { openable, station, shift, turnRequest } = get();
-      if (openable !== null && station.phase === 'idle' && shift === 'idle' && !turnRequest) {
+      const { openable, station, shift, turnRequest, arc } = get();
+      if (
+        openable !== null &&
+        station.phase === 'idle' &&
+        shift === 'idle' &&
+        !turnRequest &&
+        !arc
+      ) {
         set({ pendingOpen: null });
         dispatch({ type: 'open', index: openable });
       }
