@@ -396,6 +396,12 @@ export const UiCopySchema = z.object({
   }),
   labels: z.object({ stack: z.string(), problem: z.string(), built: z.string() }),
   checkpoint: z.object({ teaser: z.string() }),
+  notFound: z.object({
+    heading: z.string(),
+    body: z.string(),
+    backToDrive: z.string(),
+    simple: z.string(),
+  }),
   sound: z.object({ on: z.string(), off: z.string() }),
   shortcuts: z.object({
     open: z.string(),
