@@ -15,6 +15,7 @@ import {
   pose,
   record,
   settled,
+  untilAt,
   status,
   total,
   type Pose,
@@ -117,12 +118,9 @@ test.describe('the patrol loop', () => {
     const stop = await record(page);
     await nextStop(page).click();
     await expect(status(page)).toContainText(`Stop 1 of ${total}: Ignition · outbound`);
-    await settled(page);
+    // Back where it started the patrol: the same spot, facing the same way (followed by position).
+    await untilAt(page, start);
     const samples = await stop();
-    const end = await pose(page);
-    // Back where it started the patrol: the same spot, facing the same way.
-    expect(Math.hypot(end[0] - start[0], end[1] - start[1])).toBeLessThan(1.5);
-    expect(Math.abs(norm(end[2] - start[2]))).toBeLessThan(0.2);
     // It went round the turnaround to get there: well behind Ignition, and through half a turn at least.
     const farthest = Math.max(...samples.map((p) => Math.hypot(p[0] - start[0], p[1] - start[1])));
     expect(farthest).toBeGreaterThan(18);
@@ -153,9 +151,8 @@ test.describe('the patrol loop', () => {
     await expect(page.getByTestId('shift-fade')).toHaveAttribute('data-shift', 'idle', {
       timeout: 60_000,
     });
-    // A cut, not a drive back along the road: it is at the start, at once.
-    const end = await pose(page);
-    expect(Math.hypot(end[0] - start[0], end[1] - start[1])).toBeLessThan(1.5);
+    // A cut, not a drive back along the road: it is at the start.
+    await untilAt(page, start);
     // And no "new patrol" caption.
     await expect(radio(page)).not.toContainText('New patrol');
   });

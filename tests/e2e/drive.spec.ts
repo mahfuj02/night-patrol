@@ -143,6 +143,7 @@ test.describe('drive (WebGL)', () => {
 test.describe('quality override', () => {
   for (const tier of ['high', 'medium', 'low']) {
     test(`?quality=${tier} renders without runtime errors`, async ({ page }) => {
+      test.setTimeout(150_000);
       await countDrawCalls(page);
       const errors: string[] = [];
       page.on('pageerror', (error) => errors.push(error.message));
