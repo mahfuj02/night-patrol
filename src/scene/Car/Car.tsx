@@ -46,8 +46,9 @@ export function Car() {
         color: world[CAR_COLOURS[material]],
         roughness: material === 'glass' ? 0.15 : material === 'shell' ? 0.45 : 0.85,
         metalness: material === 'shell' ? 0.2 : 0,
-        emissive: material === 'bar' ? world.lightBar : '#000000',
-        emissiveIntensity: material === 'bar' ? 0.9 : 0,
+        emissive:
+          material === 'bar' ? world.lightBar : material === 'shell' ? world.carShell : '#000000',
+        emissiveIntensity: material === 'bar' ? 0.9 : material === 'shell' ? 0.22 : 0,
       });
     return {
       shell: make('shell'),
