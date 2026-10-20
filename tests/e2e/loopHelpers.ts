@@ -83,6 +83,11 @@ export async function atTheForks(page: Page) {
     timeout: MANEUVER,
   });
   await expect(status(page)).toContainText(`Stop ${total} of ${total}`, { timeout: MANEUVER });
+  // The car is back on the road only when the Open button is offered again: until then it is still
+  // backing out of the bay, and driving on is ignored.
+  await expect(page.getByRole('button', { name: 'Open Contact' })).toBeVisible({
+    timeout: MANEUVER,
+  });
   await settled(page);
 }
 
