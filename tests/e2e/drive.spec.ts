@@ -83,8 +83,8 @@ test.describe('drive (WebGL)', () => {
     await openHome(page);
     await page.mouse.move(400, 300);
     for (let i = 0; i < 3; i++) await page.mouse.wheel(0, 100);
-    // Driving on: between stops now, heading out.
-    await expect(page.getByText('En route · outbound')).toBeVisible();
+    // Driving on, heading out: the car is never turned or sent back by scrolling.
+    await expect(page.getByRole('heading', { name: 'Route · outbound' })).toBeVisible();
     await page.mouse.wheel(0, -100);
     await expect(page.getByText(/To drive the other way, press Turn around/)).toBeVisible();
   });
