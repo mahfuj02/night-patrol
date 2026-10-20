@@ -18,6 +18,7 @@ import { RouteMap } from '@/ui/RouteMap';
 import { SkillsPanel } from '@/ui/Skills';
 import { CabinOverlay } from '@/ui/Cabin';
 import { ShortcutsOverlay } from '@/ui/Shortcuts';
+import { SoundDriver, SoundToggle } from '@/ui/Sound';
 import { StationControls, StationWall } from '@/ui/Station';
 
 // The 3D scene is only ever loaded in the browser, and only when WebGL is available.
@@ -80,6 +81,8 @@ export function HomeExperience() {
         <CabinOverlay />
         <ShiftFade />
         <ShortcutsOverlay />
+        <SoundToggle />
+        <SoundDriver />
       </div>
       <noscript>
         <Link href="/simple" className="text-hud fixed bottom-4 left-4 underline">

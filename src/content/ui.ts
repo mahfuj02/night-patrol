@@ -27,6 +27,7 @@ export const simpleCopy: UiCopy = {
     noWebGL: 'This browser cannot show the 3D drive, but the simple version has everything.',
   },
   checkpoint: { teaser: 'Also' },
+  sound: { on: 'Sound: on', off: 'Sound: off' },
   shortcuts: {
     open: 'Keyboard shortcuts',
     heading: 'Keyboard shortcuts',
