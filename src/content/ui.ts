@@ -27,6 +27,20 @@ export const simpleCopy: UiCopy = {
     noWebGL: 'This browser cannot show the 3D drive, but the simple version has everything.',
   },
   checkpoint: { teaser: 'Also' },
+  shortcuts: {
+    open: 'Keyboard shortcuts',
+    heading: 'Keyboard shortcuts',
+    close: 'Close',
+    items: [
+      { keys: 'Down, Right', action: 'Drive on' },
+      { keys: 'Up, Left', action: 'Brake to a stop' },
+      { keys: 'Space, Page Down', action: 'Drive to the next stop' },
+      { keys: 'Page Up, Shift+Space', action: 'Brake' },
+      { keys: 'Tab', action: 'Move between the buttons and the route map' },
+      { keys: 'Escape', action: 'Leave a station or close a panel' },
+      { keys: '?', action: 'Show this list' },
+    ],
+  },
   hud: { radioLabel: 'Dispatch radio', sign: 'Sign: {name}. {slogan}' },
   menu: {
     toggle: 'Route map',

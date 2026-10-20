@@ -16,6 +16,7 @@ import { ExperiencePanel } from '@/ui/Experience';
 import { LibraryPanel } from '@/ui/Library';
 import { RouteMap } from '@/ui/RouteMap';
 import { SkillsPanel } from '@/ui/Skills';
+import { ShortcutsOverlay } from '@/ui/Shortcuts';
 import { StationControls, StationWall } from '@/ui/Station';
 
 // The 3D scene is only ever loaded in the browser, and only when WebGL is available.
@@ -76,6 +77,7 @@ export function HomeExperience() {
         <ContactPanel />
         <Subtitles />
         <ShiftFade />
+        <ShortcutsOverlay />
       </div>
       <noscript>
         <Link href="/simple" className="text-hud fixed bottom-4 left-4 underline">

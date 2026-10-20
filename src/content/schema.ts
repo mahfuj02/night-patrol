@@ -394,6 +394,12 @@ export const UiCopySchema = z.object({
   }),
   labels: z.object({ stack: z.string(), problem: z.string(), built: z.string() }),
   checkpoint: z.object({ teaser: z.string() }),
+  shortcuts: z.object({
+    open: z.string(),
+    heading: z.string(),
+    close: z.string(),
+    items: z.array(z.object({ keys: z.string(), action: z.string() })).min(1),
+  }),
   hud: z.object({
     radioLabel: z.string(),
     /** Read out at a project stop for screen readers. `{name}` and `{slogan}` are the sign's. */
