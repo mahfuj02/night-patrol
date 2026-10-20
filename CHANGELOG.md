@@ -13,6 +13,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ### Added
 
+- Phase 10, the car (`docs/car.md`): the owner's white sedan replaces the placeholder box car: sloped hood and boot, tinted glass cabin, amber roof light bar, black rims, a faint cyan underglow and a "MAHFUJ02" plate (text from `profile.plate`, stylised, not a copy of a real plate). Original primitives, no manufacturer marks, about 30 meshes.
 - Phase 9, sound (`docs/sound.md`): a "Sound: off / on" button (off by default, remembered, never autoplays, not even from a saved "on" until the first click or key). Engine hum and tyres on snow follow the car's speed, a wiper swish matches the cabin wipers, and a radio blip plays as a captioned line comes in. Everything is synthesised with the Web Audio API: no audio files, nothing to license, loaded only once sound is on.
 - Phase 6, the cabin (`docs/cabin.md`): the dark dashboard edge with the roof light bar glow, a Bangladesh flag, a coffee cup and two windshield wipers that sweep every ten seconds (parked under reduced motion). Decoration only: no text, hidden from assistive tech.
 - Phase 8b, the keyboard shortcuts overlay: press `?` (or the round ? button on a wide screen) to list every way to drive; Escape or Close shuts it and gives focus back. Any stop is still at most two clicks away on any device (the route map, a bottom sheet on a phone).

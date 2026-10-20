@@ -48,6 +48,8 @@ export const ProfileSchema = z.object({
     linkedin: url,
     portfolio: url,
   }),
+  /** The text on the car's licence plate (the owner's public GitHub username). */
+  plate: z.string().min(1).max(10),
   /** Where the resume PDF lives (on mahfuj.dev). */
   resumeUrl: url,
 });

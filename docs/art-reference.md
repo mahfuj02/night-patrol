@@ -183,3 +183,7 @@ Notes:
 - **Reduced motion:** static or very slow snow, no flicker, no camera shake.
 - **Shelter stop:** nothing here changes the rule: warm windows, a quiet captioned line, and links only.
 - **No logos or trademarks.** Landmarks are silhouettes, with only the text allowed by the content files.
+
+## The car (Phase 10)
+
+The owner's white sedan, modelled from primitives with no manufacturer marks (rule 10): `car-shell` (white body and roof), `car-glass` (tinted windows), `car-trim` (bumpers, tyres, grille), `car-rim` (black rims), `light-bar` (the amber roof bar, emissive), `underglow` (a faint cyan glow under the car) and `plate-bg` and `plate-ink` (the licence plate, a stylised plate that is not a copy of any real one; its text comes from `profile.plate`).

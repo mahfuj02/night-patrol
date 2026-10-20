@@ -18,5 +18,6 @@ export const profile: Profile = {
     linkedin: 'https://www.linkedin.com/in/mahfuj02/',
     portfolio: 'https://mahfuj.dev',
   },
+  plate: 'MAHFUJ02',
   resumeUrl: 'https://mahfuj.dev/resume/MahfujAhmed_Resume.pdf',
 };
