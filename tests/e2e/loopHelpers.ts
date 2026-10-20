@@ -112,3 +112,19 @@ export async function record(page: Page) {
       return w.__poses;
     }) as Promise<Pose[]>;
 }
+
+/** Waits until the car is at `target` (the same spot, facing the same way), by where it actually is. */
+export async function untilAt(page: Page, target: Pose, timeout = MANEUVER) {
+  await expect
+    .poll(
+      async () => {
+        const p = await pose(page);
+        return (
+          Math.hypot(p[0] - target[0], p[1] - target[1]) < 1.5 &&
+          Math.abs(norm(p[2] - target[2])) < 0.2
+        );
+      },
+      { timeout, intervals: [700] },
+    )
+    .toBe(true);
+}
