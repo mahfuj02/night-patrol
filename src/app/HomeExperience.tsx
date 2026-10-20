@@ -16,6 +16,7 @@ import { ExperiencePanel } from '@/ui/Experience';
 import { LibraryPanel } from '@/ui/Library';
 import { RouteMap } from '@/ui/RouteMap';
 import { SkillsPanel } from '@/ui/Skills';
+import { CabinOverlay } from '@/ui/Cabin';
 import { ShortcutsOverlay } from '@/ui/Shortcuts';
 import { StationControls, StationWall } from '@/ui/Station';
 
@@ -76,6 +77,7 @@ export function HomeExperience() {
         <ExperiencePanel />
         <ContactPanel />
         <Subtitles />
+        <CabinOverlay />
         <ShiftFade />
         <ShortcutsOverlay />
       </div>
