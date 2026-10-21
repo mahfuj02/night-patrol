@@ -60,7 +60,7 @@ export const simpleCopy: UiCopy = {
     driving: 'Driving to {name}…',
     arrived: 'Arrived: {name}',
     stopName: '{title}, stop {n} of {total}',
-    stationName: '{title}, {section} station',
+    stationName: '{title} {section}, station',
     current: 'you are here',
     close: 'Close route map',
     driveToIt: 'Drive to it',
