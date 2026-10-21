@@ -42,8 +42,11 @@ export interface RouteModel {
   intersections: { id: string; from: number; to: number }[];
   /** Intersections and the station bays: where the plowed ridge and the tree rows stop. */
   clearings: { id: string; from: number; to: number }[];
-  /** Where the car drives: the centre of the right-hand lane at `u`, written into `out`. */
-  lanePointAt: (u: number, out?: Vector3) => Vector3;
+  /**
+   * Where the car drives: the centre of the right-hand lane at `u`, written into `out`. Going the
+   * other way (`direction` -1, back toward the start) its right-hand lane is on the route's left.
+   */
+  lanePointAt: (u: number, out?: Vector3, direction?: 1 | -1) => Vector3;
   /** True if `u` falls inside an intersection, widened by `margin` metres either side. */
   inIntersection: (u: number, margin?: number) => boolean;
 }
@@ -87,11 +90,12 @@ export function createRouteModel(
     widthAt: (u) => interpolateWidth(fractions, widths, u),
     intersections,
     clearings,
-    lanePointAt: (u, out = new Vector3()) => {
+    lanePointAt: (u, out = new Vector3(), direction = 1) => {
       curve.getPointAt(u, out);
       curve.getTangentAt(u, laneTangent);
-      // To the right of the direction of travel: (-tangent.z, 0, tangent.x).
-      const offset = driveOffset(interpolateWidth(fractions, widths, u));
+      // To the right of the direction of travel: (-tangent.z, 0, tangent.x), turned about when going
+      // the other way.
+      const offset = driveOffset(interpolateWidth(fractions, widths, u)) * direction;
       return out.set(out.x - laneTangent.z * offset, out.y, out.z + laneTangent.x * offset);
     },
     inIntersection: (u, margin = 0) =>

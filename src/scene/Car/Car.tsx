@@ -4,8 +4,8 @@ import { Vector3, type Group, type Object3D, type SpotLight } from 'three';
 import { palette, world } from '@/lib/palette';
 import { carState } from '../carState';
 import { progress } from '../progress';
-import { routeModel } from '../Road/route';
 import { stationView } from '../Stations/stationView';
+import { loopPoseAt } from '../Road/loop';
 
 const HEADLIGHT_COLOR = '#FFE9C4';
 const HEADLIGHT_INTENSITY = 90;
@@ -15,6 +15,7 @@ const PARKED_AIM_UP = 3.2;
 
 const position = new Vector3();
 const tangent = new Vector3();
+const pose = { x: 0, z: 0, heading: 0 };
 
 /**
  * Placeholder low-poly car built from primitives. Local +z is forward; the group follows the
@@ -36,9 +37,12 @@ export function Car() {
       tangent.set(Math.sin(stationView.heading), 0, Math.cos(stationView.heading));
       car.rotation.y = stationView.heading;
     } else {
-      routeModel.lanePointAt(progress.t, position);
-      routeModel.curve.getTangentAt(progress.t, tangent);
-      car.rotation.y = Math.atan2(tangent.x, tangent.z);
+      // On the road: in the right-hand lane for the way it is going, facing that way (so going back
+      // toward the start it is in the other lane and faces back, never driving in reverse).
+      loopPoseAt(progress.s, pose);
+      position.set(pose.x, 0, pose.z);
+      tangent.set(Math.sin(pose.heading), 0, Math.cos(pose.heading));
+      car.rotation.y = pose.heading;
     }
     car.position.copy(position);
     carState.position.copy(position);

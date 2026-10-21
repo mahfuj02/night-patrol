@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 import { Vector3 } from 'three';
-import { easeInOut, parkingPath, vectorHeading, type ParkingPath } from '@/lib/parking';
+import { easeInOut, parkingPath, type ParkingPath } from '@/lib/parking';
 import {
   BACK_OUT_SECONDS,
   TURN_IN_SECONDS,
@@ -12,18 +12,31 @@ import {
 import { fitDistance, isWallLegible } from '@/lib/stationCamera';
 import { matrix3dFor, quadWidth, type Quad } from '@/lib/homography';
 import { wallDom } from '@/lib/wallDom';
+import { stops } from '@/content/stops';
+import { signedGap } from '@/lib/loopRoute';
+import { STOP_VISITS, patrolLoop as loop } from '@/lib/patrolLoop';
 import { useDriveStore } from '@/store/drive';
 import { progress } from '../progress';
-import { routeModel } from '../Road/route';
+import { loopPoseAt } from '../Road/loop';
 import { CAR_HALF_LENGTH } from './stationGeometry';
 import { stationFrames } from './stationFrames';
 import { stationView } from './stationView';
 
-/** How close (in route `t`) the car must be to a stop for a station chosen from the map to open. */
-const ARRIVED = 0.002;
+/** How close (in metres of driving) the car must be to a stop for a station chosen from the map to open. */
+const ARRIVED = 2.5;
 
-const lane = new Vector3();
-const tangent = new Vector3();
+/** The stop index of every station, to tell when the car has arrived at one from either direction. */
+const stationStopIndex = stationFrames.map((frame) =>
+  stops.findIndex((stop) => stop.id === frame.station.stopId),
+);
+
+/** True when the car is at a visit to the stop (outbound or heading back). */
+function atStopVisit(stopIndex: number): boolean {
+  return STOP_VISITS.some(
+    (v) => v.stop === stopIndex && Math.abs(signedGap(loop, progress.s, v.s)) < ARRIVED,
+  );
+}
+
 const corner = new Vector3();
 
 /** Progress of the wall content fade, over the later part of the turn in. */
@@ -51,20 +64,14 @@ export function StationDriver({ reducedMotion }: { reducedMotion: boolean }) {
 
     // A station chosen from the map opens as soon as the car has arrived at its stop.
     if (pendingOpen !== null && station.phase === 'idle') {
-      const target = stationFrames[pendingOpen];
-      if (target && Math.abs(progress.t - target.stopT) < ARRIVED) openStation();
+      if (atStopVisit(stationStopIndex[pendingOpen] ?? -1)) openStation();
     }
     const frame = station.index !== null ? stationFrames[station.index] : undefined;
 
     if (station.phase !== l.phase) {
       if (station.phase === 'turning-in' && frame) {
         // From where the car is on the road, with the road's heading, to the bay.
-        routeModel.lanePointAt(progress.t, lane);
-        routeModel.curve.getTangentAt(progress.t, tangent);
-        l.path = parkingPath(
-          { x: lane.x, z: lane.z, heading: vectorHeading(tangent.x, tangent.z) },
-          frame.geometry.car,
-        );
+        l.path = parkingPath(loopPoseAt(progress.s), frame.geometry.car);
         l.p = 0;
         l.s = 0;
       } else if (station.phase === 'backing-out') {

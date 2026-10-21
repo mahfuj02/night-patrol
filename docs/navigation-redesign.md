@@ -1,6 +1,6 @@
 # Navigation redesign
 
-> **Status:** the Contact station at The Forks is built (Phase 5h, see [docs/contact-station.md](contact-station.md)); all five stations now exist. The Experience station (the LIILAB office) is built (Phase 5g, see [docs/experience-station.md](experience-station.md)). The Skills station is built too (Phase 5f, see [docs/skills-station.md](skills-station.md)). The Millennium Library's building and interface are built (Phase 5e part 1, see [docs/library.md](library.md)); the interior is part 2.
+> **Status:** the continuous patrol loop is built (Phase 8a, see [docs/patrol-loop.md](patrol-loop.md) and [docs/uturn.md](uturn.md)); Prev became Brake. The Contact station at The Forks is built (Phase 5h, see [docs/contact-station.md](contact-station.md)); all five stations now exist. The Experience station (the LIILAB office) is built (Phase 5g, see [docs/experience-station.md](experience-station.md)). The Skills station is built too (Phase 5f, see [docs/skills-station.md](skills-station.md)). The Millennium Library's building and interface are built (Phase 5e part 1, see [docs/library.md](library.md)); the interior is part 2.
 >
 > **Earlier status:** the station arrival pattern and the Education station are built (Phase 5b); see [docs/stations.md](stations.md) for how. The transit-map menu is built too (Phase 5c, [docs/routemap.md](routemap.md)). Drive-by project stops are lit signs with a slogan, not popups (see [docs/adding-a-stop.md](adding-a-stop.md)); the project details live in the route map and the library. The route has been simplified (see [Simplified route](#simplified-route)). The other stations follow.
 
@@ -76,9 +76,9 @@ The Projects and Experience stations vary steps 2 to 4 (see their sections). The
 `en-route` → `at-light` (red, button shown) → `turning-in` → `parked` (content shown) → `backing-out` → `en-route`.
 
 - It lives in `src/lib/station.ts` as a pure reducer, with unit tests. The drive store holds the state and the station index; the scene reads it each frame.
-- `at-light` is the existing stop magnet at the light's `t`, so Prev, Next, wheel and the menu already know how to leave it. The magnet shrinks near another stop (`effectiveRadius`), so tight spacing is handled.
+- `at-light` is the existing stop magnet at the light's `t`, so Brake, Next, wheel and the menu already know how to leave it. The magnet shrinks near another stop (`effectiveRadius`), so tight spacing is handled.
 - Turning in and backing out are timed, not driven by scroll: about **1.6 s in and 1 to 2 s out**. While they run only Esc and the skip control act, and both jump to the end of the manoeuvre.
-- Any jump that leaves a station (menu, Prev, Next, a far wheel nudge) backs out first, and skips the animation when the jump is large.
+- Any jump that leaves a station (menu, Brake, Next, a far wheel nudge) backs out first, and skips the animation when the jump is large.
 - **Backing out is the one place the car moves backwards.** "The car never drives backwards" (Phase 8) applies to route travel only; reversing out of a bay is a manoeuvre.
 
 ### Per-station data, not hardcoded
@@ -131,7 +131,7 @@ Replaces the Phase 8 mini-map and **moves earlier** (see [Phases](#phases-and-or
 ### Layout
 
 - **Desktop:** a left-hand panel, **collapsible**, so the right side stays free for the checkpoint panel. It starts open on wide screens and collapsed on narrow ones. The collapsed state is not stored (CLAUDE.md rule 11 allows `localStorage` only for sound and quality preferences).
-- **Mobile:** a bottom sheet opened from a button next to Prev and Next, sharing the sheet the checkpoint panel uses (one sheet at a time).
+- **Mobile:** a bottom sheet opened from a button next to Brake and Next, sharing the sheet the checkpoint panel uses (one sheet at a time).
 - **Above the list:** five **section buttons** (Education, Projects, Experience, Skills, Contact). One click drives to that station and opens it.
 - **The list:** the route drawn as a **vertical transit line**, start at the top.
   - Coloured per zone: **sodium orange** Exchange District, **red-orange** downtown, **grey-green** residential, **blue** avenue, **gold** The Forks.
@@ -385,7 +385,7 @@ Any stop, station, the contact details or the resume is at most **two clicks** f
 | Draw calls                              | A building per station                                                                     | 4 to 6 frustum-culled meshes each; five stations add about 30, so about 100 against 150                                                                                                     |
 | Signal state                            | Instance colour writes                                                                     | A handful of heads, written only when a state changes                                                                                                                                       |
 | Menu in the DOM                         | A list of 8 stops (11 with the stations) and an SVG line, always mounted                   | Small; the car marker moves by transform; no layout work per frame                                                                                                                          |
-| State machine bugs                      | Scroll, Prev/Next, menu jumps and Esc during a manoeuvre                                   | A pure reducer with exhaustive tests; a Playwright flow per station; manoeuvres are timed and skippable                                                                                     |
+| State machine bugs                      | Scroll, Brake/Next, menu jumps and Esc during a manoeuvre                                  | A pure reducer with exhaustive tests; a Playwright flow per station; manoeuvres are timed and skippable                                                                                     |
 | E2E time                                | SwiftShader is slow and several accessibility tests are already slow                       | Station tests use the `low` tier; one shared flow helper                                                                                                                                    |
 | Accessibility                           | Content in a hidden 3D container, or read twice; 3D books and monitors have no semantics   | The wall, monitors and books each have a real DOM list as their accessible UI; the sheet and the wall are never both exposed; axe on every station                                          |
 | Audio                                   | Several sounds at once, and autoplay rules                                                 | Off by default; a user action starts audio; one shared mixer; captions for everything                                                                                                       |

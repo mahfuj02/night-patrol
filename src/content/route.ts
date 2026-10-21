@@ -10,8 +10,12 @@ import type { Route } from './schema';
  * TODO(content): owner to review the shape against real Winnipeg geography.
  */
 export const route: Route = {
-  lengthMetres: 1146.2,
+  lengthMetres: 1176.23,
   points: [
+    // 30 m of road behind Ignition: the lead-in to the small turnaround that puts the car back on the
+    // outbound lane at the start of each patrol (src/scene/Road/roundabout.ts).
+    { x: -29.4, z: 5.9, width: 6 },
+    { x: -14.7, z: 2.95, width: 6 },
     // Exchange District: narrow streets, tight bends
     { x: 0, z: 0, width: 6, stopId: 'ignition' },
     { x: 30, z: -6, width: 6, stopId: 'dispatch' },
@@ -118,4 +122,17 @@ export const route: Route = {
       control: 'stop',
     },
   ],
+};
+
+/**
+ * The lengths the closed patrol loop is built from, in metres (src/lib/loopRoute.ts). The runs are
+ * how far in from each end of the road the two roundabouts take the car in and let it out; the arcs
+ * are the lengths of one pass through each roundabout. src/scene/Road/loop.test.ts checks them
+ * against the real geometry, so re-cutting the roundabouts cannot leave them stale.
+ */
+export const loopMetres = {
+  startRun: 12,
+  forksRun: 14,
+  startArc: 95.66,
+  forksArc: 136.81,
 };

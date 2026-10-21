@@ -53,7 +53,7 @@ test.describe('Contact station', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await openContact(page);
     const box = await panel(page).boundingBox();
-    const prev = await page.getByRole('button', { name: '‹ Prev' }).boundingBox();
+    const prev = await page.getByRole('button', { name: '‹ Brake' }).boundingBox();
     expect(box!.x).toBeGreaterThanOrEqual(0);
     expect(box!.x + box!.width).toBeLessThanOrEqual(390);
     expect(box!.y + box!.height).toBeLessThanOrEqual(prev!.y + 1);

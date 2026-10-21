@@ -17,15 +17,14 @@ import { useDriveStore } from '@/store/drive';
 export function Subtitles() {
   const stopIndex = useDriveStore((s) => s.stopIndex);
   const atStop = useDriveStore((s) => s.atStop);
-  const shift = useDriveStore((s) => s.shift);
+  const direction = useDriveStore((s) => s.direction);
+  const laps = useDriveStore((s) => s.laps);
   const stop = stops[stopIndex];
-  // While the shift resets the dispatch line is "New patrol starting.", whatever stop the car is at.
-  const line =
-    shift !== 'idle'
-      ? radioLines.find((l) => l.id === 'new-patrol')
-      : atStop && stop?.radioId
-        ? radioLines.find((l) => l.id === stop.radioId)
-        : undefined;
+  // Heading back, a stop uses its return line if it has one, and otherwise the line it has outbound.
+  // The call that starts the patrol is only said on the first lap.
+  const lineId = direction === -1 ? (stop?.radioReturn ?? stop?.radioId) : stop?.radioId;
+  const found = atStop && lineId ? radioLines.find((l) => l.id === lineId) : undefined;
+  const line = found?.firstLapOnly && laps > 0 ? undefined : found;
   const sign = atStop && stop ? projects.find((p) => p.stopId === stop.id)?.sign : undefined;
 
   return (

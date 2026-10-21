@@ -22,6 +22,8 @@ export interface SignalHead {
   lit: 'green' | 'red';
   /** Set on a station's light: the station it belongs to. Its lamp changes with the car. */
   station?: number;
+  /** Set on a station light that faces the traffic heading back toward the start. */
+  back?: boolean;
 }
 
 export interface StopSign {
@@ -176,34 +178,42 @@ export function buildFurniture(crossings: readonly Crossing[]): Furniture {
 const STATION_MAST_AHEAD = 5;
 
 /**
- * The signals at the stations: one mast over the right-hand side of the route, a little past where
- * the car stops at the red light, with a head over each lane facing the traffic that approaches. They
- * start green; the scene turns a station's heads red as the car arrives (`station` says which).
+ * The signals at the stations, for both ways round the loop. Heading out, one mast over the right-hand
+ * side of the route stands a little past where the car stops at the red light, with a head over each
+ * lane facing the traffic that approaches. Heading back, the car stops at a light on the other side
+ * of the stop, and a second mast stands over the route's left-hand side, past that light, facing the
+ * traffic that comes back. They start green; the scene turns a station's heads red as the car
+ * arrives (`station` says which, `back` which way).
  */
 export function buildStationLights(
   model: RouteModel,
-  stations: readonly { index: number; lightT: number }[],
+  stations: readonly { index: number; lightT: number; stopT: number }[],
 ): { masts: Mast[]; heads: SignalHead[] } {
   const out: { masts: Mast[]; heads: SignalHead[] } = { masts: [], heads: [] };
-  for (const { index, lightT } of stations) {
-    const u = lightT + STATION_MAST_AHEAD / model.length;
-    const centre = model.curve.getPointAt(u);
-    const t = model.curve.getTangentAt(u);
-    t.y = 0;
-    t.normalize();
-    const right = new Vector3(-t.z, 0, t.x);
-    const half = model.widthAt(u) / 2;
-    const reach = half + POLE_OFFSET;
-    const part = mast(
-      centre.clone().addScaledVector(right, reach),
-      right.clone().negate(),
-      reach,
-      driveOffset(half * 2),
-      t.clone().negate(),
-      'green',
-    );
-    out.masts.push(part.mast);
-    out.heads.push(...part.heads.map((head) => ({ ...head, station: index })));
+  for (const { index, lightT, stopT } of stations) {
+    for (const back of [false, true]) {
+      // Heading back the light is as far past the stop as it is before it heading out.
+      const at = back ? 2 * stopT - lightT : lightT;
+      const u = at + ((back ? -1 : 1) * STATION_MAST_AHEAD) / model.length;
+      const centre = model.curve.getPointAt(u);
+      const t = model.curve.getTangentAt(u);
+      t.y = 0;
+      t.normalize();
+      const right = new Vector3(-t.z, 0, t.x);
+      const half = model.widthAt(u) / 2;
+      const reach = half + POLE_OFFSET;
+      const side = back ? -1 : 1;
+      const part = mast(
+        centre.clone().addScaledVector(right, reach * side),
+        right.clone().multiplyScalar(-side),
+        reach,
+        driveOffset(half * 2),
+        back ? t.clone() : t.clone().negate(),
+        'green',
+      );
+      out.masts.push(part.mast);
+      out.heads.push(...part.heads.map((head) => ({ ...head, station: index, back })));
+    }
   }
   return out;
 }

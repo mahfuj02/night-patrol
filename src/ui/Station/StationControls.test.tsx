@@ -2,8 +2,9 @@ import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { stations, stops } from '@/content';
-import { INITIAL_STATION } from '@/lib/station';
 import { useDriveStore } from '@/store/drive';
+import { MAGNETS } from '@/lib/patrolLoop';
+import { placeCar, resetDrive } from '@/store/driveTestUtils';
 import { DriveControls } from '../DriveControls';
 import { StationControls } from './StationControls';
 
@@ -30,8 +31,7 @@ function park() {
 describe('StationControls', () => {
   beforeEach(() => {
     act(() => {
-      useDriveStore.setState({ station: INITIAL_STATION, wallLegible: true });
-      state().goToStop(0);
+      resetDrive();
     });
   });
 
@@ -50,19 +50,16 @@ describe('StationControls', () => {
     expect(screen.queryByRole('button', { name: 'Open Education' })).toBeNull();
   });
 
-  it('offers it at the red light before the stop too', () => {
+  it('offers it at the red light before the stop too, heading out and heading back', () => {
     render(<StationControls />);
-    act(() => {
-      state().goToStop(RRC);
-      state().prev();
-    });
-    // Prev goes to the stop before; walk to the light with a nudge instead.
-    act(() => {
-      state().goToStop(RRC);
-      state().nudge(-0.016);
-    });
-    expect(state().atLight).toBe(0);
-    expect(screen.getByRole('button', { name: 'Open Education' })).toBeInTheDocument();
+    for (const direction of [1, -1] as const) {
+      const light = MAGNETS.find(
+        (m) => m.kind === 'light' && m.ref === 0 && m.direction === direction,
+      )!;
+      act(() => placeCar(light.s));
+      expect(state().atLight).toBe(0);
+      expect(screen.getByRole('button', { name: 'Open Education' })).toBeInTheDocument();
+    }
   });
 
   it('does not take focus when it appears', () => {
@@ -75,7 +72,7 @@ describe('StationControls', () => {
     const user = userEvent.setup();
     renderBoth();
     act(() => state().goToStop(RRC));
-    screen.getByRole('button', { name: 'Next stop ›' }).focus();
+    screen.getByRole('button', { name: 'Start over' }).focus();
     await user.tab();
     expect(screen.getByRole('button', { name: 'Open Education' })).toHaveFocus();
   });

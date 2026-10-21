@@ -2,9 +2,9 @@ import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { allProjects, projects, stations, stops } from '@/content';
-import { INITIAL_STATION } from '@/lib/station';
 import { progress } from '@/scene/progress';
-import { STOP_TS, useDriveStore } from '@/store/drive';
+import { useDriveStore } from '@/store/drive';
+import { resetDrive, visitOf } from '@/store/driveTestUtils';
 import { RouteMap } from './RouteMap';
 
 const state = () => useDriveStore.getState();
@@ -25,8 +25,7 @@ describe('RouteMap', () => {
   beforeEach(() => {
     stubViewport(true);
     act(() => {
-      useDriveStore.setState({ station: INITIAL_STATION, pendingOpen: null, wallLegible: true });
-      state().goToStop(0);
+      resetDrive();
     });
   });
   afterEach(() => vi.unstubAllGlobals());
@@ -55,7 +54,7 @@ describe('RouteMap', () => {
     render(<RouteMap />);
     const stop = stops.findIndex((s) => s.id === 'dispatch');
     await user.click(screen.getByRole('button', { name: new RegExp(stops[stop]!.title) }));
-    expect(state().target).toBe(STOP_TS[stop]);
+    expect(state().target).toBeCloseTo(visitOf(stop).s, 6);
     expect(screen.getByRole('status')).toHaveTextContent(`Driving to ${stops[stop]!.title}`);
   });
 
@@ -64,7 +63,7 @@ describe('RouteMap', () => {
     render(<RouteMap />);
     const stop = stops.findIndex((s) => s.id === 'dispatch');
     await user.click(screen.getByRole('button', { name: new RegExp(stops[stop]!.title) }));
-    progress.t = STOP_TS[stop]!;
+    progress.s = visitOf(stop).s;
     expect(await screen.findByText(`Arrived: ${stops[stop]!.title}`)).toBeInTheDocument();
   });
 
@@ -83,7 +82,7 @@ describe('RouteMap', () => {
     const button = screen.getByRole('button', { name: /Education station/ });
     button.focus();
     await user.keyboard('{Enter}');
-    expect(state().target).toBe(STOP_TS[RRC]);
+    expect(state().target).toBeCloseTo(visitOf(RRC).s, 6);
     expect(state().pendingOpen).toBe(0);
   });
 
@@ -117,7 +116,7 @@ describe('RouteMap', () => {
     await user.click(screen.getByRole('button', { name: 'EventFlow' }));
     await user.click(screen.getByRole('button', { name: 'Drive to it' }));
     const stop = stops.findIndex((s) => s.id === 'exchange-warehouses');
-    expect(state().target).toBe(STOP_TS[stop]);
+    expect(state().target).toBeCloseTo(visitOf(stop).s, 6);
   });
 
   it('lists only the published projects', () => {

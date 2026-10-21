@@ -7,6 +7,14 @@ export const radioLines: RadioLine[] = [
     id: 'dispatch',
     stopId: 'dispatch',
     text: 'Unit 02, Mahfuj, Full Stack Developer, starting patrol.',
+    firstLapOnly: true,
+  },
+  {
+    // Heading back past Dispatch, on the return half of the patrol loop.
+    id: 'dispatch-return',
+    stopId: 'dispatch',
+    // TODO(content): owner to tweak the wording.
+    text: 'Unit 02, heading back to base.',
   },
   {
     id: 'rrc-campus',
@@ -27,16 +35,28 @@ export const radioLines: RadioLine[] = [
     text: 'City services building on your left. Every request logged, tracked and closed out. CivicTrack.',
   },
   {
+    // Heading back, the buildings that were on the left are on the right.
+    id: 'rrc-campus-return',
+    stopId: 'rrc-campus',
+    // TODO(content): owner to tweak the wording.
+    text: 'Unit 02, Exchange District. RRC campus on your right. This is where my Winnipeg tech journey started.',
+  },
+  {
+    id: 'exchange-warehouses-return',
+    stopId: 'exchange-warehouses',
+    // TODO(content): owner to tweak the wording.
+    text: 'Show tonight at the old warehouse. Tickets running through EventFlow, on your right.',
+  },
+  {
+    id: 'city-services-return',
+    stopId: 'city-services',
+    // TODO(content): owner to tweak the wording.
+    text: 'City services building on your right. Every request logged, tracked and closed out. CivicTrack.',
+  },
+  {
     id: 'portage-main',
     stopId: 'portage-main',
     text: 'Dispatch, the wind at Portage and Main is doing its usual thing. Hold your hat.',
   },
   { id: 'shift-complete', stopId: 'the-forks', text: 'Shift complete.' },
-  {
-    // Shown while the view fades out and the drive starts again (stopId is where it starts).
-    id: 'new-patrol',
-    stopId: 'ignition',
-    // TODO(content): owner to tweak the wording.
-    text: 'New patrol starting.',
-  },
 ];

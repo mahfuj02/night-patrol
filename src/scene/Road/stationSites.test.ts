@@ -8,11 +8,11 @@ import { routeModel } from './route';
  * PRs; this test keeps the road ready for them, so re-cutting the route cannot bend a site by accident.
  */
 const STATION_SITES = [
-  { id: 'millennium-library', at: 600 },
-  { id: 'skills-station', at: 700 },
-  { id: 'liilab-office', at: 940 },
-  // The end of the route (1,108 m): the Contact station's bay and red light are in the last 50 m.
-  { id: 'the-forks', at: 1108 },
+  { id: 'millennium-library', at: 630 },
+  { id: 'skills-station', at: 730 },
+  { id: 'liilab-office', at: 970 },
+  // The end of the route (1,138 m): the Contact station's bay and red light are in the last 50 m.
+  { id: 'the-forks', at: 1138 },
 ] as const;
 
 /** How far each side of the stop the road must stay straight: the reserved footprint and the bay. */
