@@ -1,6 +1,7 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import { simpleCopy } from '@/content/ui';
+import { palette } from '@/lib/palette';
 import { getSiteUrl } from '@/lib/site';
 import './globals.css';
 
@@ -11,7 +12,15 @@ export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: simpleCopy.site.title,
   description: simpleCopy.site.description,
+  openGraph: {
+    title: simpleCopy.site.title,
+    description: simpleCopy.site.description,
+    type: 'website',
+  },
+  twitter: { card: 'summary_large_image' },
 };
+
+export const viewport: Viewport = { themeColor: palette.night, colorScheme: 'dark' };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -402,7 +402,7 @@ One branch per stop or small group, e.g. `feat/p5-stop-exchange-eventflow`, `fea
 - Distant skyline: Golden Boy, towers
 - **Done when:** every stop in §2.2 is reachable and shows its panel.
 
-### Phase 6: Dashboard skills + patrol log  → `v0.6.0`
+### Phase 6: Dashboard skills + patrol log  → `v0.6.0` (built as the cabin, `docs/cabin.md`; the skills and experience live at their stations)
 Branch: `feat/p6-dashboard-patrol-log`
 - Interior dashboard view (camera can glance down, or HUD overlay of dashboard). The cabin matches the owner's car (see Phase 10): dark, tinted glass, amber light bar glow on the roof lining
 - Windshield and wiper animation (needs the interior view; moved here from Phase 3). Wipers respect reduced motion (static, or a single slow wipe)
@@ -430,14 +430,14 @@ Branch: `feat/p8-minimap-mobile`
 - E2E for mini-map and keyboard
 - **Done when:** any stop is ≤ 2 clicks from anywhere on any device.
 
-### Phase 9: Sound  → `v0.9.0`
+### Phase 9: Sound  → `v0.9.0` (built, `docs/sound.md`)
 Branch: `feat/p9-sound`
 - SoundToggle (off by default, persisted)
 - Howler lazy-loaded; engine hum, tires on snow, wipers, radio blips
 - Original or properly licensed CC0 audio only; credits in README
 - **Done when:** sound adds atmosphere and never autoplays.
 
-### Phase 10: Art pass (hand-modelled landmarks)  → `v0.10.0`
+### Phase 10: Art pass (hand-modelled landmarks)  → `v0.10.0` (built, `docs/car.md`)
 Branches: `feat/p10-models-<name>`
 - Replace landmark blockouts with original hand-modelled detail (each real Winnipeg landmark, the car). Procedural buildings and props stay procedural. No purchased or downloaded models.
 - **The car** is the owner's own white 2019 Honda Civic sedan (10th generation), modified: amber roof light bar, tinted windows, black rims, subtle cyan underglow. Original hand-modelled, with **no Honda logos, badges or other manufacturer marks**. The licence plate reads "MAHFUJ02" on a stylized plate that is not a copy of the official Manitoba plate; the plate text comes from `src/content` (`profile.ts`), not from the scene code. Until this phase the placeholder car is a simple white sedan shape. The Phase 6 interior matches it.
@@ -445,7 +445,7 @@ Branches: `feat/p10-models-<name>`
 - Consistent world palette; small shared texture atlases only where needed
 - **Done when:** visual quality is final and budgets still pass in every tier.
 
-### Phase 11: Performance, a11y, launch  → `v1.0.0`
+### Phase 11: Performance, a11y, launch  → `v1.0.0` (repo work built, owner steps in `docs/launch.md`)
 Branch: `perf/p11-launch-hardening`
 - Adaptive quality tuning on real mid-range Android + iPhone
 - Final Lighthouse, axe, cross-browser (Chrome, Safari, Firefox, mobile Safari)

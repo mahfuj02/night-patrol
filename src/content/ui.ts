@@ -3,7 +3,8 @@ import type { UiCopy } from './schema';
 export const simpleCopy: UiCopy = {
   site: {
     title: 'Night Patrol',
-    description: 'A scroll-driven 3D night drive through low-poly winter Winnipeg.',
+    description:
+      'A scroll-driven 3D night drive through winter Winnipeg. Each stop is a chapter of a career.',
   },
   home: {
     heading: 'Night Patrol',
@@ -27,6 +28,27 @@ export const simpleCopy: UiCopy = {
     noWebGL: 'This browser cannot show the 3D drive, but the simple version has everything.',
   },
   checkpoint: { teaser: 'Also' },
+  notFound: {
+    heading: 'Wrong turn, Unit 02',
+    body: 'There is no road here. Head back to the patrol, or read the simple version.',
+    backToDrive: 'Back to the drive',
+    simple: 'View the simple version',
+  },
+  sound: { on: 'Sound: on', off: 'Sound: off' },
+  shortcuts: {
+    open: 'Keyboard shortcuts',
+    heading: 'Keyboard shortcuts',
+    close: 'Close',
+    items: [
+      { keys: 'Down, Right', action: 'Drive on' },
+      { keys: 'Up, Left', action: 'Brake to a stop' },
+      { keys: 'Space, Page Down', action: 'Drive to the next stop' },
+      { keys: 'Page Up, Shift+Space', action: 'Brake' },
+      { keys: 'Tab', action: 'Move between the buttons and the route map' },
+      { keys: 'Escape', action: 'Leave a station or close a panel' },
+      { keys: '?', action: 'Show this list' },
+    ],
+  },
   hud: { radioLabel: 'Dispatch radio', sign: 'Sign: {name}. {slogan}' },
   menu: {
     toggle: 'Route map',

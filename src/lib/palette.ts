@@ -86,6 +86,15 @@ export const world = {
   binGrey: '#3A3E44',
   fenceWood: '#5A4C3E',
   fenceWeathered: '#6B6259',
+  // the car
+  carShell: '#E6E9EC',
+  carGlass: '#0B1016',
+  carTrim: '#101317',
+  carRim: '#07090C',
+  lightBar: '#FFB25C',
+  underglow: '#2FE3E8',
+  plateBg: '#EEF0F2',
+  plateInk: '#1B2A4A',
   // accents
   forksMagenta: '#AD76AE',
   forksMagentaDeep: '#791F7C',

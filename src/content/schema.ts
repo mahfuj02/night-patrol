@@ -48,6 +48,8 @@ export const ProfileSchema = z.object({
     linkedin: url,
     portfolio: url,
   }),
+  /** The text on the car's licence plate (the owner's public GitHub username). */
+  plate: z.string().min(1).max(10),
   /** Where the resume PDF lives (on mahfuj.dev). */
   resumeUrl: url,
 });
@@ -394,6 +396,19 @@ export const UiCopySchema = z.object({
   }),
   labels: z.object({ stack: z.string(), problem: z.string(), built: z.string() }),
   checkpoint: z.object({ teaser: z.string() }),
+  notFound: z.object({
+    heading: z.string(),
+    body: z.string(),
+    backToDrive: z.string(),
+    simple: z.string(),
+  }),
+  sound: z.object({ on: z.string(), off: z.string() }),
+  shortcuts: z.object({
+    open: z.string(),
+    heading: z.string(),
+    close: z.string(),
+    items: z.array(z.object({ keys: z.string(), action: z.string() })).min(1),
+  }),
   hud: z.object({
     radioLabel: z.string(),
     /** Read out at a project stop for screen readers. `{name}` and `{slogan}` are the sign's. */
