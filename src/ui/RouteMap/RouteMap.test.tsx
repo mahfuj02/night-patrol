@@ -79,7 +79,7 @@ describe('RouteMap', () => {
   it('drives to a station from the keyboard and opens it on arrival', async () => {
     const user = userEvent.setup();
     render(<RouteMap />);
-    const button = screen.getByRole('button', { name: /Education, station/ });
+    const button = screen.getByRole('button', { name: /Education station/ });
     button.focus();
     await user.keyboard('{Enter}');
     expect(state().target).toBeCloseTo(visitOf(RRC).s, 6);
@@ -145,7 +145,7 @@ describe('RouteMap', () => {
     const user = userEvent.setup();
     render(<RouteMap />);
     await user.click(screen.getByRole('button', { name: /Route map/ }));
-    await user.click(screen.getByRole('button', { name: /Education, station/ }));
+    await user.click(screen.getByRole('button', { name: /Education station/ }));
     expect(screen.queryByRole('navigation', { name: 'Route map' })).toBeNull();
   });
 });

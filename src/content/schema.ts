@@ -426,8 +426,9 @@ export const UiCopySchema = z.object({
     driving: z.string(),
     arrived: z.string(),
     /** Accessible names. `{title}`, `{n}`, `{total}` and `{section}` are filled in. */
-    stopName: z.string(),
-    stationName: z.string(),
+    /** Read after the visible words of a row, so the row's name contains them first. */
+    stopNote: z.string(),
+    stationNote: z.string(),
     current: z.string(),
     close: z.string(),
     driveToIt: z.string(),
