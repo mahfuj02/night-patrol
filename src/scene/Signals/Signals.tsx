@@ -172,7 +172,13 @@ export function Signals() {
       if (head.station === undefined) return;
       const frame = stationFrames[head.station];
       if (!frame) return;
-      const lit: Lit = lightIsRed(progress.t, frame.lightT, frame.stopT, phase) ? 'red' : 'green';
+      // Each mast watches its own traffic: heading out, or heading back (its light is as far past
+      // the stop as the outbound one is before it, so the car's place is mirrored about the stop).
+      const way = head.back ? -1 : 1;
+      const t = way === 1 ? progress.t : 2 * frame.stopT - progress.t;
+      const watching = phase !== 'idle' || progress.direction === way;
+      const lit: Lit =
+        watching && lightIsRed(t, frame.lightT, frame.stopT, phase) ? 'red' : 'green';
       if (shown.current[i] === lit) return;
       shown.current[i] = lit;
       paint(i, lit);

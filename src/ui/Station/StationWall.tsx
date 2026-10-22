@@ -111,7 +111,7 @@ export function StationWall() {
       {sheet && content && (
         <aside
           aria-labelledby={sheetHeading}
-          className="bg-night-2 text-snow border-hud/40 fixed inset-x-0 bottom-[9.5rem] z-10 max-h-[40dvh] overflow-y-auto rounded-t-xl border p-5 shadow-xl"
+          className="bg-night-2 text-snow border-hud/40 fixed inset-x-0 bottom-[12.5rem] z-10 max-h-[40dvh] overflow-y-auto rounded-t-xl border p-5 shadow-xl"
         >
           <button
             type="button"

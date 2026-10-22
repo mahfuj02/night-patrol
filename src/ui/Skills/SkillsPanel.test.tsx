@@ -2,8 +2,8 @@ import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { profile, skills, stations, stops } from '@/content';
-import { INITIAL_STATION } from '@/lib/station';
 import { useDriveStore } from '@/store/drive';
+import { resetDrive } from '@/store/driveTestUtils';
 import { StationControls } from '../Station';
 import { SkillsPanel } from './SkillsPanel';
 
@@ -23,8 +23,7 @@ function park(index: number) {
 describe('SkillsPanel', () => {
   beforeEach(() => {
     act(() => {
-      useDriveStore.setState({ station: INITIAL_STATION, pendingOpen: null, wallLegible: true });
-      state().goToStop(0);
+      resetDrive();
     });
   });
 

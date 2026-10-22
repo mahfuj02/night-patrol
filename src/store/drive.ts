@@ -1,76 +1,69 @@
 import { create } from 'zustand';
-import { route } from '@/content/route';
 import { stations } from '@/content/stations';
 import { stops } from '@/content/stops';
-import { clamp01, isAtStop, nearestStopIndex, stepToStop } from '@/lib/route';
+import { progress } from '@/lib/driveProgress';
+import { magnetZone, nearestPoint, nextVisit, planJump, signedGap } from '@/lib/loopRoute';
+import { MAGNETS, START_S, STOP_VISITS, patrolLoop as loop } from '@/lib/patrolLoop';
 import {
   INITIAL_STATION,
-  offsetT,
   reduceStation,
   type StationAction,
   type StationState,
 } from '@/lib/station';
+import type { Direction } from '@/lib/uturn';
 
-export const STOP_TS: readonly number[] = stops.map((stop) => stop.t);
-
-/**
- * The farthest the car can be driven: the last stop. The road runs a little past it (the lead-in to
- * the roundabout at the end of the shift), but only the end-of-shift loop drives there.
- */
-export const LAST_STOP_T = STOP_TS[STOP_TS.length - 1] ?? 1;
-
-/** Where each station's car stops at its red light, as `t`. */
-export const STATION_LIGHT_TS: readonly number[] = stations.map((station) => {
-  const stop = stops.find((s) => s.id === station.stopId);
-  return offsetT(stop?.t ?? 0, station.light.offset, route.lengthMetres);
-});
-
-interface Point {
-  t: number;
-  kind: 'stop' | 'light';
-  /** The stop index, or the station index. */
-  ref: number;
-}
-
-/** Every place the magnet holds the car: the stops and the station lights, in route order. */
-const POINTS: readonly Point[] = [
-  ...STOP_TS.map((t, ref): Point => ({ t, kind: 'stop', ref })),
-  ...STATION_LIGHT_TS.map((t, ref): Point => ({ t, kind: 'light', ref })),
-].sort((a, b) => a.t - b.t);
-
-/** The magnet positions (`t`), used by the scene to ease the car to a stop at each of them. */
-export const MAGNET_TS: readonly number[] = POINTS.map((p) => p.t);
+/** The car never gets further than this ahead of its destination's lead, so scrolling stays a leash. */
+export const LEASH_METRES = 80;
+/** Braking aims this many seconds of driving ahead of the car, so it eases to a stop, not a halt. */
+export const BRAKE_SECONDS = 0.2;
 
 interface DriveState {
-  /** Where the visitor wants to be along the route, 0..1. The scene eases toward it. */
+  /**
+   * Where the visitor wants the car to be, in metres driven round the patrol loop (it counts up lap
+   * after lap, and the scene eases the car toward it, pulled to a stop by the magnet). The car only
+   * ever drives forward along the loop: input moves this ahead, braking pulls it back to the car.
+   */
   target: number;
   /** Index of the stop nearest to `target`. */
   stopIndex: number;
-  /** True when `target` is close enough to `stopIndex` for the stop to count as reached. */
+  /** True when `target` is close enough to a stop for the stop to count as reached. */
   atStop: boolean;
   /** The station whose red light the car is stopped at, or null. */
   atLight: number | null;
   /** The station the visitor can open right now (at its light, or at its stop), or null. */
   openable: number | null;
-  /** A station the visitor chose from the map: opened as soon as the car has arrived at it. */
+  /** Which way along the route the car is heading at `target`: 1 outbound, -1 heading back. */
+  direction: Direction;
+  /** True after braking, until the car drives again: the cue to offer Turn around. */
+  braked: boolean;
+  /** A U-turn has been asked for (the button, or a jump that is nearer the other way) and is not done. */
+  turnRequest: boolean;
+  /** Where on the loop (wrapped) to drive to once the U-turn is done, or null to stay put. */
+  goal: number | null;
+  /** True while the car is on a roundabout, where it drives itself and cannot be braked or turned. */
+  arc: boolean;
+  /** How many times the car has come round the turnaround and started another lap. */
+  laps: number;
+  /** A station chosen from the map: opened as soon as the car has arrived at it. */
   pendingOpen: number | null;
   /** The station arrival state: idle, turning in, parked or backing out. */
   station: StationState;
   /** False when the wall is too small on screen to read, so the content opens in the sheet too. */
   wallLegible: boolean;
   /**
-   * The end of the shift: the car `looping` the roundabout past The Forks, then `fading-out` (the
-   * view goes dark), then the car is put back at the first stop and the view `fading-in`, then
-   * `idle`. `resetCount` goes up at the cut so the scene snaps its progress instead of easing back
-   * along the whole route.
+   * Start over: the view fades out, the car is put back at the first stop heading out, and the view
+   * fades in. `resetCount` goes up at the cut so the scene snaps instead of driving back.
    */
-  shift: 'idle' | 'looping' | 'fading-out' | 'fading-in';
+  shift: 'idle' | 'fading-out' | 'fading-in';
   resetCount: number;
-  /** Counts the frames the scene has advanced the lap, as a heartbeat for the stall timer. */
-  loopTicks: number;
+  /** Forward input: drive on. Backward input: brake. A size of 0 does nothing. */
   nudge: (delta: number) => void;
+  /** Drive on to the next stop ahead. */
   next: () => void;
-  prev: () => void;
+  /** Brake to a stop. */
+  brake: () => void;
+  /** Turn round in the road and stop, facing the other way. */
+  turnAround: () => void;
   goToStop: (index: number) => void;
   /** Drives to a station and opens it once there. */
   goToStation: (index: number) => void;
@@ -78,41 +71,56 @@ interface DriveState {
   closeStation: () => void;
   finishManeuver: () => void;
   setWallLegible: (legible: boolean) => void;
-  /** At the last stop with the car out of its station: loop the roundabout, fade out and start again. */
-  startNewPatrol: () => void;
-  /** The lap is done (or skipped): fade out. */
-  finishLoop: () => void;
-  /** The scene advanced the lap by a frame: a heartbeat, so a lap that is running is never cut short. */
-  tickLoop: () => void;
+  /** The scene finished a U-turn and the car is now `pos` metres round the loop. */
+  finishTurn: (pos: number) => void;
+  /** The scene says whether the car is on a roundabout. */
+  setArc: (arc: boolean) => void;
+  /** The scene says the car has come round the turnaround and is starting another lap. */
+  completeLap: () => void;
+  /** Fade out, put the car back at the first stop heading out, and fade in. */
+  startOver: () => void;
   /** The view is dark: cut back to the first stop and fade in. */
   completeFadeOut: () => void;
   /** The view is back: the reset is over. */
   finishReset: () => void;
 }
 
-function derive(target: number) {
-  const t = Math.min(clamp01(target), LAST_STOP_T);
-  const stopIndex = nearestStopIndex(t, STOP_TS);
-  const magnetIndex = nearestStopIndex(t, MAGNET_TS);
-  const point = isAtStop(t, MAGNET_TS) ? POINTS[magnetIndex] : undefined;
-  const atStop = point?.kind === 'stop';
-  const atLight = point?.kind === 'light' ? point.ref : null;
+/** What the target says about the stop and station the car is at. */
+export function derive(target: number) {
+  const s = loop.wrap(target);
+  const nearVisit = STOP_VISITS[nearestPoint(loop, s, STOP_VISITS)];
+  const magnetIndex = nearestPoint(loop, s, MAGNETS);
+  const point = MAGNETS[magnetIndex];
+  const inZone =
+    point !== undefined &&
+    Math.abs(signedGap(loop, s, point.s)) <= magnetZone(loop, magnetIndex, MAGNETS);
+  const atStop = inZone && point.kind === 'stop';
+  const atLight = inZone && point.kind === 'light' ? point.ref : null;
+  const stopIndex = atStop ? point.ref : (nearVisit?.stop ?? 0);
   const stopId = stops[stopIndex]?.id;
-  const stationAtStop = atStop ? stations.findIndex((s) => s.stopId === stopId) : -1;
+  const stationAtStop = atStop ? stations.findIndex((st) => st.stopId === stopId) : -1;
   return {
-    target: t,
+    target,
     stopIndex,
     atStop,
     atLight,
     openable: atLight ?? (stationAtStop >= 0 ? stationAtStop : null),
+    direction: (inZone ? point.direction : loop.direction(s)) as Direction,
   };
 }
+
+const IDLE = {
+  braked: false,
+  turnRequest: false,
+  goal: null,
+  pendingOpen: null,
+} as const;
 
 export const useDriveStore = create<DriveState>((set, get) => {
   /** Applies a movement unless the car is in a station: then it backs out first (or is ignored). */
   const move = (dir: 1 | -1 | 0, go: () => void, jump?: number, open?: number) => {
-    // Nothing drives the car while the end of the shift plays (the loop, the fade and the reset).
-    if (get().shift !== 'idle') return;
+    // Nothing drives the car while it is starting over, or turning round.
+    if (get().shift !== 'idle' || get().turnRequest) return;
     const { station } = get();
     if (station.phase === 'idle') return go();
     if (station.phase === 'parked' && (dir !== 0 || jump !== undefined)) {
@@ -130,53 +138,98 @@ export const useDriveStore = create<DriveState>((set, get) => {
   const dispatch = (action: StationAction) =>
     set((state) => ({ station: reduceStation(state.station, action) }));
 
+  /** Drives (or turns round and drives) to the nearest visit of a stop. */
+  const jumpTo = (index: number, open: number | null) => {
+    const visits = STOP_VISITS.filter((v) => v.stop === index);
+    const here = progress.s;
+    const plan = planJump(loop, loop.wrap(here), visits);
+    if (!plan) return;
+    if (plan.uTurn) {
+      // Show where it is going now; the scene turns the car round, then drives there.
+      set({
+        ...derive(plan.visit.s),
+        target: here,
+        braked: false,
+        turnRequest: true,
+        goal: plan.visit.s,
+        pendingOpen: open,
+      });
+      return;
+    }
+    set({
+      ...derive(here + plan.distance),
+      braked: false,
+      goal: null,
+      pendingOpen: open,
+    });
+  };
+
   return {
-    ...derive(0),
+    ...derive(START_S),
+    braked: false,
+    turnRequest: false,
+    goal: null,
+    arc: false,
+    laps: 0,
     station: INITIAL_STATION,
     pendingOpen: null,
     wallLegible: true,
     shift: 'idle',
     resetCount: 0,
-    loopTicks: 0,
-    nudge: (delta) =>
-      move(delta > 0 ? 1 : delta < 0 ? -1 : 0, () =>
-        set({ ...derive(get().target + delta), pendingOpen: null }),
-      ),
+    nudge: (delta) => {
+      if (delta < 0) return get().brake();
+      if (delta === 0) return;
+      move(1, () => {
+        const was = get().target;
+        const ahead = Math.min(was + delta * loop.spec.road, progress.s + LEASH_METRES);
+        // Never pulls the target back (a jump may have put it beyond the leash).
+        set({ ...derive(Math.max(was, ahead)), braked: false, pendingOpen: null });
+      });
+    },
     next: () =>
-      move(1, () =>
+      move(1, () => {
+        const was = get().target;
+        const s = loop.wrap(was);
+        const visit = nextVisit(loop, s, STOP_VISITS);
+        if (!visit) return;
+        let ahead = loop.ahead(s, visit.s);
+        if (ahead <= 1) ahead += loop.length;
+        set({ ...derive(was + ahead), braked: false, pendingOpen: null });
+      }),
+    brake: () =>
+      move(-1, () => {
+        // On a roundabout the car drives itself round.
+        if (get().arc) return;
+        const aim = progress.s + Math.max(0, progress.speed) * BRAKE_SECONDS;
+        set({ ...derive(aim), braked: true, pendingOpen: null, goal: null });
+      }),
+    turnAround: () =>
+      move(0, () => {
+        if (get().arc) return;
         set({
-          ...derive(stepToStop(get().target, 1, STOP_TS)),
+          ...derive(progress.s),
+          braked: false,
           pendingOpen: null,
-        }),
-      ),
-    prev: () =>
-      move(-1, () =>
-        set({
-          ...derive(stepToStop(get().target, -1, STOP_TS)),
-          pendingOpen: null,
-        }),
-      ),
-    goToStop: (index) =>
-      move(
-        0,
-        () => {
-          const stopT = STOP_TS[index];
-          if (stopT !== undefined) {
-            set({ ...derive(stopT), pendingOpen: null });
-          }
-        },
-        index,
-      ),
+          turnRequest: true,
+          goal: null,
+        });
+      }),
+    goToStop: (index) => move(0, () => jumpTo(index, null), index),
     goToStation: (index) => {
       const station = stations[index];
       const stopIndex = stops.findIndex((s) => s.id === station?.stopId);
-      const stopT = STOP_TS[stopIndex];
-      if (!station || stopT === undefined) return;
-      move(0, () => set({ ...derive(stopT), pendingOpen: index }), stopIndex, index);
+      if (!station || stopIndex < 0) return;
+      move(0, () => jumpTo(stopIndex, index), stopIndex, index);
     },
     openStation: () => {
-      const { openable, station, shift } = get();
-      if (openable !== null && station.phase === 'idle' && shift === 'idle') {
+      const { openable, station, shift, turnRequest, arc } = get();
+      if (
+        openable !== null &&
+        station.phase === 'idle' &&
+        shift === 'idle' &&
+        !turnRequest &&
+        !arc
+      ) {
         set({ pendingOpen: null });
         dispatch({ type: 'open', index: openable });
       }
@@ -189,7 +242,7 @@ export const useDriveStore = create<DriveState>((set, get) => {
       if (before.phase === 'backing-out' && after.phase === 'idle') {
         const { pending } = after;
         set({ station: { ...after, pending: { kind: 'none' } }, wallLegible: true });
-        if (pending.kind === 'dir') (pending.dir === 1 ? get().next : get().prev)();
+        if (pending.kind === 'dir') (pending.dir === 1 ? get().next : get().brake)();
         else if (pending.kind === 'go') get().goToStop(pending.index);
         else if (pending.kind === 'station') get().goToStation(pending.index);
       }
@@ -197,24 +250,27 @@ export const useDriveStore = create<DriveState>((set, get) => {
     setWallLegible: (legible) => {
       if (get().wallLegible !== legible) set({ wallLegible: legible });
     },
-    startNewPatrol: () => {
-      const { shift, atStop, stopIndex, station } = get();
-      if (shift !== 'idle' || station.phase !== 'idle') return;
-      if (!atStop || stopIndex !== stops.length - 1) return;
-      set({ shift: 'looping', pendingOpen: null });
+    finishTurn: (pos) => {
+      const { goal, pendingOpen } = get();
+      const target = goal === null ? pos : pos + loop.ahead(loop.wrap(pos), goal);
+      set({ ...derive(target), ...IDLE, pendingOpen: goal === null ? null : pendingOpen });
     },
-    tickLoop: () => {
-      if (get().shift === 'looping') set({ loopTicks: get().loopTicks + 1 });
+    setArc: (arc) => {
+      if (get().arc !== arc) set({ arc });
     },
-    finishLoop: () => {
-      if (get().shift === 'looping') set({ shift: 'fading-out' });
+    completeLap: () => set({ laps: get().laps + 1 }),
+    startOver: () => {
+      const { shift, station, turnRequest } = get();
+      if (shift !== 'idle' || station.phase !== 'idle' || turnRequest) return;
+      set({ shift: 'fading-out', pendingOpen: null });
     },
     completeFadeOut: () => {
       if (get().shift !== 'fading-out') return;
       set({
-        ...derive(0),
+        ...derive(START_S),
+        ...IDLE,
+        arc: false,
         station: INITIAL_STATION,
-        pendingOpen: null,
         wallLegible: true,
         shift: 'fading-in',
         resetCount: get().resetCount + 1,

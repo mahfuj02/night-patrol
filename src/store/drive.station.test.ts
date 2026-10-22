@@ -1,51 +1,64 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { route, stations, stops } from '@/content';
+import { stations, stops } from '@/content';
+import { progress } from '@/lib/driveProgress';
+import { patrolLoop as loop, MAGNETS } from '@/lib/patrolLoop';
 import { INITIAL_STATION } from '@/lib/station';
-import { MAGNET_TS, STATION_LIGHT_TS, STOP_TS, useDriveStore } from './drive';
+import { useDriveStore } from './drive';
+import { arriveAt, placeCar, resetDrive, visitOf } from './driveTestUtils';
 
 const state = () => useDriveStore.getState();
 const EDU = 0;
 const RRC = stops.findIndex((s) => s.id === stations[EDU]!.stopId);
-const lightT = STATION_LIGHT_TS[EDU]!;
-
-function reset() {
-  useDriveStore.setState({ station: INITIAL_STATION, wallLegible: true });
-  state().goToStop(0);
-}
+const lights = MAGNETS.filter((m) => m.kind === 'light' && m.ref === EDU);
 
 describe('station magnets', () => {
-  it('puts the Education red light before the RRC stop, in route order', () => {
-    expect(lightT).toBeLessThan(STOP_TS[RRC]!);
-    expect(lightT).toBeGreaterThan(STOP_TS[RRC - 1]!);
-    expect(MAGNET_TS).toHaveLength(STOP_TS.length + STATION_LIGHT_TS.length);
-    expect([...MAGNET_TS]).toEqual([...MAGNET_TS].sort((a, b) => a - b));
-    // About 20 m before the stop, on the route as long as the content says.
-    expect(STOP_TS[RRC]! - lightT).toBeCloseTo(20 / route.lengthMetres, 6);
+  it('puts a red light before the stop in each direction: both sides of the stop', () => {
+    expect(lights).toHaveLength(2);
+    const out = lights.find((l) => l.direction === 1)!;
+    const back = lights.find((l) => l.direction === -1)!;
+    const stopOut = visitOf(RRC, 1).s;
+    const stopBack = visitOf(RRC, -1).s;
+    // About 20 m before the stop along the way the car is going, as the content says.
+    expect(loop.ahead(out.s, stopOut)).toBeCloseTo(20, 6);
+    expect(loop.ahead(back.s, stopBack)).toBeCloseTo(20, 6);
+    // On the road that is before the stop heading out, and past it heading back.
+    expect(loop.roadMetres(out.s)).toBeLessThan(loop.roadMetres(stopOut));
+    expect(loop.roadMetres(back.s)).toBeGreaterThan(loop.roadMetres(stopBack));
+  });
+
+  it('keeps every magnet point in loop order, with a stop for each visit', () => {
+    const order = MAGNETS.map((m) => m.s);
+    expect(order).toEqual([...order].sort((a, b) => a - b));
+    const stopCount = MAGNETS.filter((m) => m.kind === 'stop').length;
+    expect(stopCount).toBe(stops.length + (stops.length - 2));
   });
 });
 
 describe('opening a station', () => {
-  beforeEach(reset);
+  beforeEach(resetDrive);
 
-  it('can be opened at the red light and at the stop, and not elsewhere', () => {
+  it('can be opened at the red light and at the stop, and not elsewhere, in either direction', () => {
     expect(state().openable).toBeNull();
-    useDriveStore.setState({ ...state(), target: lightT });
-    state().nudge(0);
-    expect(state().atLight).toBe(EDU);
-    expect(state().openable).toBe(EDU);
-    expect(state().atStop).toBe(false);
-    state().goToStop(RRC);
-    expect(state().atLight).toBeNull();
-    expect(state().atStop).toBe(true);
-    expect(state().openable).toBe(EDU);
-    state().goToStop(RRC + 1);
-    expect(state().openable).toBeNull();
+    for (const direction of [1, -1] as const) {
+      const light = lights.find((l) => l.direction === direction)!;
+      placeCar(light.s);
+      expect(state().atLight).toBe(EDU);
+      expect(state().openable).toBe(EDU);
+      expect(state().atStop).toBe(false);
+      expect(state().direction).toBe(direction);
+      arriveAt(RRC, direction);
+      expect(state().atLight).toBeNull();
+      expect(state().atStop).toBe(true);
+      expect(state().openable).toBe(EDU);
+      arriveAt(RRC + 1, direction);
+      expect(state().openable).toBeNull();
+    }
   });
 
   it('opens only when something is openable', () => {
     state().openStation();
     expect(state().station.phase).toBe('idle');
-    state().goToStop(RRC);
+    arriveAt(RRC, -1);
     state().openStation();
     expect(state().station).toEqual({
       phase: 'turning-in',
@@ -55,7 +68,7 @@ describe('opening a station', () => {
   });
 
   it('goes turning in, parked, backing out and back to idle as the scene reports', () => {
-    state().goToStop(RRC);
+    arriveAt(RRC);
     state().openStation();
     state().finishManeuver();
     expect(state().station.phase).toBe('parked');
@@ -70,8 +83,8 @@ describe('opening a station', () => {
 
 describe('moving while at a station', () => {
   beforeEach(() => {
-    reset();
-    state().goToStop(RRC);
+    resetDrive();
+    arriveAt(RRC);
     state().openStation();
   });
 
@@ -79,7 +92,7 @@ describe('moving while at a station', () => {
     const before = state().target;
     state().nudge(0.05);
     state().next();
-    state().prev();
+    state().brake();
     state().goToStop(0);
     expect(state().target).toBe(before);
     expect(state().station.phase).toBe('turning-in');
@@ -96,13 +109,16 @@ describe('moving while at a station', () => {
     expect(state().stopIndex).toBe(RRC + 1);
   });
 
-  it('drives backwards on Prev and a wheel nudge too', () => {
+  it('backs out and stays on the road for brake, and drives on for a forward nudge', () => {
     state().finishManeuver();
-    state().prev();
+    state().brake();
+    expect(state().station.pending).toEqual({ kind: 'dir', dir: -1 });
     state().finishManeuver();
-    expect(state().stopIndex).toBe(RRC - 1);
+    expect(state().stopIndex).toBe(RRC);
+    expect(state().braked).toBe(true);
+    expect(state().target).toBeCloseTo(progress.s, 0);
 
-    state().goToStop(RRC);
+    arriveAt(RRC);
     state().openStation();
     state().finishManeuver();
     state().nudge(0.04);
@@ -132,15 +148,24 @@ describe('moving while at a station', () => {
     state().finishManeuver();
     expect(state().station).toEqual(INITIAL_STATION);
   });
+
+  it('does not turn round or start over from the bay', () => {
+    state().finishManeuver();
+    state().turnAround();
+    state().startOver();
+    expect(state().station.phase).toBe('parked');
+    expect(state().turnRequest).toBe(false);
+    expect(state().shift).toBe('idle');
+  });
 });
 
 describe('wall legibility', () => {
-  beforeEach(reset);
+  beforeEach(resetDrive);
   it('remembers whether the wall is big enough to read, and resets when the car leaves', () => {
     state().setWallLegible(false);
     expect(state().wallLegible).toBe(false);
     state().setWallLegible(false);
-    state().goToStop(RRC);
+    arriveAt(RRC);
     state().openStation();
     state().finishManeuver();
     state().closeStation();

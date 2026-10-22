@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { START_S } from '@/lib/patrolLoop';
 import { useDriveStore } from '@/store/drive';
 import { useIntroStore } from '@/store/intro';
 import { HomeExperience } from './HomeExperience';
@@ -66,7 +67,7 @@ describe('HomeExperience', () => {
   it('drives with the wheel over the scene', () => {
     render(<HomeExperience />);
     fireEvent.wheel(screen.getByTestId('scene').parentElement!, { deltaY: 100 });
-    expect(state().target).toBeGreaterThan(0);
+    expect(state().target).toBeGreaterThan(START_S);
   });
 
   it('does not trap the keyboard: Tab reaches the link and buttons, and Space on a button acts once', async () => {
@@ -75,7 +76,7 @@ describe('HomeExperience', () => {
     await user.tab();
     expect(screen.getByRole('link', { name: 'Simple view' })).toHaveFocus();
     await user.tab();
-    expect(screen.getByRole('button', { name: '‹ Prev' })).toHaveFocus();
+    expect(screen.getByRole('button', { name: '‹ Brake' })).toHaveFocus();
     await user.tab();
     const next = screen.getByRole('button', { name: 'Next stop ›' });
     expect(next).toHaveFocus();
@@ -100,7 +101,7 @@ describe('HomeExperience', () => {
       render(<HomeExperience />);
       await user.keyboard('{ArrowDown}{ArrowDown}{PageDown}');
       expect(state().stopIndex).toBe(0);
-      expect(state().target).toBe(0);
+      expect(state().target).toBe(START_S);
     });
 
     it('is not shown without WebGL', () => {

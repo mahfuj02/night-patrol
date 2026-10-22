@@ -91,7 +91,7 @@ test.describe('Education station', () => {
   }) => {
     test.setTimeout(120_000);
     await driveToRrc(page);
-    await page.getByRole('button', { name: 'Next stop ›' }).focus();
+    await page.getByRole('button', { name: 'Start over' }).focus();
     await page.keyboard.press('Tab');
     await expect(openButton(page)).toBeFocused();
   });

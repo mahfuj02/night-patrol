@@ -27,3 +27,23 @@ body {
   outline: 2px solid var(--color-hud);
   outline-offset: 2px;
 }
+
+/* The cabin wipers: parked most of the time, one slow sweep every ten seconds. Not used under reduced motion. */
+@keyframes cabin-wipe {
+  0%,
+  86% {
+    transform: rotate(-72deg);
+  }
+  93% {
+    transform: rotate(72deg);
+  }
+  100% {
+    transform: rotate(-72deg);
+  }
+}
+.cabin-wiper {
+  animation: cabin-wipe 10s ease-in-out infinite;
+}
+.cabin-wiper + .cabin-wiper {
+  animation-delay: 0.15s;
+}

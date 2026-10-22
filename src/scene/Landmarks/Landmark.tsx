@@ -40,7 +40,9 @@ export function Landmark({
   const glow = useMemo(() => new GlowUniform(), []);
 
   useFrame(() => {
-    glow.set(Math.max(minGlow, landmarkGlow(progress.t, frame.stopT, reducedMotion)));
+    // Heading back the sign lights up the same way, as the car approaches it from the other side.
+    const t = progress.direction === 1 ? progress.t : 2 * frame.stopT - progress.t;
+    glow.set(Math.max(minGlow, landmarkGlow(t, frame.stopT, reducedMotion)));
     onGlow?.(glow.value);
     if (!lean) return;
     const [lx, ly, lz] = focus;

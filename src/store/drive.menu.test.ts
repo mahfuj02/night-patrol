@@ -1,22 +1,19 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { stations, stops } from '@/content';
+import { progress } from '@/lib/driveProgress';
 import { INITIAL_STATION } from '@/lib/station';
-import { STOP_TS, useDriveStore } from './drive';
+import { useDriveStore } from './drive';
+import { arriveAt, resetDrive, visitOf } from './driveTestUtils';
 
 const state = () => useDriveStore.getState();
 const RRC = stops.findIndex((s) => s.id === stations[0]!.stopId);
 
-function reset() {
-  useDriveStore.setState({ station: INITIAL_STATION, pendingOpen: null, wallLegible: true });
-  state().goToStop(0);
-}
-
 describe('going to a station from the map', () => {
-  beforeEach(reset);
+  beforeEach(resetDrive);
 
   it('drives to the stop and asks for the station to open on arrival', () => {
     state().goToStation(0);
-    expect(state().target).toBe(STOP_TS[RRC]);
+    expect(state().target).toBeCloseTo(visitOf(RRC).s, 6);
     expect(state().pendingOpen).toBe(0);
     expect(state().station.phase).toBe('idle');
     // The scene opens it once the car has arrived; opening clears the request.
@@ -26,11 +23,24 @@ describe('going to a station from the map', () => {
     expect(state().station.phase).toBe('turning-in');
   });
 
+  it('goes to the heading-back visit of a station when that is nearer, turning round once', () => {
+    arriveAt(8, 1);
+    state().goToStation(0);
+    expect(state().turnRequest).toBe(true);
+    expect(state().goal).toBe(visitOf(RRC, -1).s);
+    expect(state().pendingOpen).toBe(0);
+    // Once the scene has turned the car round, the open request is still waiting.
+    progress.s = progress.s + 1000;
+    state().finishTurn(progress.s);
+    expect(state().pendingOpen).toBe(0);
+    expect(state().turnRequest).toBe(false);
+  });
+
   it('is cancelled by any other movement before the car arrives', () => {
     for (const move of [
       () => state().nudge(0.01),
       () => state().next(),
-      () => state().prev(),
+      () => state().brake(),
       () => state().goToStop(1),
     ]) {
       state().goToStation(0);
@@ -48,7 +58,8 @@ describe('going to a station from the map', () => {
   });
 
   it('backs out of the station the car is parked at first, then drives to the chosen one', () => {
-    state().goToStop(RRC);
+    useDriveStore.setState({ station: INITIAL_STATION });
+    arriveAt(RRC);
     state().openStation();
     state().finishManeuver();
     expect(state().station.phase).toBe('parked');
@@ -60,8 +71,8 @@ describe('going to a station from the map', () => {
     expect(state().pendingOpen).toBe(0);
   });
 
-  it('leaves a parked car where it is for a request to go nowhere new', () => {
-    state().goToStop(RRC);
+  it('keeps a request to go elsewhere for after backing out', () => {
+    arriveAt(RRC);
     state().openStation();
     state().finishManeuver();
     state().goToStop(0);
