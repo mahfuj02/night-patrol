@@ -68,13 +68,11 @@ function Row({
   const above = index > 0 ? transit[segmentZone(entries, index - 1)] : null;
   const below = index < entries.length - 1 ? transit[segmentZone(entries, index)] : null;
   const section = entry.section ? copy.station.sections[entry.section] : null;
-  const name = section
-    ? formatTemplate(copy.menu.stationName, { title: entry.title, section })
-    : formatTemplate(copy.menu.stopName, {
-        title: entry.title,
-        n: entry.stopIndex + 1,
-        total: entries.length,
-      });
+  // The row's name is its visible words (the title, then the section tag) followed by a note that only
+  // assistive tech reads, so the visible text is part of the name (WCAG label in name).
+  const note = section
+    ? copy.menu.stationNote
+    : formatTemplate(copy.menu.stopNote, { n: entry.stopIndex + 1, total: entries.length });
 
   return (
     <li className="relative" style={{ height: ROW }}>
@@ -95,7 +93,6 @@ function Row({
       <button
         type="button"
         onClick={() => onChoose(entry)}
-        aria-label={current ? `${name}, ${copy.menu.current}` : name}
         aria-current={current ? 'location' : undefined}
         className="text-snow hover:bg-night/60 relative flex h-full w-full items-center gap-3 rounded-md pr-2 text-left text-sm"
       >
@@ -109,18 +106,19 @@ function Row({
             <span className="block h-2.5 w-2.5 rounded-full" style={{ background: colour }} />
           )}
         </span>
-        <span aria-hidden="true" className="min-w-0 flex-1 truncate">
-          {entry.title}
-        </span>
+        <span className="min-w-0 flex-1 truncate">{entry.title}</span>{' '}
         {section && (
           <span
-            aria-hidden="true"
             className="text-night shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold"
             style={{ background: colour }}
           >
             {section}
           </span>
-        )}
+        )}{' '}
+        <span className="sr-only">
+          {note}
+          {current ? `, ${copy.menu.current}` : ''}
+        </span>
       </button>
     </li>
   );
