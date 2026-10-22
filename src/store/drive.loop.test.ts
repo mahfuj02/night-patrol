@@ -41,6 +41,7 @@ function simulate(options: {
       const before = progress.s;
       const step = stepLoop(loop, {
         s: before,
+        speed: progress.speed,
         target: store.target,
         dt: DT,
         reducedMotion: options.reducedMotion ?? false,

@@ -75,6 +75,7 @@ export function ProgressDriver({ reducedMotion }: { reducedMotion: boolean }) {
     const before = progress.s;
     const step = stepLoop(loop, {
       s: before,
+      speed: progress.speed,
       target: store.target,
       dt,
       reducedMotion,

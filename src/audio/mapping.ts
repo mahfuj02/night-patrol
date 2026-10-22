@@ -12,17 +12,17 @@ const clamp01 = (x: number) => Math.min(1, Math.max(0, Number.isFinite(x) ? x : 
 /** 0 at rest, 1 at `TOP_SPEED` and above. */
 export const speedShare = (speed: number) => clamp01(speed / TOP_SPEED);
 
-/** Engine hum pitch in Hz: a low idle that rises with speed. */
-export const engineFrequency = (speed: number) => 48 + 52 * speedShare(speed);
+/** Engine hum pitch in Hz: a soft low tone that rises only a little with speed. */
+export const engineFrequency = (speed: number) => 55 + 22 * speedShare(speed);
 
-/** Engine level, 0 to 0.12: always a quiet idle while the sound is on. */
-export const engineGain = (speed: number) => 0.035 + 0.085 * speedShare(speed);
+/** Engine level, 0 to 0.12: a quiet, steady bed while the sound is on. */
+export const engineGain = (speed: number) => 0.04 + 0.04 * speedShare(speed);
 
-/** Tyres crunching on snow: silent at rest, rising with speed, 0 to 0.09. */
-export const tyreGain = (speed: number) => 0.09 * Math.pow(speedShare(speed), 0.8);
+/** Tyres hushing on snow: silent at rest, a soft rise with speed, 0 to 0.035. */
+export const tyreGain = (speed: number) => 0.035 * Math.pow(speedShare(speed), 0.9);
 
 /** The tyre noise gets brighter with speed: low-pass cutoff in Hz. */
-export const tyreCutoff = (speed: number) => 500 + 1500 * speedShare(speed);
+export const tyreCutoff = (speed: number) => 280 + 420 * speedShare(speed);
 
 /** The wipers swish this often, in seconds (matches the cabin animation). */
 export const WIPER_PERIOD = 10;
