@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { stations } from '@/content/stations';
 import { stops } from '@/content/stops';
 import { progress } from '@/lib/driveProgress';
+import { stoppingDistance } from '@/lib/loopDrive';
 import { magnetZone, nearestPoint, nextVisit, planJump, signedGap } from '@/lib/loopRoute';
 import { MAGNETS, START_S, STOP_VISITS, patrolLoop as loop } from '@/lib/patrolLoop';
 import {
@@ -14,8 +15,6 @@ import type { Direction } from '@/lib/uturn';
 
 /** The car never gets further than this ahead of its destination's lead, so scrolling stays a leash. */
 export const LEASH_METRES = 80;
-/** Braking aims this many seconds of driving ahead of the car, so it eases to a stop, not a halt. */
-export const BRAKE_SECONDS = 0.2;
 
 interface DriveState {
   /**
@@ -200,7 +199,7 @@ export const useDriveStore = create<DriveState>((set, get) => {
       move(-1, () => {
         // On a roundabout the car drives itself round.
         if (get().arc) return;
-        const aim = progress.s + Math.max(0, progress.speed) * BRAKE_SECONDS;
+        const aim = progress.s + stoppingDistance(Math.max(0, progress.speed));
         set({ ...derive(aim), braked: true, pendingOpen: null, goal: null });
       }),
     turnAround: () =>

@@ -11,6 +11,11 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Content synced with mahfuj.dev (owner overrides kept: the email): LIILAB as Junior Software Engineer, Feb 2021 to May 2023; the RRC diploma from August 2023 to August 2025 (graduation TODO removed); a new Industrial Project entry (RRC Polytechnic, mobile app development, May to September 2025); the new Connexions Spectrum project (a library book, no route stop); Safe Drive AI and RoleReady stacks; the CivicTrack repository link; case study links to mahfuj.dev for the projects that have one; and the resume link on mahfuj.dev (`profile.resumeUrl` replaces the local `/resume.pdf`)
 - Skills are grouped by category (web, backend, embedded, ai, mobile) instead of dashboard widget groups, with Tailwind, Netlify Functions, React Native and Expo added, `C / C++` split into `C` and `C++`, and `Claude` renamed `Claude Code`
 
+### Fixed
+
+- The car's speed is smooth: it now has a real speed that can only speed up and slow down so fast (gentle at low speed, brisker for a long jump across the map), instead of a position that chased the request (which lurched whenever the request moved). It eases off before a stop and Brake stops it in the distance it needs. See `src/lib/loopDrive.ts`.
+- The sound is soft: a warm low hum of two sine tones that barely changes pitch, a quiet bed of distant wind, tyres hushing on snow, a soft wiper brush and a gentle two-note chime, all fading in slowly. The harsh sawtooth hum, the hiss and the square-wave beeps are gone.
+
 ### Added
 
 - Phase 11, launch hardening (`docs/launch.md`): a themed 404 ("Wrong turn, Unit 02"), an Open Graph and Twitter preview image, the favicon and home-screen icons, theme colour, security headers, an updated README with the controls and credits, and a checklist of what only the owner can do (domain, link from mahfuj.dev, device passes, content proofreading).
